@@ -71,7 +71,7 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
               <TableCell>
                 <div className="flex items-center">
                   <LevelIcon level={level} className="h-7 w-7 mr-2" />
-                  <span className="font-semibold">{match.skillLevel.toLocaleString()}</span>
+                  <span className="font-semibold">{match.skillLevel}</span>
                   <span className={cn(
                     "ml-2 flex items-center text-xs",
                     match.skillChange > 0 ? "text-green-400" : "text-red-400"

@@ -77,7 +77,7 @@ export default function Home() {
                       <LevelIcon level={profile.level} className="h-24 w-24" />
                     </button>
                     <div>
-                      <p className="text-4xl font-bold">{profile.elo.toLocaleString()} <span className="text-lg text-muted-foreground">{t.elo}</span></p>
+                      <p className="text-4xl font-bold">{profile.elo} <span className="text-lg text-muted-foreground">{t.elo}</span></p>
                       <p className="text-muted-foreground">{t.level} {profile.level}</p>
                     </div>
                   </CardContent>

@@ -17,13 +17,13 @@ const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader
   const flagUrl = getFlagEmoji(player.country);
   
   return (
-    <div className="relative pt-10">
+    <div className="relative pt-8">
       {isLeader && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] z-20">
-            <Crown className="h-4 w-4" fill="currentColor" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] z-20">
+            <Crown className="h-3 w-3" fill="currentColor" />
         </div>
       )}
-      <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg transition-colors duration-300">
+      <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg transition-none">
         <div className="absolute inset-0">
             <Image src={player.bannerUrl} alt={`${player.name} banner`} fill className="object-cover opacity-30" data-ai-hint="abstract red" />
             <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
@@ -49,7 +49,7 @@ const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader
           
           <div className="mt-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5 text-sm backdrop-blur-md border border-white/10">
               <LevelIcon level={player.level} className="h-6 w-6" />
-              <span className='text-white font-bold tracking-tighter'>{player.elo.toLocaleString()}</span>
+              <span className='text-white font-bold tracking-tighter'>{player.elo}</span>
           </div>
         </div>
       </Card>
@@ -58,8 +58,8 @@ const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader
 };
 
 const EmptyPlayerCard = () => (
-    <div className="pt-10">
-      <Card className="w-48 h-64 bg-card/5 border-border/20 border-dashed flex flex-col items-center justify-center p-4 text-muted-foreground transition-all duration-300 ease-in-out hover:border-primary/50 hover:text-foreground hover:bg-card/10 cursor-pointer group">
+    <div className="pt-8">
+      <Card className="w-48 h-64 bg-card/5 border-border/20 border-dashed flex flex-col items-center justify-center p-4 text-muted-foreground cursor-pointer group">
           <div className="bg-muted/10 p-4 rounded-full group-hover:bg-primary/10 transition-colors">
             <Plus className="h-8 w-8" />
           </div>

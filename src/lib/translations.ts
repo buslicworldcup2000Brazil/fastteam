@@ -8,7 +8,7 @@ export const translations = {
     level: "Уровень",
     player_stats: "Статистика игрока",
     stats_subtitle: "За последние 30 игр",
-    elo: "ЭЛО",
+    elo: "ELO",
     level_info: "Информация об уровне",
     performance_trend: "Тренды производительности",
     skill_over_matches: "Уровень навыка за последние {count} матчей",
