@@ -13,13 +13,13 @@ import Link from 'next/link';
 import LevelIcon from '@/components/ui/level-icon';
 
 const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader?: boolean }) => (
-  <div className="relative pt-8">
+  <div className="relative pt-10">
     {isLeader && (
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] z-20">
-          <Crown className="h-7 w-7" fill="currentColor" />
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] z-20">
+          <Crown className="h-5 w-5" fill="currentColor" />
       </div>
     )}
-    <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-105 hover:border-primary shadow-lg">
+    <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg transition-colors duration-300">
       <div className="absolute inset-0">
           <Image src={player.bannerUrl} alt={`${player.name} banner`} fill className="object-cover opacity-30" data-ai-hint="abstract red" />
           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
@@ -42,7 +42,7 @@ const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader
 );
 
 const EmptyPlayerCard = () => (
-    <div className="pt-8">
+    <div className="pt-10">
       <Card className="w-48 h-64 bg-card/5 border-border/20 border-dashed flex flex-col items-center justify-center p-4 text-muted-foreground transition-all duration-300 ease-in-out hover:border-primary/50 hover:text-foreground hover:bg-card/10 cursor-pointer group">
           <div className="bg-muted/10 p-4 rounded-full group-hover:bg-primary/10 transition-colors">
             <Plus className="h-8 w-8" />
@@ -56,7 +56,7 @@ export default function MatchmakingPage() {
   const [mode, setMode] = React.useState('5v5');
   
   const totalSlots = mode === '2v2' ? 2 : 5;
-  const emptySlots = totalSlots - 1;
+  const playerIndex = mode === '2v2' ? 0 : 2; // Игрок в 3-й карточке (индекс 2) для режима 5x5
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 overflow-hidden">
@@ -74,9 +74,12 @@ export default function MatchmakingPage() {
         </div>
 
         <div className="flex flex-wrap justify-center items-center gap-8 mb-20 w-full">
-            <PlayerCard player={userProfile} isLeader={true} />
-            {Array.from({ length: emptySlots }).map((_, i) => (
-              <EmptyPlayerCard key={i} />
+            {Array.from({ length: totalSlots }).map((_, i) => (
+              i === playerIndex ? (
+                <PlayerCard key="player" player={userProfile} isLeader={true} />
+              ) : (
+                <EmptyPlayerCard key={`empty-${i}`} />
+              )
             ))}
         </div>
         
