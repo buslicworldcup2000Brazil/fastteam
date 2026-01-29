@@ -14,22 +14,23 @@ type ThemeProviderState = {
 const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [primaryColor, setPrimaryColorState] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("theme-primary-color") || "3 71% 41%"
-    }
-    return "3 71% 41%"
-  })
-
-  const [language, setLanguageState] = useState<Language>(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("app-language") as Language) || "ru"
-    }
-    return "ru"
-  })
+  // Use stable initial values to avoid hydration mismatch
+  const [primaryColor, setPrimaryColorState] = useState("3 71% 41%")
+  const [language, setLanguageState] = useState<Language>("ru")
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    // Read from localStorage only after mount
+    const savedColor = localStorage.getItem("theme-primary-color")
+    const savedLang = localStorage.getItem("app-language") as Language
+    
+    if (savedColor) setPrimaryColorState(savedColor)
+    if (savedLang) setLanguageState(savedLang)
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return;
 
     const root = document.documentElement;
     root.style.setProperty("--primary", primaryColor);
@@ -38,12 +39,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.style.setProperty("--accent-foreground", "0 0% 98%");
 
     localStorage.setItem("theme-primary-color", primaryColor);
-  }, [primaryColor])
+  }, [primaryColor, mounted])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!mounted) return;
     localStorage.setItem("app-language", language);
-  }, [language])
+  }, [language, mounted])
 
   const setPrimaryColor = (color: string) => {
     if (color.trim().length > 0) {
@@ -55,6 +56,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setLanguageState(lang);
   }
 
+  // To strictly avoid hydration mismatch on language-dependent text, 
+  // we could return null until mounted, but stable default "ru" is better for UX.
   return (
     <ThemeProviderContext.Provider value={{ primaryColor, setPrimaryColor, language, setLanguage }}>
       {children}
