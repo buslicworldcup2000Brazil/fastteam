@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Pencil, UserPlus, Swords } from 'lucide-react';
+import { MoreHorizontal, Pencil, Swords, Search } from 'lucide-react';
 import ThemeCustomizer from '@/components/theme-customizer';
 import Link from 'next/link';
+import { Input } from '@/components/ui/input';
 
 type UserProfile = {
   name: string;
@@ -46,28 +46,34 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
           <div className="flex flex-col items-center md:items-start md:pb-4">
             <h1 className="text-3xl md:text-4xl font-bold">{user.name}</h1>
           </div>
-          <div className="md:ml-auto flex items-center gap-2 md:pb-4">
-            <Button asChild>
-                <Link href="/matchmaking"><Swords className="mr-2 h-4 w-4" /> Play</Link>
-            </Button>
-            <Button>
-              <UserPlus className="mr-2 h-4 w-4" /> Add Friend
-            </Button>
-            <ThemeCustomizer />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">More Options</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onEdit}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  <span>Edit Profile</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="md:ml-auto flex flex-col md:flex-row items-center gap-2 md:pb-4 w-full md:w-auto">
+            <div className="relative w-full md:w-64 order-2 md:order-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search players..." 
+                className="pl-9 bg-background/50 backdrop-blur-sm border-primary/20 focus:border-primary"
+              />
+            </div>
+            <div className="flex items-center gap-2 order-1 md:order-2">
+              <Button asChild>
+                  <Link href="/matchmaking"><Swords className="mr-2 h-4 w-4" /> Play</Link>
+              </Button>
+              <ThemeCustomizer />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">More Options</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={onEdit}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    <span>Edit Profile</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
