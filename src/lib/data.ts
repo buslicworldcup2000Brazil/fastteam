@@ -2,7 +2,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { ImagePlaceholder } from '@/lib/placeholder-images';
 import { Trophy, Swords, Star, Crosshair } from 'lucide-react';
 
-const calculateLevel = (elo: number): number => {
+export const calculateLevel = (elo: number): number => {
   if (elo >= 1900) return 10;
   if (elo >= 1700) return 9;
   if (elo >= 1500) return 8;
@@ -37,16 +37,16 @@ export const statsData = [
 ];
 
 export const matchHistoryData = [
-    { id: '1', date: '28 Jan 2026', time: '02:04', result: 'win', score: '13 : 11', skillLevel: 4471, skillChange: 17, kd: '30/20', kdRatio: 1.50, krRatio: 1.25, map: 'Mil. Warehouses' },
-    { id: '2', date: '28 Jan 2026', time: '01:20', result: 'win', score: '13 : 11', skillLevel: 4454, skillChange: 25, kd: '25/16', kdRatio: 1.56, krRatio: 1.04, map: 'House' },
-    { id: '3', date: '28 Jan 2026', time: '00:31', result: 'win', score: '13 : 4', skillLevel: 4429, skillChange: 29, kd: '23/10', kdRatio: 2.30, krRatio: 1.35, map: 'Factory' },
-    { id: '4', date: '27 Jan 2026', time: '23:50', result: 'win', score: '13 : 8', skillLevel: 4400, skillChange: 30, kd: '32/14', kdRatio: 2.29, krRatio: 1.52, map: 'Mil. Warehouses' },
-    { id: '5', date: '27 Jan 2026', time: '21:46', result: 'win', score: '13 : 9', skillLevel: 4370, skillChange: 29, kd: '31/13', kdRatio: 2.38, krRatio: 1.41, map: 'House' },
-    { id: '6', date: '25 Jan 2026', time: '17:05', result: 'loss', score: '11 : 13', skillLevel: 4341, skillChange: -34, kd: '23/17', kdRatio: 1.35, krRatio: 0.96, map: 'Factory' },
-    { id: '7', date: '25 Jan 2026', time: '16:19', result: 'loss', score: '9 : 13', skillLevel: 4375, skillChange: -32, kd: '30/16', kdRatio: 1.88, krRatio: 1.36, map: 'Mil. Warehouses' },
-    { id: '8', date: '25 Jan 2026', time: '15:08', result: 'win', score: '13 : 11', skillLevel: 4407, skillChange: 25, kd: '39/15', kdRatio: 2.60, krRatio: 1.62, map: 'House' },
-    { id: '9', date: '25 Jan 2026', time: '14:18', result: 'win', score: '13 : 2', skillLevel: 4382, skillChange: 26, kd: '15/10', kdRatio: 1.50, krRatio: 1.00, map: 'Factory' },
-    { id: '10', date: '25 Jan 2026', time: '00:20', result: 'win', score: '13 : 6', skillLevel: 4356, skillChange: 25, kd: '29/12', kdRatio: 2.42, krRatio: 1.53, map: 'Mil. Warehouses' },
+    { id: '1', date: '28 Jan 2026', time: '02:04', result: 'win', score: '13 : 11', skillLevel: 1471, skillChange: 17, kd: '30/20', kdRatio: 1.50, krRatio: 1.25, map: 'Mil. Warehouses' },
+    { id: '2', date: '28 Jan 2026', time: '01:20', result: 'win', score: '13 : 11', skillLevel: 1454, skillChange: 25, kd: '25/16', kdRatio: 1.56, krRatio: 1.04, map: 'House' },
+    { id: '3', date: '28 Jan 2026', time: '00:31', result: 'win', score: '13 : 4', skillLevel: 1429, skillChange: 29, kd: '23/10', kdRatio: 2.30, krRatio: 1.35, map: 'Factory' },
+    { id: '4', date: '27 Jan 2026', time: '23:50', result: 'win', score: '13 : 8', skillLevel: 1400, skillChange: 30, kd: '32/14', kdRatio: 2.29, krRatio: 1.52, map: 'Mil. Warehouses' },
+    { id: '5', date: '27 Jan 2026', time: '21:46', result: 'win', score: '13 : 9', skillLevel: 1370, skillChange: 29, kd: '31/13', kdRatio: 2.38, krRatio: 1.41, map: 'House' },
+    { id: '6', date: '25 Jan 2026', time: '17:05', result: 'loss', score: '11 : 13', skillLevel: 1341, skillChange: -34, kd: '16/17', kdRatio: 0.94, krRatio: 0.96, map: 'Factory' },
+    { id: '7', date: '25 Jan 2026', time: '16:19', result: 'loss', score: '9 : 13', skillLevel: 1375, skillChange: -32, kd: '15/16', kdRatio: 0.94, krRatio: 1.36, map: 'Mil. Warehouses' },
+    { id: '8', date: '25 Jan 2026', time: '15:08', result: 'win', score: '13 : 11', skillLevel: 1407, skillChange: 25, kd: '39/15', kdRatio: 2.60, krRatio: 1.62, map: 'House' },
+    { id: '9', date: '25 Jan 2026', time: '14:18', result: 'win', score: '13 : 2', skillLevel: 1382, skillChange: 26, kd: '15/10', kdRatio: 1.50, krRatio: 1.00, map: 'Factory' },
+    { id: '10', date: '25 Jan 2026', time: '00:20', result: 'win', score: '13 : 6', skillLevel: 1356, skillChange: 25, kd: '29/12', kdRatio: 2.42, krRatio: 1.53, map: 'Mil. Warehouses' },
 ];
 
 export const gameStatsChartData = matchHistoryData.map(match => ({

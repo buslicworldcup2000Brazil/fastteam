@@ -9,6 +9,7 @@ import {
 import { ArrowUp, ArrowDown, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import LevelIcon from "@/components/ui/level-icon"
+import { calculateLevel } from "@/lib/data"
 
 type Match = {
   id: string;
@@ -46,7 +47,7 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
         </TableHeader>
         <TableBody>
           {matches.map((match) => {
-            const level = Math.min(10, Math.floor(match.skillLevel / 450));
+            const level = calculateLevel(match.skillLevel);
             return (
             <TableRow key={match.id} className="border-b-border/20 last:border-b-0">
               <TableCell>
@@ -76,7 +77,12 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
                 </div>
               </TableCell>
               <TableCell className="font-semibold">{match.kd}</TableCell>
-              <TableCell className="font-semibold">{match.kdRatio.toFixed(2)}</TableCell>
+              <TableCell className={cn(
+                "font-semibold",
+                match.kdRatio < 1.0 ? "text-red-400" : "text-green-400"
+              )}>
+                {match.kdRatio.toFixed(2)}
+              </TableCell>
               <TableCell className="font-semibold">{match.krRatio.toFixed(2)}</TableCell>
               <TableCell className="font-semibold">{match.map}</TableCell>
               <TableCell className="text-right">
