@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { countries, getFlagEmoji } from '@/lib/countries';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 const profileSchema = z.object({
   name: z.string().min(2, "Nickname must be at least 2 characters."),
@@ -147,7 +148,9 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
                       {countries.map((country) => (
                         <SelectItem key={country} value={country}>
                           <span className="flex items-center gap-2">
-                            <span>{getFlagEmoji(country)}</span>
+                            <div className="relative w-5 h-3.5 overflow-hidden rounded-xs border border-white/10">
+                              <Image src={getFlagEmoji(country)} alt={country} fill className="object-cover" unoptimized />
+                            </div>
                             {country}
                           </span>
                         </SelectItem>

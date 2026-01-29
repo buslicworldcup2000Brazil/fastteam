@@ -25,6 +25,8 @@ type ProfileHeaderProps = {
 };
 
 export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
+  const flagUrl = getFlagEmoji(user.country);
+
   return (
     <header className="relative">
       <div className="h-48 md:h-64 w-full relative">
@@ -48,9 +50,15 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
           <div className="flex flex-col items-center md:items-start md:pb-4">
             <div className="flex items-center gap-3">
               <h1 className="text-3xl md:text-4xl font-bold">{user.name}</h1>
-              <span className="text-2xl" title={user.country}>
-                {getFlagEmoji(user.country)}
-              </span>
+              <div className="relative w-8 h-6 overflow-hidden rounded-sm shadow-sm border border-white/10" title={user.country}>
+                <Image 
+                  src={flagUrl} 
+                  alt={user.country} 
+                  fill 
+                  className="object-cover" 
+                  unoptimized
+                />
+              </div>
             </div>
           </div>
           <div className="md:ml-auto flex flex-col md:flex-row items-center gap-2 md:pb-4 w-full md:w-auto">

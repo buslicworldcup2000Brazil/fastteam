@@ -13,37 +13,49 @@ import Link from 'next/link';
 import LevelIcon from '@/components/ui/level-icon';
 import { getFlagEmoji } from '@/lib/countries';
 
-const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader?: boolean }) => (
-  <div className="relative pt-10">
-    {isLeader && (
-      <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] z-20">
-          <Crown className="h-4 w-4" fill="currentColor" />
-      </div>
-    )}
-    <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg transition-colors duration-300">
-      <div className="absolute inset-0">
-          <Image src={player.bannerUrl} alt={`${player.name} banner`} fill className="object-cover opacity-30" data-ai-hint="abstract red" />
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
-      </div>
+const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader?: boolean }) => {
+  const flagUrl = getFlagEmoji(player.country);
+  
+  return (
+    <div className="relative pt-10">
+      {isLeader && (
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] z-20">
+            <Crown className="h-4 w-4" fill="currentColor" />
+        </div>
+      )}
+      <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg transition-colors duration-300">
+        <div className="absolute inset-0">
+            <Image src={player.bannerUrl} alt={`${player.name} banner`} fill className="object-cover opacity-30" data-ai-hint="abstract red" />
+            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
+        </div>
 
-      <div className="relative text-center flex flex-col items-center">
-        <Avatar className="h-24 w-24 border-4 border-background/80 ring-2 ring-primary mb-3">
-          <AvatarImage src={player.avatarUrl} alt={player.name} data-ai-hint="gaming avatar" />
-          <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <div className="flex items-center gap-1.5">
-          <p className="font-bold text-xl tracking-tight">{player.name}</p>
-          <span className="text-lg" title={player.country}>{getFlagEmoji(player.country)}</span>
+        <div className="relative text-center flex flex-col items-center">
+          <Avatar className="h-24 w-24 border-4 border-background/80 ring-2 ring-primary mb-3">
+            <AvatarImage src={player.avatarUrl} alt={player.name} data-ai-hint="gaming avatar" />
+            <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="flex items-center gap-1.5">
+            <p className="font-bold text-xl tracking-tight">{player.name}</p>
+            <div className="relative w-5 h-4 overflow-hidden rounded-xs border border-white/5" title={player.country}>
+              <Image 
+                src={flagUrl} 
+                alt={player.country} 
+                fill 
+                className="object-cover" 
+                unoptimized
+              />
+            </div>
+          </div>
+          
+          <div className="mt-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5 text-sm backdrop-blur-md border border-white/10">
+              <LevelIcon level={player.level} className="h-6 w-6" />
+              <span className='text-white font-bold tracking-tighter'>{player.elo.toLocaleString()}</span>
+          </div>
         </div>
-        
-        <div className="mt-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5 text-sm backdrop-blur-md border border-white/10">
-            <LevelIcon level={player.level} className="h-6 w-6" />
-            <span className='text-white font-bold tracking-tighter'>{player.elo.toLocaleString()}</span>
-        </div>
-      </div>
-    </Card>
-  </div>
-);
+      </Card>
+    </div>
+  );
+};
 
 const EmptyPlayerCard = () => (
     <div className="pt-10">
@@ -60,8 +72,6 @@ export default function MatchmakingPage() {
   const [mode, setMode] = React.useState('5v5');
   
   const totalSlots = mode === '2v2' ? 2 : 5;
-  // In 5v5, player is in 3rd card (index 2). In 2v2, player is in 1st card (index 0) or just centralize.
-  // For consistency, let's keep it centered:
   const playerIndex = mode === '2v2' ? 0 : 2;
 
   return (
