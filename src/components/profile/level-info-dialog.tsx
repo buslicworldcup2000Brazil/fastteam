@@ -29,9 +29,9 @@ const levelData = [
     { level: 5, eloRange: '900 – 1099', win: '+20 – +26', loss: '-13 – -19', winsToLevel: '8-9' },
     { level: 6, eloRange: '1100 – 1299', win: '+17 – +23', loss: '-10 – -16', winsToLevel: '9-10' },
     { level: 7, eloRange: '1300 – 1499', win: '+14 – +20', loss: '-7 – -13', winsToLevel: '10-12' },
-    { level: 8, eloRange: '1500 – 1699', win: '+11 – +17', loss: '-4 – -10', winsToLevel: '12-16' },
-    { level: 9, eloRange: '1700 – 1899', win: '+8 – +14', loss: '-1 – -7', winsToLevel: '16-24' },
-    { level: 10, eloRange: '1900 – 2099', win: '+5 – +11', loss: '+0 – -4', winsToLevel: '24+' },
+    { level: 8, eloRange: '1500 – 1699', win: '+13 – +19', loss: '-6 – -12', winsToLevel: '10-12' },
+    { level: 9, eloRange: '1700 – 1899', win: '+12 – +18', loss: '-5 – -11', winsToLevel: '11-13' },
+    { level: 10, eloRange: '1900 – 2099', win: '+11 – +17', loss: '-4 – -10', winsToLevel: '12-14' },
 ];
 
 
