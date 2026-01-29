@@ -21,7 +21,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   })
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--primary", primaryColor)
+    const root = document.documentElement
+    root.style.setProperty("--primary", primaryColor)
+    root.style.setProperty("--ring", primaryColor)
+    
+    // Устанавливаем цвет акцента (для наведения на кнопки) таким же как основной цвет
+    root.style.setProperty("--accent", primaryColor)
+    // Текст на акцентном фоне должен быть контрастным (белым/светлым)
+    root.style.setProperty("--accent-foreground", "0 0% 98%")
+
     if (typeof window !== 'undefined') {
         localStorage.setItem("theme-primary-color", primaryColor)
     }
