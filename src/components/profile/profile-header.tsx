@@ -31,7 +31,7 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
 
   return (
     <header className="relative">
-      <div className="h-48 md:h-64 w-full relative">
+      <div className="h-64 md:h-80 w-full relative">
         <Image
           key={user.bannerUrl}
           src={user.bannerUrl}
