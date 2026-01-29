@@ -21,23 +21,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   })
 
   useEffect(() => {
-    const root = document.documentElement
-    root.style.setProperty("--primary", primaryColor)
-    root.style.setProperty("--ring", primaryColor)
-    
-    // Устанавливаем цвет акцента (для наведения на кнопки) таким же как основной цвет
-    root.style.setProperty("--accent", primaryColor)
-    // Текст на акцентном фоне должен быть контрастным (белым/светлым)
-    root.style.setProperty("--accent-foreground", "0 0% 98%")
+    if (typeof window === 'undefined') return;
 
-    if (typeof window !== 'undefined') {
-        localStorage.setItem("theme-primary-color", primaryColor)
-    }
+    const root = document.documentElement;
+    
+    // Основной цвет
+    root.style.setProperty("--primary", primaryColor);
+    root.style.setProperty("--ring", primaryColor);
+    
+    // Акцентный цвет (используется для hover эффектов на кнопках variant="outline" и "ghost")
+    root.style.setProperty("--accent", primaryColor);
+    // Цвет текста/иконки на акцентном фоне (белый для темных тем)
+    root.style.setProperty("--accent-foreground", "0 0% 98%");
+
+    // Сохраняем в localStorage
+    localStorage.setItem("theme-primary-color", primaryColor);
   }, [primaryColor])
 
   const setPrimaryColor = (color: string) => {
-    // Basic validation for HSL format
-    if (/^\d{1,3}\s\d{1,3}%\s\d{1,3}%$/.test(color)) {
+    // Упрощенная проверка формата HSL (числа с процентами или без)
+    if (color.trim().length > 0) {
       setPrimaryColorState(color)
     }
   }
