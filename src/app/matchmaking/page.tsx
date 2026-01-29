@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { userProfile } from '@/lib/data';
 import { Crown, Plus } from 'lucide-react';
 import Link from 'next/link';
+import LevelIcon from '@/components/ui/level-icon';
 
 const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader?: boolean }) => (
   <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-end pb-4 transition-all duration-300 ease-in-out transform hover:scale-105 hover:border-primary shadow-lg">
@@ -33,7 +34,7 @@ const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader
     </div>
     
     <div className="relative mt-3 flex items-center gap-2 bg-black/40 rounded-full px-3 py-1 text-sm backdrop-blur-sm">
-        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500/20 text-red-400 font-bold text-xs">10</div>
+        <LevelIcon level={10} className="h-6 w-6" />
         <span className='text-white font-semibold'>2,450</span>
     </div>
   </Card>
