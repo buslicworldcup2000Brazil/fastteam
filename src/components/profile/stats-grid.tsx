@@ -1,4 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import type { LucideIcon } from 'lucide-react';
 
 type Stat = {
@@ -6,6 +7,7 @@ type Stat = {
   title: string;
   value: string;
   icon: LucideIcon;
+  progress: number;
 };
 
 type StatsGridProps = {
@@ -14,20 +16,19 @@ type StatsGridProps = {
 
 export default function StatsGrid({ stats }: StatsGridProps) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {stats.map((stat) => (
-        <Card key={stat.id}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {stat.title}
-            </CardTitle>
-            <stat.icon className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stat.value}</div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <Card>
+      <CardContent className="p-6 space-y-6">
+        {stats.map((stat) => (
+          <div key={stat.id}>
+            <div className="flex items-center gap-2 mb-2">
+              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-muted-foreground">{stat.title}</span>
+              <span className="ml-auto text-sm text-foreground font-bold">{stat.value}</span>
+            </div>
+            <Progress value={stat.progress} className="h-2" />
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }

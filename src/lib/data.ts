@@ -1,6 +1,6 @@
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { ImagePlaceholder } from '@/lib/placeholder-images';
-import { Clock, Crosshair, ShieldCheck, Trophy, Swords, Star } from 'lucide-react';
+import { Trophy, Swords, Star, Crosshair } from 'lucide-react';
 
 export const userProfile = {
   name: "ShadowStriker",
@@ -11,12 +11,10 @@ export const userProfile = {
 };
 
 export const statsData = [
-  { id: '1', title: 'K/D Ratio', value: '2.45', icon: Crosshair },
-  { id: '2', title: 'Win Rate', value: '68%', icon: Trophy },
-  { id: '3', title: 'Headshot %', value: '42%', icon: ShieldCheck },
-  { id: '4', title: 'Hours Played', value: '1,200', icon: Clock },
-  { id: '5', title: 'Matches Won', value: '816', icon: Swords },
-  { id: '6', title: 'Avg. Score', value: '5,320', icon: Star },
+  { id: '1', title: 'K/D Ratio', value: '2.45', icon: Swords, progress: 49 },
+  { id: '2', title: 'Win Rate', value: '68%', icon: Trophy, progress: 68 },
+  { id: '5', title: 'Matches Won', value: '816', icon: Star, progress: 54 },
+  { id: '6', title: 'Avg. Kills', value: '18.5', icon: Crosshair, progress: 62 },
 ];
 
 export const friendsData = [

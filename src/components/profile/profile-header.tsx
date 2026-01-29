@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, Pencil, UserPlus, MessageSquare } from 'lucide-react';
+import ThemeCustomizer from '@/components/theme-customizer';
 
 type UserProfile = {
   name: string;
@@ -55,6 +56,7 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
             <Button variant="secondary">
               <MessageSquare className="mr-2 h-4 w-4" /> Message
             </Button>
+            <ThemeCustomizer />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
