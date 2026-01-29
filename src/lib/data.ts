@@ -20,12 +20,14 @@ const level = calculateLevel(elo);
 
 export const userProfile = {
   name: "ShadowStriker",
+  bio: "Pro player & Streamer",
   handle: "@shadowstriker99",
   tags: ["Pro", "Streamer", "MVP"],
   bannerUrl: PlaceHolderImages.find(img => img.id === 'profile-banner')?.imageUrl || 'https://picsum.photos/seed/1/1200/400',
   avatarUrl: PlaceHolderImages.find(img => img.id === 'profile-avatar')?.imageUrl || 'https://picsum.photos/seed/2/200/200',
   elo: elo,
   level: level,
+  winStreak: 5,
   country: "Россия",
   language: "ru",
   lastFlagChange: 0, // Timestamp

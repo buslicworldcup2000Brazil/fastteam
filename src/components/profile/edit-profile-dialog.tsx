@@ -27,6 +27,7 @@ import { translations } from '@/lib/translations';
 
 const profileSchema = z.object({
   name: z.string().min(2, "Nickname must be at least 2 characters."),
+  bio: z.string().max(30, "Bio must be at most 30 characters.").optional(),
   bannerUrl: z.string().url({ message: "Please enter a valid URL." }).or(z.literal('')),
   avatarUrl: z.string().url({ message: "Please enter a valid URL." }).or(z.literal('')),
   country: z.string(),
@@ -41,6 +42,7 @@ type EditProfileDialogProps = {
   onUpdate: (data: ProfileValues) => void;
   currentUser: {
     name: string;
+    bio?: string;
     bannerUrl: string;
     avatarUrl: string;
     country: string;
@@ -96,6 +98,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: currentUser.name,
+      bio: currentUser.bio || '',
       bannerUrl: currentUser.bannerUrl,
       avatarUrl: currentUser.avatarUrl,
       country: currentUser.country,
@@ -107,6 +110,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
     if (isOpen) {
       form.reset({
         name: currentUser.name,
+        bio: currentUser.bio || '',
         bannerUrl: '',
         avatarUrl: '',
         country: currentUser.country,
@@ -161,7 +165,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[620px]">
+      <DialogContent className="sm:max-w-[682px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
@@ -175,84 +179,104 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
             <div className="space-y-4">
               <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t.profile}</h3>
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.nickname}</FormLabel>
-                    <FormControl>
-                      <Input placeholder="CoolGamer123" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.country}</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                      disabled={!canChangeFlag}
-                    >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.nickname}</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a country" />
-                        </SelectTrigger>
+                        <Input placeholder="CoolGamer123" {...field} />
                       </FormControl>
-                      <SelectContent className="max-h-[250px]">
-                        {countries.map((country) => (
-                          <SelectItem key={country} value={country}>
-                            <span className="flex items-center gap-2">
-                              <div className="relative w-5 h-3.5 overflow-hidden rounded-xs border border-white/10 shrink-0">
-                                <Image 
-                                  src={getFlagEmoji(country)} 
-                                  alt={country} 
-                                  fill 
-                                  className="object-cover" 
-                                  unoptimized 
-                                />
-                              </div>
-                              {country}
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {!canChangeFlag && (
-                      <FormDescription className="text-xs text-amber-500">
-                        {t.country_change_hint.replace('{date}', nextChangeDate?.toLocaleDateString() || '')}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="bio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.bio}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t.bio_placeholder} {...field} maxLength={30} />
+                      </FormControl>
+                      <FormDescription className="text-xs">
+                        {t.bio_limit}
                       </FormDescription>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="language"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t.interface_lang}</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select language" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="ru">Русский (RU)</SelectItem>
-                        <SelectItem value="en">English (EN)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.country}</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                        disabled={!canChangeFlag}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a country" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="max-h-[250px]">
+                          {countries.map((country) => (
+                            <SelectItem key={country} value={country}>
+                              <span className="flex items-center gap-2">
+                                <div className="relative w-5 h-3.5 overflow-hidden rounded-xs border border-white/10 shrink-0">
+                                  <Image 
+                                    src={getFlagEmoji(country)} 
+                                    alt={country} 
+                                    fill 
+                                    className="object-cover" 
+                                    unoptimized 
+                                  />
+                                </div>
+                                {country}
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {!canChangeFlag && (
+                        <FormDescription className="text-xs text-amber-500">
+                          {t.country_change_hint.replace('{date}', nextChangeDate?.toLocaleDateString() || '')}
+                        </FormDescription>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="language"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.interface_lang}</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select language" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="ru">Русский (RU)</SelectItem>
+                          <SelectItem value="en">English (EN)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <Separator />

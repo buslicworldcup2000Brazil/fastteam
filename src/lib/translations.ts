@@ -23,6 +23,9 @@ export const translations = {
     customize_identity: "Настройте свою личность и цвета интерфейса.",
     profile: "Профиль",
     nickname: "Никнейм",
+    bio: "О себе",
+    bio_placeholder: "Расскажите о себе...",
+    bio_limit: "Макс. 30 символов",
     country: "Страна",
     interface_lang: "Язык интерфейса",
     appearance: "Внешний вид",
@@ -41,7 +44,8 @@ export const translations = {
     kd_ratio: "K/D Ratio",
     win_rate: "Win Rate",
     matches_won: "Победы",
-    avg_kills: "Ср. убийства"
+    avg_kills: "Ср. убийства",
+    win_streak: "Вин стрик"
   },
   en: {
     play: "Play",
@@ -67,6 +71,9 @@ export const translations = {
     customize_identity: "Customize your identity and the interface colors.",
     profile: "Profile",
     nickname: "Nickname",
+    bio: "Bio",
+    bio_placeholder: "Tell us about yourself...",
+    bio_limit: "Max 30 characters",
     country: "Country",
     interface_lang: "Interface Language",
     appearance: "Appearance",
@@ -85,6 +92,7 @@ export const translations = {
     kd_ratio: "K/D Ratio",
     win_rate: "Win Rate",
     matches_won: "Matches Won",
-    avg_kills: "Avg. Kills"
+    avg_kills: "Avg. Kills",
+    win_streak: "Win Streak"
   }
 };

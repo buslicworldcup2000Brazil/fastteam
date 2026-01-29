@@ -19,7 +19,7 @@ import LevelInfoDialog from '@/components/profile/level-info-dialog';
 import { useTheme } from '@/components/theme-provider';
 import { translations } from '@/lib/translations';
 import { Button } from '@/components/ui/button';
-import { Swords } from 'lucide-react';
+import { Swords, Flame } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Home() {
@@ -34,6 +34,7 @@ export default function Home() {
     setProfile(prevProfile => ({
       ...prevProfile,
       name: values.name,
+      bio: values.bio,
       bannerUrl: values.bannerUrl || prevProfile.bannerUrl,
       avatarUrl: values.avatarUrl || prevProfile.avatarUrl,
       country: values.country,
@@ -68,20 +69,37 @@ export default function Home() {
           <TabsContent value="overview">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t.rank}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex items-center gap-4">
-                    <button onClick={() => setIsLevelInfoOpen(true)} className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md">
-                      <LevelIcon level={profile.level} className="h-24 w-24" />
-                    </button>
-                    <div>
-                      <p className="text-4xl font-bold">{profile.elo} <span className="text-lg text-muted-foreground">{t.elo}</span></p>
-                      <p className="text-muted-foreground">{t.level} {profile.level}</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{t.rank}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex items-center gap-4">
+                      <button onClick={() => setIsLevelInfoOpen(true)} className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md">
+                        <LevelIcon level={profile.level} className="h-20 w-20" />
+                      </button>
+                      <div>
+                        <p className="text-3xl font-bold">{profile.elo} <span className="text-sm text-muted-foreground">{t.elo}</span></p>
+                        <p className="text-muted-foreground text-sm">{t.level} {profile.level}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-br from-card to-primary/5">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                        <Flame className="h-4 w-4 text-orange-500" />
+                        {t.win_streak}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-5xl font-black italic tracking-tighter text-primary">
+                        {profile.winStreak}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+
                 <div>
                   <h2 className="text-2xl font-bold mb-1">{t.player_stats}</h2>
                   <p className="text-sm text-muted-foreground mb-4">{t.stats_subtitle}</p>

@@ -9,6 +9,7 @@ import { translations } from '@/lib/translations';
 
 type UserProfile = {
   name: string;
+  bio?: string;
   handle: string;
   tags: string[];
   bannerUrl: string;
@@ -61,6 +62,9 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
                 />
               </div>
             </div>
+            {user.bio && (
+              <p className="text-muted-foreground text-sm font-medium mt-1">{user.bio}</p>
+            )}
           </div>
           <div className="md:ml-auto flex flex-col md:flex-row items-center gap-2 md:pb-4 w-full md:w-auto">
             <div className="relative w-full md:w-64">
