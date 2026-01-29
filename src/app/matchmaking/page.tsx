@@ -16,7 +16,7 @@ const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader
   <div className="relative pt-8">
     {isLeader && (
       <div className="absolute top-0 left-1/2 -translate-x-1/2 text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] z-20">
-          <Crown className="h-10 w-10" fill="currentColor" />
+          <Crown className="h-7 w-7" fill="currentColor" />
       </div>
     )}
     <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-105 hover:border-primary shadow-lg">
@@ -33,8 +33,8 @@ const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader
         <p className="font-bold text-xl tracking-tight">{player.name}</p>
         
         <div className="mt-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5 text-sm backdrop-blur-md border border-white/10">
-            <LevelIcon level={10} className="h-6 w-6" />
-            <span className='text-white font-bold tracking-tighter'>2,450</span>
+            <LevelIcon level={player.level} className="h-6 w-6" />
+            <span className='text-white font-bold tracking-tighter'>{player.elo.toLocaleString()}</span>
         </div>
       </div>
     </Card>
@@ -73,7 +73,7 @@ export default function MatchmakingPage() {
             <p className="text-muted-foreground font-medium uppercase tracking-[0.2em] text-xs">Party Leader Status Active</p>
         </div>
 
-        <div className="flex flex-wrap justify-center items-start gap-8 mb-20">
+        <div className="flex flex-wrap justify-center items-center gap-8 mb-20 w-full">
             <PlayerCard player={userProfile} isLeader={true} />
             {Array.from({ length: emptySlots }).map((_, i) => (
               <EmptyPlayerCard key={i} />
