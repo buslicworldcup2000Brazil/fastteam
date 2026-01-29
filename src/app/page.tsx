@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -22,6 +23,7 @@ import { translations } from '@/lib/translations';
 import { Button } from '@/components/ui/button';
 import { Swords, Flame, Trophy } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const { language } = useTheme();
@@ -42,6 +44,13 @@ export default function Home() {
       country: values.country,
       language: values.language,
     }));
+  };
+
+  const getLevelColorClass = (level: number) => {
+    if (level <= 3) return 'from-green-500/10';
+    if (level <= 7) return 'from-yellow-500/10';
+    if (level <= 9) return 'from-orange-500/10';
+    return 'from-red-500/10';
   };
 
   return (
@@ -83,12 +92,15 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card>
+                  <Card className={cn(
+                    "bg-gradient-to-br to-card/5",
+                    getLevelColorClass(profile.level)
+                  )}>
                     <CardHeader>
                       <CardTitle>{t.rank}</CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center gap-4">
-                      <button onClick={() => setIsLevelInfoOpen(true)} className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md">
+                      <button onClick={() => setIsLevelInfoOpen(true)} className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md transition-transform hover:scale-105">
                         <LevelIcon level={profile.level} className="h-20 w-20" />
                       </button>
                       <div>

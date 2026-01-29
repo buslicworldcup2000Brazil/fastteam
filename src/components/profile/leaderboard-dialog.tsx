@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -21,6 +22,7 @@ import LevelIcon from "@/components/ui/level-icon";
 import Image from "next/image";
 import { getFlagEmoji } from "@/lib/countries";
 import { Trophy } from "lucide-react";
+import RankBadge from "@/components/ui/rank-badge";
 
 type LeaderboardDialogProps = {
   isOpen: boolean;
@@ -44,7 +46,7 @@ export default function LeaderboardDialog({ isOpen, setIsOpen }: LeaderboardDial
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">{t.rank_position}</TableHead>
+                <TableHead className="w-[100px]">{t.rank_position}</TableHead>
                 <TableHead>{t.nickname}</TableHead>
                 <TableHead>{t.level}</TableHead>
                 <TableHead className="text-right">{t.elo}</TableHead>
@@ -53,8 +55,8 @@ export default function LeaderboardDialog({ isOpen, setIsOpen }: LeaderboardDial
             <TableBody>
               {topPlayersData.map((player, index) => (
                 <TableRow key={player.name}>
-                  <TableCell className="font-bold text-muted-foreground">
-                    #{index + 1}
+                  <TableCell>
+                    <RankBadge rank={index + 1} className="h-10 w-10" />
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
