@@ -6,6 +6,7 @@ import { MoreHorizontal, Pencil, Swords, Search } from 'lucide-react';
 import ThemeCustomizer from '@/components/theme-customizer';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
+import { getFlagEmoji } from '@/lib/countries';
 
 type UserProfile = {
   name: string;
@@ -15,6 +16,7 @@ type UserProfile = {
   avatarUrl: string;
   elo: number;
   level: number;
+  country: string;
 };
 
 type ProfileHeaderProps = {
@@ -44,7 +46,12 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
             <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-center md:items-start md:pb-4">
-            <h1 className="text-3xl md:text-4xl font-bold">{user.name}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl md:text-4xl font-bold">{user.name}</h1>
+              <span className="text-2xl" title={user.country}>
+                {getFlagEmoji(user.country)}
+              </span>
+            </div>
           </div>
           <div className="md:ml-auto flex flex-col md:flex-row items-center gap-2 md:pb-4 w-full md:w-auto">
             <div className="relative w-full md:w-64 order-2 md:order-1">
@@ -69,7 +76,7 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={onEdit}>
                     <Pencil className="mr-2 h-4 w-4" />
-                    <span>Edit Profile</span>
+                    <span>Settings</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

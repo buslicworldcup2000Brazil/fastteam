@@ -22,11 +22,14 @@ export default function Home() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLevelInfoOpen, setIsLevelInfoOpen] = useState(false);
 
-  const handleProfileUpdate = (newUrls: { bannerUrl: string; avatarUrl: string }) => {
+  const handleProfileUpdate = (values: any) => {
     setProfile(prevProfile => ({
       ...prevProfile,
-      bannerUrl: newUrls.bannerUrl || prevProfile.bannerUrl,
-      avatarUrl: newUrls.avatarUrl || prevProfile.avatarUrl,
+      name: values.name,
+      bannerUrl: values.bannerUrl || prevProfile.bannerUrl,
+      avatarUrl: values.avatarUrl || prevProfile.avatarUrl,
+      country: values.country,
+      language: values.language,
     }));
   };
 
@@ -82,8 +85,7 @@ export default function Home() {
         isOpen={isDialogOpen}
         setIsOpen={setIsDialogOpen}
         onUpdate={handleProfileUpdate}
-        currentBannerUrl={profile.bannerUrl}
-        currentAvatarUrl={profile.avatarUrl}
+        currentUser={profile}
       />
 
       <LevelInfoDialog isOpen={isLevelInfoOpen} setIsOpen={setIsLevelInfoOpen} />

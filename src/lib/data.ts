@@ -1,5 +1,4 @@
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import type { ImagePlaceholder } from '@/lib/placeholder-images';
 import { Trophy, Swords, Star, Crosshair } from 'lucide-react';
 
 export const calculateLevel = (elo: number): number => {
@@ -16,7 +15,7 @@ export const calculateLevel = (elo: number): number => {
   return 1;
 };
 
-const elo = 100;
+const elo = 1450;
 const level = calculateLevel(elo);
 
 export const userProfile = {
@@ -27,6 +26,9 @@ export const userProfile = {
   avatarUrl: PlaceHolderImages.find(img => img.id === 'profile-avatar')?.imageUrl || 'https://picsum.photos/seed/2/200/200',
   elo: elo,
   level: level,
+  country: "Россия",
+  language: "ru",
+  lastFlagChange: 0, // Timestamp
 };
 
 export const statsData = [

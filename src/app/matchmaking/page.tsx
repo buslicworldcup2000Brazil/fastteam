@@ -11,12 +11,13 @@ import { userProfile } from '@/lib/data';
 import { Crown, Plus } from 'lucide-react';
 import Link from 'next/link';
 import LevelIcon from '@/components/ui/level-icon';
+import { getFlagEmoji } from '@/lib/countries';
 
 const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader?: boolean }) => (
   <div className="relative pt-10">
     {isLeader && (
-      <div className="absolute top-2 left-1/2 -translate-x-1/2 text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] z-20">
-          <Crown className="h-5 w-5" fill="currentColor" />
+      <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] z-20">
+          <Crown className="h-4 w-4" fill="currentColor" />
       </div>
     )}
     <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg transition-colors duration-300">
@@ -30,7 +31,10 @@ const PlayerCard = ({ player, isLeader }: { player: typeof userProfile; isLeader
           <AvatarImage src={player.avatarUrl} alt={player.name} data-ai-hint="gaming avatar" />
           <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
         </Avatar>
-        <p className="font-bold text-xl tracking-tight">{player.name}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="font-bold text-xl tracking-tight">{player.name}</p>
+          <span className="text-lg" title={player.country}>{getFlagEmoji(player.country)}</span>
+        </div>
         
         <div className="mt-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5 text-sm backdrop-blur-md border border-white/10">
             <LevelIcon level={player.level} className="h-6 w-6" />
@@ -56,7 +60,9 @@ export default function MatchmakingPage() {
   const [mode, setMode] = React.useState('5v5');
   
   const totalSlots = mode === '2v2' ? 2 : 5;
-  const playerIndex = mode === '2v2' ? 0 : 2; // Игрок в 3-й карточке (индекс 2) для режима 5x5
+  // In 5v5, player is in 3rd card (index 2). In 2v2, player is in 1st card (index 0) or just centralize.
+  // For consistency, let's keep it centered:
+  const playerIndex = mode === '2v2' ? 0 : 2;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 overflow-hidden">
@@ -106,7 +112,7 @@ export default function MatchmakingPage() {
             </RadioGroup>
 
             <Button size="lg" className="w-full h-16 text-2xl font-black italic tracking-tighter shadow-[0_10px_40px_-10px_rgba(var(--primary),0.5)] hover:shadow-[0_15px_50px_-10px_rgba(var(--primary),0.6)] transition-all">
-                READY UP
+                Play
             </Button>
         </div>
       </div>
