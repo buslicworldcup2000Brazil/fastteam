@@ -2,8 +2,22 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { ImagePlaceholder } from '@/lib/placeholder-images';
 import { Trophy, Swords, Star, Crosshair } from 'lucide-react';
 
-const elo = 4550;
-const level = Math.min(10, Math.floor(elo / 450));
+const calculateLevel = (elo: number): number => {
+  if (elo >= 1900) return 10;
+  if (elo >= 1700) return 9;
+  if (elo >= 1500) return 8;
+  if (elo >= 1300) return 7;
+  if (elo >= 1100) return 6;
+  if (elo >= 900) return 5;
+  if (elo >= 700) return 4;
+  if (elo >= 500) return 3;
+  if (elo >= 300) return 2;
+  if (elo >= 100) return 1;
+  return 1;
+};
+
+const elo = 100;
+const level = calculateLevel(elo);
 
 export const userProfile = {
   name: "ShadowStriker",
@@ -20,14 +34,6 @@ export const statsData = [
   { id: '2', title: 'Win Rate', value: '68%', icon: Trophy, progress: 68 },
   { id: '5', title: 'Matches Won', value: '816', icon: Star, progress: 54 },
   { id: '6', title: 'Avg. Kills', value: '18.5', icon: Crosshair, progress: 62 },
-];
-
-export const friendsData = [
-  { id: '1', name: 'CyberReaper', handle: '@cyber', avatar: PlaceHolderImages.find(img => img.id === 'friend-1') as ImagePlaceholder, status: 'online' as const },
-  { id: '2', name: 'VoidWalker', handle: '@void', avatar: PlaceHolderImages.find(img => img.id === 'friend-2') as ImagePlaceholder, status: 'online' as const },
-  { id: '3', name: 'PixelPhantm', handle: '@pixel', avatar: PlaceHolderImages.find(img => img.id === 'friend-3') as ImagePlaceholder, status: 'online' as const },
-  { id: '4', name: 'IronClad', handle: '@iron', avatar: PlaceHolderImages.find(img => img.id === 'friend-4') as ImagePlaceholder, status: 'ingame' as const },
-  { id: '5', name: 'Ghost_Ops', handle: '@ghost', avatar: PlaceHolderImages.find(img => img.id === 'friend-5') as ImagePlaceholder, status: 'ingame' as const },
 ];
 
 export const matchHistoryData = [

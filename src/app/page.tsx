@@ -9,17 +9,18 @@ import {
 } from "@/components/ui/tabs"
 import ProfileHeader from '@/components/profile/profile-header';
 import StatsGrid from '@/components/profile/stats-grid';
-import FriendsList from '@/components/profile/friends-list';
 import EditProfileDialog from '@/components/profile/edit-profile-dialog';
-import { userProfile, statsData, friendsData, matchHistoryData, gameStatsChartData } from '@/lib/data';
+import { userProfile, statsData, matchHistoryData, gameStatsChartData } from '@/lib/data';
 import MatchHistoryTable from '@/components/profile/match-history-table';
 import GameStatsChart from '@/components/profile/game-stats-chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import LevelIcon from '@/components/ui/level-icon';
+import LevelInfoDialog from '@/components/profile/level-info-dialog';
 
 export default function Home() {
   const [profile, setProfile] = useState(userProfile);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLevelInfoOpen, setIsLevelInfoOpen] = useState(false);
 
   const handleProfileUpdate = (newUrls: { bannerUrl: string; avatarUrl: string }) => {
     setProfile(prevProfile => ({
@@ -37,7 +38,7 @@ export default function Home() {
       />
       
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="match_history" className="w-full">
+        <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-3 mb-6 bg-card border">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="game_stats">Game Stats</TabsTrigger>
@@ -51,7 +52,9 @@ export default function Home() {
                     <CardTitle>Rank</CardTitle>
                   </CardHeader>
                   <CardContent className="flex items-center gap-4">
-                    <LevelIcon level={profile.level} className="h-24 w-24" />
+                    <button onClick={() => setIsLevelInfoOpen(true)} className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md">
+                      <LevelIcon level={profile.level} className="h-24 w-24" />
+                    </button>
                     <div>
                       <p className="text-4xl font-bold">{profile.elo.toLocaleString()} <span className="text-lg text-muted-foreground">ELO</span></p>
                       <p className="text-muted-foreground">Level {profile.level}</p>
@@ -63,10 +66,6 @@ export default function Home() {
                   <p className="text-sm text-muted-foreground mb-4">Based on the last 30 games</p>
                   <StatsGrid stats={statsData} />
                 </div>
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold mb-4">Friends Online</h2>
-                <FriendsList friends={friendsData} />
               </div>
             </div>
           </TabsContent>
@@ -86,6 +85,8 @@ export default function Home() {
         currentBannerUrl={profile.bannerUrl}
         currentAvatarUrl={profile.avatarUrl}
       />
+
+      <LevelInfoDialog isOpen={isLevelInfoOpen} setIsOpen={setIsLevelInfoOpen} />
     </div>
   );
 }

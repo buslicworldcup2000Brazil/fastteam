@@ -45,12 +45,6 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
           </Avatar>
           <div className="flex flex-col items-center md:items-start md:pb-4">
             <h1 className="text-3xl md:text-4xl font-bold">{user.name}</h1>
-            <p className="text-muted-foreground">{user.handle}</p>
-            <div className="flex gap-2 mt-2">
-              {user.tags.map(tag => (
-                <Badge key={tag} variant="secondary">{tag}</Badge>
-              ))}
-            </div>
           </div>
           <div className="md:ml-auto flex items-center gap-2 md:pb-4">
             <Button asChild>
