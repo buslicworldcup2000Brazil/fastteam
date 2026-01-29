@@ -23,6 +23,7 @@ import { useTheme } from '@/components/theme-provider';
 import { Label } from '@/components/ui/label';
 import { Check, Settings } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { translations } from '@/lib/translations';
 
 const profileSchema = z.object({
   name: z.string().min(2, "Nickname must be at least 2 characters."),
@@ -44,7 +45,6 @@ type EditProfileDialogProps = {
     avatarUrl: string;
     country: string;
     language: string;
-    lastFlagChange: number;
   };
 };
 
@@ -85,7 +85,9 @@ function hexToHsl(hex: string): string | null {
 
 export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, currentUser }: EditProfileDialogProps) {
   const { toast } = useToast();
-  const { primaryColor, setPrimaryColor } = useTheme();
+  const { primaryColor, setPrimaryColor, language, setLanguage } = useTheme();
+  const t = translations[language];
+  
   const [canChangeFlag, setCanChangeFlag] = useState(true);
   const [nextChangeDate, setNextChangeDate] = useState<Date | null>(null);
   const [customColor, setCustomColor] = useState('');
@@ -142,8 +144,8 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
     if (isCountryChanged && !canChangeFlag) {
       toast({
         variant: "destructive",
-        title: "Wait a moment",
-        description: `You can change your flag again on ${nextChangeDate?.toLocaleDateString()}`,
+        title: t.wait_moment,
+        description: t.flag_change_limit.replace('{date}', nextChangeDate?.toLocaleDateString() || ''),
       });
       return;
     }
@@ -152,32 +154,33 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
       localStorage.setItem('lastFlagChangeDate', Date.now().toString());
     }
 
+    setLanguage(values.language);
     onUpdate(values);
     setIsOpen(false);
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[560px]">
+      <DialogContent className="sm:max-w-[620px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            Settings & Appearance
+            {t.settings_appearance}
           </DialogTitle>
           <DialogDescription>
-            Customize your identity and the interface colors.
+            {t.customize_identity}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
             <div className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Profile</h3>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t.profile}</h3>
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nickname</FormLabel>
+                    <FormLabel>{t.nickname}</FormLabel>
                     <FormControl>
                       <Input placeholder="CoolGamer123" {...field} />
                     </FormControl>
@@ -190,7 +193,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
                 name="country"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Country</FormLabel>
+                    <FormLabel>{t.country}</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
@@ -222,7 +225,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
                     </Select>
                     {!canChangeFlag && (
                       <FormDescription className="text-xs text-amber-500">
-                        Country can be changed once every 14 days. Next change: {nextChangeDate?.toLocaleDateString()}
+                        {t.country_change_hint.replace('{date}', nextChangeDate?.toLocaleDateString() || '')}
                       </FormDescription>
                     )}
                     <FormMessage />
@@ -234,7 +237,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
                 name="language"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Interface Language</FormLabel>
+                    <FormLabel>{t.interface_lang}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -255,10 +258,10 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
             <Separator />
 
             <div className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Appearance</h3>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t.appearance}</h3>
               <div className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label>Accent Color</Label>
+                  <Label>{t.accent_color}</Label>
                   <div className="flex flex-wrap gap-2">
                     {PRESET_COLORS.map((color) => (
                       <Button
@@ -277,7 +280,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="custom-color">Custom Hex Color</Label>
+                  <Label htmlFor="custom-color">{t.custom_hex}</Label>
                   <Input
                     id="custom-color"
                     value={customColor}
@@ -292,13 +295,13 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
             <Separator />
 
             <div className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Graphics</h3>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t.graphics}</h3>
               <FormField
                 control={form.control}
                 name="bannerUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Banner Image URL</FormLabel>
+                    <FormLabel>{t.banner_url}</FormLabel>
                     <FormControl>
                       <Input placeholder="https://example.com/new-banner.png" {...field} />
                     </FormControl>
@@ -311,7 +314,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
                 name="avatarUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Avatar Image URL</FormLabel>
+                    <FormLabel>{t.avatar_url}</FormLabel>
                     <FormControl>
                       <Input placeholder="https://example.com/new-avatar.png" {...field} />
                     </FormControl>
@@ -322,8 +325,8 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
             </div>
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="secondary" onClick={() => setIsOpen(false)}>Cancel</Button>
-              <Button type="submit">Save all changes</Button>
+              <Button type="button" variant="secondary" onClick={() => setIsOpen(false)}>{t.cancel}</Button>
+              <Button type="submit">{t.save_changes}</Button>
             </DialogFooter>
           </form>
         </Form>

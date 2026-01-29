@@ -4,6 +4,8 @@ import { Line, LineChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { useMemo } from 'react';
+import { useTheme } from '@/components/theme-provider';
+import { translations } from '@/lib/translations';
 
 type ChartDataPoint = {
   date: string;
@@ -22,13 +24,16 @@ const chartConfig = {
 };
 
 export default function GameStatsChart({ data }: GameStatsChartProps) {
+  const { language } = useTheme();
+  const t = translations[language];
+  
   const chartData = useMemo(() => data.map((d, i) => ({...d, name: `Match ${i + 1}`})), [data]);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Performance Trend</CardTitle>
-        <CardDescription>Skill level over the last {data.length} matches</CardDescription>
+        <CardTitle>{t.performance_trend}</CardTitle>
+        <CardDescription>{t.skill_over_matches.replace('{count}', data.length.toString())}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
@@ -56,7 +61,7 @@ export default function GameStatsChart({ data }: GameStatsChartProps) {
                             return (
                               <div className="flex flex-col">
                                 <span className="font-semibold">{props.payload.date}</span>
-                                <span className='text-sm'>Skill: {value}</span>
+                                <span className='text-sm'>{t.skill_level}: {value}</span>
                               </div>
                             )
                           }

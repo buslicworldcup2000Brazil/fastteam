@@ -10,6 +10,8 @@ import { ArrowUp, ArrowDown, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import LevelIcon from "@/components/ui/level-icon"
 import { calculateLevel } from "@/lib/data"
+import { useTheme } from "@/components/theme-provider"
+import { translations } from "@/lib/translations"
 
 type Match = {
   id: string;
@@ -30,18 +32,21 @@ type MatchHistoryTableProps = {
 };
 
 export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
+  const { language } = useTheme();
+  const t = translations[language];
+
   return (
     <div className="border rounded-lg bg-card">
       <Table>
         <TableHeader>
           <TableRow className="border-b-border/50">
-            <TableHead className="w-[150px]">Date</TableHead>
-            <TableHead>Score</TableHead>
-            <TableHead>Skill level</TableHead>
-            <TableHead>KD</TableHead>
+            <TableHead className="w-[150px]">{t.date}</TableHead>
+            <TableHead>{t.score}</TableHead>
+            <TableHead>{t.skill_level}</TableHead>
+            <TableHead>{t.kd}</TableHead>
             <TableHead>K/D</TableHead>
             <TableHead>K/R</TableHead>
-            <TableHead>Map</TableHead>
+            <TableHead>{t.map}</TableHead>
             <TableHead className="text-right"></TableHead>
           </TableRow>
         </TableHeader>

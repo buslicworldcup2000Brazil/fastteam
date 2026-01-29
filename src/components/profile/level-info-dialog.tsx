@@ -15,6 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useTheme } from "@/components/theme-provider";
+import { translations } from "@/lib/translations";
 
 type LevelInfoDialogProps = {
   isOpen: boolean;
@@ -36,20 +38,26 @@ const levelData = [
 
 
 export default function LevelInfoDialog({ isOpen, setIsOpen }: LevelInfoDialogProps) {
+  const { language } = useTheme();
+  const t = translations[language];
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Level Information</DialogTitle>
+          <DialogTitle>{t.level_info}</DialogTitle>
           <DialogDescription>
-            Here's a breakdown of ELO ranges and gains/losses for each level.
+            {language === 'ru' 
+              ? "Здесь представлена информация о диапазонах ELO и изменениях очков для каждого уровня."
+              : "Here's a breakdown of ELO ranges and gains/losses for each level."
+            }
           </DialogDescription>
         </DialogHeader>
         <div className="max-h-[60vh] overflow-y-auto">
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Level</TableHead>
+                        <TableHead>{t.level}</TableHead>
                         <TableHead>ELO Range</TableHead>
                         <TableHead>ELO on Win</TableHead>
                         <TableHead>ELO on Loss</TableHead>

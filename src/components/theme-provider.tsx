@@ -2,15 +2,16 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 
+type Language = 'ru' | 'en';
+
 type ThemeProviderState = {
   primaryColor: string
   setPrimaryColor: (color: string) => void
+  language: Language
+  setLanguage: (lang: Language) => void
 }
 
-const ThemeProviderContext = createContext<ThemeProviderState>({
-  primaryColor: "3 71% 41%",
-  setPrimaryColor: () => null,
-})
+const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [primaryColor, setPrimaryColorState] = useState(() => {
@@ -20,33 +21,42 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return "3 71% 41%"
   })
 
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("app-language") as Language) || "ru"
+    }
+    return "ru"
+  })
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const root = document.documentElement;
-    
-    // Основной цвет
     root.style.setProperty("--primary", primaryColor);
     root.style.setProperty("--ring", primaryColor);
-    
-    // Акцентный цвет (используется для hover эффектов на кнопках variant="outline" и "ghost")
     root.style.setProperty("--accent", primaryColor);
-    // Цвет текста/иконки на акцентном фоне (белый для темных тем)
     root.style.setProperty("--accent-foreground", "0 0% 98%");
 
-    // Сохраняем в localStorage
     localStorage.setItem("theme-primary-color", primaryColor);
   }, [primaryColor])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem("app-language", language);
+  }, [language])
+
   const setPrimaryColor = (color: string) => {
-    // Упрощенная проверка формата HSL (числа с процентами или без)
     if (color.trim().length > 0) {
       setPrimaryColorState(color)
     }
   }
 
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+  }
+
   return (
-    <ThemeProviderContext.Provider value={{ primaryColor, setPrimaryColor }}>
+    <ThemeProviderContext.Provider value={{ primaryColor, setPrimaryColor, language, setLanguage }}>
       {children}
     </ThemeProviderContext.Provider>
   )

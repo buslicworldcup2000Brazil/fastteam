@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Pencil, Swords, Search, Settings } from 'lucide-react';
-import Link from 'next/link';
+import { Settings, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getFlagEmoji } from '@/lib/countries';
+import { useTheme } from '@/components/theme-provider';
+import { translations } from '@/lib/translations';
 
 type UserProfile = {
   name: string;
@@ -24,6 +24,8 @@ type ProfileHeaderProps = {
 };
 
 export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
+  const { language } = useTheme();
+  const t = translations[language];
   const flagUrl = getFlagEmoji(user.country);
 
   return (
@@ -61,34 +63,17 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
             </div>
           </div>
           <div className="md:ml-auto flex flex-col md:flex-row items-center gap-2 md:pb-4 w-full md:w-auto">
-            <div className="relative w-full md:w-64 order-2 md:order-1">
+            <div className="relative w-full md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Search players..." 
+                placeholder={t.search_placeholder} 
                 className="pl-9 bg-background/50 backdrop-blur-sm border-primary/20 focus:border-primary"
               />
             </div>
-            <div className="flex items-center gap-2 order-1 md:order-2">
-              <Button asChild>
-                  <Link href="/matchmaking"><Swords className="mr-2 h-4 w-4" /> Play</Link>
-              </Button>
-              <Button variant="outline" size="icon" onClick={onEdit} title="Settings">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="icon" onClick={onEdit} title={t.edit_profile}>
                 <Settings className="h-4 w-4" />
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">More Options</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={onEdit}>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    <span>Edit Profile</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
         </div>
