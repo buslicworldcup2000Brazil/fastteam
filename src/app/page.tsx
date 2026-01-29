@@ -14,6 +14,8 @@ import EditProfileDialog from '@/components/profile/edit-profile-dialog';
 import { userProfile, statsData, friendsData, matchHistoryData, gameStatsChartData } from '@/lib/data';
 import MatchHistoryTable from '@/components/profile/match-history-table';
 import GameStatsChart from '@/components/profile/game-stats-chart';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import LevelIcon from '@/components/ui/level-icon';
 
 export default function Home() {
   const [profile, setProfile] = useState(userProfile);
@@ -43,9 +45,24 @@ export default function Home() {
           </TabsList>
           <TabsContent value="overview">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
-                <h2 className="text-2xl font-bold mb-4">Player Statistics</h2>
-                <StatsGrid stats={statsData} />
+              <div className="lg:col-span-2 space-y-8">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Rank</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex items-center gap-4">
+                    <LevelIcon level={profile.level} className="h-24 w-24" />
+                    <div>
+                      <p className="text-4xl font-bold">{profile.elo.toLocaleString()} <span className="text-lg text-muted-foreground">ELO</span></p>
+                      <p className="text-muted-foreground">Level {profile.level}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <div>
+                  <h2 className="text-2xl font-bold mb-1">Player Statistics</h2>
+                  <p className="text-sm text-muted-foreground mb-4">Based on the last 30 games</p>
+                  <StatsGrid stats={statsData} />
+                </div>
               </div>
               <div>
                 <h2 className="text-2xl font-bold mb-4">Friends Online</h2>

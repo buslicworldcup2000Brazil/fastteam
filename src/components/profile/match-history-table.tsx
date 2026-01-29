@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { ArrowUp, ArrowDown, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import LevelIcon from "@/components/ui/level-icon"
@@ -19,8 +18,7 @@ type Match = {
   score: string;
   skillLevel: number;
   skillChange: number;
-  kda: string;
-  adr: number;
+  kd: string;
   kdRatio: number;
   krRatio: number;
   map: string;
@@ -39,8 +37,7 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
             <TableHead className="w-[150px]">Date</TableHead>
             <TableHead>Score</TableHead>
             <TableHead>Skill level</TableHead>
-            <TableHead>KDA</TableHead>
-            <TableHead>ADR</TableHead>
+            <TableHead>KD</TableHead>
             <TableHead>K/D</TableHead>
             <TableHead>K/R</TableHead>
             <TableHead>Map</TableHead>
@@ -57,15 +54,13 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
                 <div className="text-sm text-muted-foreground">{match.time}</div>
               </TableCell>
               <TableCell>
-                <Badge
-                  className={cn(
-                    'w-6 h-6 p-0 mr-2 inline-flex items-center justify-center text-white font-bold text-xs',
-                    match.result === 'win' ? 'bg-green-500' : 'bg-red-500'
-                  )}
-                >
-                  {match.result === 'win' ? 'W' : 'L'}
-                </Badge>
-                <span className="font-medium">{match.score}</span>
+                <div className="flex items-center gap-3">
+                    <div className={cn(
+                        'w-1 h-6 rounded-full',
+                        match.result === 'win' ? 'bg-green-500' : 'bg-red-500'
+                    )} />
+                    <span className="font-medium">{match.score}</span>
+                </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center">
@@ -80,8 +75,7 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
                   </span>
                 </div>
               </TableCell>
-              <TableCell className="font-semibold">{match.kda}</TableCell>
-              <TableCell className="font-semibold">{match.adr.toFixed(1)}</TableCell>
+              <TableCell className="font-semibold">{match.kd}</TableCell>
               <TableCell className="font-semibold">{match.kdRatio.toFixed(2)}</TableCell>
               <TableCell className="font-semibold">{match.krRatio.toFixed(2)}</TableCell>
               <TableCell className="font-semibold">{match.map}</TableCell>

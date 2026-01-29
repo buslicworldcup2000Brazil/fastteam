@@ -13,6 +13,8 @@ type UserProfile = {
   tags: string[];
   bannerUrl: string;
   avatarUrl: string;
+  elo: number;
+  level: number;
 };
 
 type ProfileHeaderProps = {
