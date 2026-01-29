@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Pencil, UserPlus, MessageSquare } from 'lucide-react';
+import { MoreHorizontal, Pencil, UserPlus, Swords } from 'lucide-react';
 import ThemeCustomizer from '@/components/theme-customizer';
+import Link from 'next/link';
 
 type UserProfile = {
   name: string;
@@ -49,12 +50,12 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
               ))}
             </div>
           </div>
-          <div className="md:ml-auto flex gap-2 md:pb-4">
+          <div className="md:ml-auto flex items-center gap-2 md:pb-4">
+            <Button asChild>
+                <Link href="/matchmaking"><Swords className="mr-2 h-4 w-4" /> Play</Link>
+            </Button>
             <Button>
               <UserPlus className="mr-2 h-4 w-4" /> Add Friend
-            </Button>
-            <Button variant="secondary">
-              <MessageSquare className="mr-2 h-4 w-4" /> Message
             </Button>
             <ThemeCustomizer />
             <DropdownMenu>
