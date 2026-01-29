@@ -2,8 +2,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Pencil, Swords, Search } from 'lucide-react';
-import ThemeCustomizer from '@/components/theme-customizer';
+import { MoreHorizontal, Pencil, Swords, Search, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { getFlagEmoji } from '@/lib/countries';
@@ -73,7 +72,9 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
               <Button asChild>
                   <Link href="/matchmaking"><Swords className="mr-2 h-4 w-4" /> Play</Link>
               </Button>
-              <ThemeCustomizer />
+              <Button variant="outline" size="icon" onClick={onEdit} title="Settings">
+                <Settings className="h-4 w-4" />
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon">
@@ -84,7 +85,7 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={onEdit}>
                     <Pencil className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                    <span>Edit Profile</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
