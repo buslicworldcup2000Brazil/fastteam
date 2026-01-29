@@ -16,10 +16,11 @@ import GameStatsChart from '@/components/profile/game-stats-chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import LevelIcon from '@/components/ui/level-icon';
 import LevelInfoDialog from '@/components/profile/level-info-dialog';
+import LeaderboardDialog from '@/components/profile/leaderboard-dialog';
 import { useTheme } from '@/components/theme-provider';
 import { translations } from '@/lib/translations';
 import { Button } from '@/components/ui/button';
-import { Swords, Flame } from 'lucide-react';
+import { Swords, Flame, Trophy } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Home() {
@@ -29,6 +30,7 @@ export default function Home() {
   const [profile, setProfile] = useState(userProfile);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLevelInfoOpen, setIsLevelInfoOpen] = useState(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
   const handleProfileUpdate = (values: any) => {
     setProfile(prevProfile => ({
@@ -58,12 +60,23 @@ export default function Home() {
               <TabsTrigger value="match_history">{t.match_history}</TabsTrigger>
             </TabsList>
             
-            <Button asChild size="lg" className="w-full md:w-auto font-bold px-8 shadow-lg shadow-primary/20">
-              <Link href="/matchmaking">
-                <Swords className="mr-2 h-5 w-5" /> 
-                {t.play}
-              </Link>
-            </Button>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={() => setIsLeaderboardOpen(true)}
+                className="flex-1 md:flex-none font-bold"
+              >
+                <Trophy className="mr-2 h-5 w-5 text-yellow-500" />
+                {t.top_players}
+              </Button>
+              <Button asChild size="lg" className="flex-1 md:flex-none font-bold px-8 shadow-lg shadow-primary/20">
+                <Link href="/matchmaking">
+                  <Swords className="mr-2 h-5 w-5" /> 
+                  {t.play}
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <TabsContent value="overview">
@@ -125,6 +138,7 @@ export default function Home() {
       />
 
       <LevelInfoDialog isOpen={isLevelInfoOpen} setIsOpen={setIsLevelInfoOpen} />
+      <LeaderboardDialog isOpen={isLeaderboardOpen} setIsOpen={setIsLeaderboardOpen} />
     </div>
   );
 }

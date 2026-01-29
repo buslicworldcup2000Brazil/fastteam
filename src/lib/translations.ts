@@ -45,7 +45,9 @@ export const translations = {
     win_rate: "Win Rate",
     matches_won: "Победы",
     avg_kills: "Ср. убийства",
-    win_streak: "Вин стрик"
+    win_streak: "Вин стрик",
+    top_players: "Лидеры",
+    rank_position: "Место"
   },
   en: {
     play: "Play",
@@ -93,6 +95,8 @@ export const translations = {
     win_rate: "Win Rate",
     matches_won: "Matches Won",
     avg_kills: "Avg. Kills",
-    win_streak: "Win Streak"
+    win_streak: "Win Streak",
+    top_players: "Top Players",
+    rank_position: "Rank"
   }
 };

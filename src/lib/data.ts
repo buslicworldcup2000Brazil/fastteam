@@ -57,3 +57,26 @@ export const gameStatsChartData = matchHistoryData.map(match => ({
     date: `${match.date} ${match.time}`,
     skillLevel: match.skillLevel
 })).reverse();
+
+export const topPlayersData = [
+  { name: "S1mple", country: "Украина", elo: 3842, level: 10 },
+  { name: "ZywOo", country: "Франция", elo: 3721, level: 10 },
+  { name: "NiKo", country: "Босния и Герцеговина", elo: 3654, level: 10 },
+  { name: "m0NESY", country: "Россия", elo: 3612, level: 10 },
+  { name: "donk", country: "Россия", elo: 3589, level: 10 },
+  { name: "ropz", country: "Эстония", elo: 3450, level: 10 },
+  { name: "dev1ce", country: "Дания", elo: 3410, level: 10 },
+  { name: "Twistzz", country: "Канада", elo: 3385, level: 10 },
+  { name: "frozen", country: "Словакия", elo: 3312, level: 10 },
+  { name: "broky", country: "Латвия", elo: 3290, level: 10 },
+  { name: "EliGE", country: "Соединённые Штаты Америки (США)", elo: 3245, level: 10 },
+  { name: "sh1ro", country: "Россия", elo: 3210, level: 10 },
+  { name: "Ax1Le", country: "Россия", elo: 3185, level: 10 },
+  { name: "blameF", country: "Дания", elo: 3150, level: 10 },
+  { name: "Spinx", country: "Израиль", elo: 3125, level: 10 },
+  { name: "stavn", country: "Дания", elo: 3095, level: 10 },
+  { name: "jabbi", country: "Дания", elo: 3070, level: 10 },
+  { name: "jks", country: "Австралия", elo: 3045, level: 10 },
+  { name: "KSCERATO", country: "Бразилия", elo: 3020, level: 10 },
+  { name: "YEKINDAR", country: "Латвия", elo: 2995, level: 10 },
+];
