@@ -83,7 +83,12 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
               )}>
                 {match.kdRatio.toFixed(2)}
               </TableCell>
-              <TableCell className="font-semibold">{match.krRatio.toFixed(2)}</TableCell>
+              <TableCell className={cn(
+                "font-semibold",
+                match.krRatio < 1.0 ? "text-red-400" : "text-green-400"
+              )}>
+                {match.krRatio.toFixed(2)}
+              </TableCell>
               <TableCell className="font-semibold">{match.map}</TableCell>
               <TableCell className="text-right">
                 <button className="text-muted-foreground hover:text-foreground">
