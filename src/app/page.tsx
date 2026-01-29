@@ -11,7 +11,9 @@ import ProfileHeader from '@/components/profile/profile-header';
 import StatsGrid from '@/components/profile/stats-grid';
 import FriendsList from '@/components/profile/friends-list';
 import EditProfileDialog from '@/components/profile/edit-profile-dialog';
-import { userProfile, statsData, friendsData } from '@/lib/data';
+import { userProfile, statsData, friendsData, matchHistoryData, gameStatsChartData } from '@/lib/data';
+import MatchHistoryTable from '@/components/profile/match-history-table';
+import GameStatsChart from '@/components/profile/game-stats-chart';
 
 export default function Home() {
   const [profile, setProfile] = useState(userProfile);
@@ -33,7 +35,7 @@ export default function Home() {
       />
       
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs defaultValue="match_history" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-3 mb-6 bg-card border">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="game_stats">Game Stats</TabsTrigger>
@@ -52,14 +54,10 @@ export default function Home() {
             </div>
           </TabsContent>
           <TabsContent value="game_stats">
-             <div className="flex items-center justify-center h-48 bg-card rounded-lg">
-                <p className="text-muted-foreground">Game stats will be displayed here.</p>
-              </div>
+             <GameStatsChart data={gameStatsChartData} />
           </TabsContent>
           <TabsContent value="match_history">
-            <div className="flex items-center justify-center h-48 bg-card rounded-lg">
-                <p className="text-muted-foreground">Match history will be displayed here.</p>
-              </div>
+            <MatchHistoryTable matches={matchHistoryData} />
           </TabsContent>
         </Tabs>
       </main>
