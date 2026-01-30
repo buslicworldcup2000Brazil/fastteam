@@ -133,17 +133,19 @@ export default function MatchmakingPage() {
       interval = setInterval(() => {
         setSearchTime(prev => prev + 1);
       }, 1000);
-      
-      if (searchTime >= 5) {
-        setStatus('ready_check');
-        setReadyCheckTime(20);
-        setIsReady(false);
-        setPlayersReady(0);
-      }
     } else {
       setSearchTime(0);
     }
     return () => clearInterval(interval);
+  }, [status]);
+
+  useEffect(() => {
+    if (status === 'searching' && searchTime >= 5) {
+      setStatus('ready_check');
+      setReadyCheckTime(20);
+      setIsReady(false);
+      setPlayersReady(0);
+    }
   }, [status, searchTime]);
 
   // Ready Check Timer
@@ -151,14 +153,7 @@ export default function MatchmakingPage() {
     let interval: any;
     if (status === 'ready_check') {
       interval = setInterval(() => {
-        setReadyCheckTime(prev => {
-          if (prev <= 1) {
-            handleReadyCheckEnd();
-            return 0;
-          }
-          return prev - 1;
-        });
-
+        setReadyCheckTime(prev => Math.max(0, prev - 1));
         setPlayersReady(prev => {
           if (prev < totalPlayers - 1 && Math.random() > 0.6) {
             return prev + 1;
@@ -170,29 +165,37 @@ export default function MatchmakingPage() {
     return () => clearInterval(interval);
   }, [status, totalPlayers]);
 
+  // Watch readyCheckTime to trigger transition
+  useEffect(() => {
+    if (status === 'ready_check' && readyCheckTime === 0) {
+      handleReadyCheckEnd();
+    }
+  }, [readyCheckTime, status]);
+
   // Transition to Match Room
   useEffect(() => {
     if (status === 'ready_check' && isReady && playersReady === totalPlayers - 1) {
-      setTimeout(() => setStatus('match_room'), 1000);
+      const timer = setTimeout(() => setStatus('match_room'), 1000);
+      return () => clearTimeout(timer);
     }
   }, [isReady, playersReady, totalPlayers, status]);
 
-  // Veto Timer (Integrated)
+  // Veto Timer
   useEffect(() => {
     let interval: any;
     if (status === 'match_room' && matchStatus === 'veto') {
       interval = setInterval(() => {
-        setVetoTime(prev => {
-          if (prev <= 1) {
-            handleVetoEnd();
-            return 0;
-          }
-          return prev - 1;
-        });
+        setVetoTime(prev => Math.max(0, prev - 1));
       }, 1000);
     }
     return () => clearInterval(interval);
   }, [status, matchStatus]);
+
+  useEffect(() => {
+    if (status === 'match_room' && matchStatus === 'veto' && vetoTime === 0) {
+      handleVetoEnd();
+    }
+  }, [vetoTime, status, matchStatus]);
 
   // Connection Timer
   useEffect(() => {
@@ -218,9 +221,9 @@ export default function MatchmakingPage() {
 
   const votes = useMemo(() => {
     return {
-      dust2: otherVotes.dust2 + (myVote === 'dust2' ? 1 : 0),
-      mirage: otherVotes.mirage + (myVote === 'mirage' ? 1 : 0),
-      inferno: otherVotes.inferno + (myVote === 'inferno' ? 1 : 0),
+      dust2: (otherVotes.dust2 || 0) + (myVote === 'dust2' ? 1 : 0),
+      mirage: (otherVotes.mirage || 0) + (myVote === 'mirage' ? 1 : 0),
+      inferno: (otherVotes.inferno || 0) + (myVote === 'inferno' ? 1 : 0),
     };
   }, [otherVotes, myVote]);
 
@@ -261,38 +264,38 @@ export default function MatchmakingPage() {
     const displayPlayersReady = isReady ? playersReady + 1 : playersReady;
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-4">
-        <div className="max-w-xl w-full text-center space-y-8">
+        <div className="max-w-xl w-full text-center space-y-6">
           <div>
-            <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-2">Match Found!</h2>
-            <p className="text-muted-foreground uppercase tracking-[0.2em] text-xs">Confirm your readiness</p>
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-1">Match Found!</h2>
+            <p className="text-muted-foreground uppercase tracking-[0.2em] text-[10px]">Confirm your readiness</p>
           </div>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
             {Array.from({ length: totalPlayers }).map((_, i) => {
               const ready = i < displayPlayersReady;
               return (
                 <div 
                   key={i} 
                   className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+                    "w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300",
                     ready ? "bg-primary text-primary-foreground shadow-[0_0_15px_rgba(var(--primary),0.5)] scale-110" : "bg-white/10 text-white/30"
                   )}
                 >
-                  <CheckCircle2 className={cn("h-6 w-6", ready ? "opacity-100" : "opacity-20")} />
+                  <CheckCircle2 className={cn("h-5 w-5", ready ? "opacity-100" : "opacity-20")} />
                 </div>
               );
             })}
           </div>
-          <div className="space-y-6">
-            <div className="space-y-2">
+          <div className="space-y-4">
+            <div className="space-y-1">
                <p className="text-4xl font-mono font-bold text-primary">{formatTime(readyCheckTime)}</p>
-               <div className="max-w-[200px] mx-auto">
+               <div className="max-w-[150px] mx-auto">
                  <TimerProgressBar current={readyCheckTime} total={20} />
                </div>
             </div>
             <Button 
               disabled={isReady}
               onClick={handleSetReady}
-              className="w-full h-16 text-2xl font-black italic tracking-tighter uppercase"
+              className="w-full h-14 text-xl font-black italic tracking-tighter uppercase"
             >
               {isReady ? "Ready" : "Accept Match"}
             </Button>
@@ -304,10 +307,10 @@ export default function MatchmakingPage() {
 
   if (status === 'match_room') {
     return (
-      <div className="min-h-screen bg-[#0d0d0d] text-[#e0e0e0] font-body p-4 md:p-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between border-b border-white/5 pb-4 mb-8">
+      <div className="min-h-screen bg-[#0d0d0d] text-[#e0e0e0] font-body p-4 md:p-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between border-b border-white/5 pb-2 mb-4">
           <div className="flex gap-8">
-            <button className="text-primary font-bold uppercase tracking-tighter italic border-b-2 border-primary pb-4 -mb-4">{mode} Ranked</button>
+            <button className="text-primary font-bold uppercase tracking-tighter italic border-b-2 border-primary pb-2 -mb-2">{mode} Ranked</button>
           </div>
           <div className="flex items-center gap-4">
             <Share2 className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-white" />
@@ -315,9 +318,9 @@ export default function MatchmakingPage() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-3 flex flex-col gap-3">
-             <div className="flex items-center justify-between mb-2 px-1">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div className="lg:col-span-3 flex flex-col gap-2">
+             <div className="flex items-center justify-between mb-1 px-1">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={teamA[0].avatarUrl} />
@@ -330,25 +333,25 @@ export default function MatchmakingPage() {
           </div>
 
           <div className="lg:col-span-6 flex flex-col items-center">
-            <div className="text-center mb-6">
+            <div className="text-center mb-4">
                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-1">{mode} · EU</p>
-               <h2 className="text-2xl font-black italic uppercase text-white leading-none">
+               <h2 className="text-xl font-black italic uppercase text-white leading-none">
                  {matchStatus === 'veto' ? t.map_veto : "Match Ready"}
                </h2>
             </div>
 
-            <Card className="w-full bg-[#121212] border-white/5 p-8 flex flex-col items-center shadow-2xl relative overflow-hidden">
+            <Card className="w-full bg-[#121212] border-white/5 p-4 md:p-6 flex flex-col items-center shadow-2xl relative overflow-hidden">
                 {matchStatus === 'veto' ? (
-                  <div className="w-full space-y-8">
+                  <div className="w-full space-y-6">
                     <div className="text-center space-y-2">
                        <p className="text-4xl font-mono font-black text-primary">{formatTime(vetoTime)}</p>
-                       <div className="w-[150px] mx-auto">
+                       <div className="w-[120px] mx-auto">
                          <TimerProgressBar current={vetoTime} total={20} />
                        </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-3">
                       {MAPS.map((map) => {
-                        const count = votes[map.id as keyof typeof votes];
+                        const count = (votes as any)[map.id];
                         const percentage = (count / totalPlayers) * 100;
                         return (
                           <div 
@@ -359,13 +362,13 @@ export default function MatchmakingPage() {
                               myVote === map.id ? "border-primary scale-105" : "border-white/5 opacity-60 hover:opacity-100"
                             )}
                           >
-                            <div className="h-24 relative">
+                            <div className="h-20 relative">
                               <Image src={map.image} alt={map.name} fill className="object-cover" />
                               <div className="absolute inset-0 bg-black/40" />
                               <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <span className="text-xs font-black uppercase italic">{map.name}</span>
                                 <span className="text-[10px] font-bold mt-1">{count}/{totalPlayers}</span>
-                                <div className="h-1 w-12 bg-white/20 mt-1 rounded-full overflow-hidden">
+                                <div className="h-1 w-10 bg-white/20 mt-1 rounded-full overflow-hidden">
                                   <div className="h-full bg-primary" style={{ width: `${percentage}%` }} />
                                 </div>
                               </div>
@@ -377,46 +380,46 @@ export default function MatchmakingPage() {
                   </div>
                 ) : (
                   <>
-                    <p className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground mb-4">Connect now</p>
-                    <div className="text-center space-y-3 mb-8 w-full">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground mb-2">Connect now</p>
+                    <div className="text-center space-y-2 mb-6 w-full">
                       <p className="text-5xl font-mono font-black text-primary">{formatTime(connectTime)}</p>
-                      <div className="w-[200px] mx-auto">
+                      <div className="w-[150px] mx-auto">
                         <TimerProgressBar current={connectTime} total={180} />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-8 w-full mb-8">
+                    <div className="grid grid-cols-2 gap-4 w-full mb-6">
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Server</p>
-                        <div className="flex items-center gap-3 bg-black/40 p-3 rounded border border-white/5">
-                           <div className="relative w-8 h-5 overflow-hidden rounded-xs border border-white/10 shrink-0">
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Server</p>
+                        <div className="flex items-center gap-3 bg-black/40 p-2 rounded border border-white/5">
+                           <div className="relative w-7 h-4 overflow-hidden rounded-xs border border-white/10 shrink-0">
                               <Image src="https://flagcdn.com/w80/de.png" alt="Germany" fill className="object-cover" unoptimized />
                             </div>
-                            <span className="text-sm font-bold uppercase italic">Germany</span>
+                            <span className="text-xs font-bold uppercase italic">Germany</span>
                         </div>
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Map</p>
-                        <div className="flex items-center gap-3 bg-black/40 p-3 rounded border border-white/5">
-                            <div className="relative w-8 h-5 overflow-hidden rounded-xs border border-white/10 shrink-0">
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Map</p>
+                        <div className="flex items-center gap-3 bg-black/40 p-2 rounded border border-white/5">
+                            <div className="relative w-7 h-4 overflow-hidden rounded-xs border border-white/10 shrink-0">
                               <Image src={selectedMap?.image} alt={selectedMap?.name} fill className="object-cover" />
                             </div>
-                            <span className="text-sm font-bold uppercase italic">{selectedMap?.name}</span>
+                            <span className="text-xs font-bold uppercase italic">{selectedMap?.name}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="w-full space-y-4">
+                    <div className="w-full space-y-3">
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Password</p>
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Password</p>
                         <div className="flex items-center bg-black/60 rounded border border-white/10 overflow-hidden">
                            <div 
                             onClick={copyPassword}
-                            className="flex-1 px-4 py-3 font-mono text-sm text-muted-foreground tracking-widest italic cursor-pointer hover:text-white"
+                            className="flex-1 px-4 py-2.5 font-mono text-sm text-muted-foreground tracking-widest italic cursor-pointer hover:text-white"
                            >
                               {password}
                            </div>
                         </div>
                       </div>
-                      <Button className="w-full h-14 bg-primary text-primary-foreground font-black italic uppercase tracking-tighter text-xl">
+                      <Button className="w-full h-12 bg-primary text-primary-foreground font-black italic uppercase tracking-tighter text-lg">
                         Connect
                       </Button>
                     </div>
@@ -425,8 +428,8 @@ export default function MatchmakingPage() {
             </Card>
           </div>
 
-          <div className="lg:col-span-3 flex flex-col gap-3">
-             <div className="flex items-center justify-between mb-2 px-1">
+          <div className="lg:col-span-3 flex flex-col gap-2">
+             <div className="flex items-center justify-between mb-1 px-1">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={teamB[0].avatarUrl} />
@@ -451,71 +454,71 @@ export default function MatchmakingPage() {
       </div>
 
       <div className="w-full max-w-6xl mx-auto flex flex-col items-center">
-        <div className="mb-16 text-center">
-            <h1 className="text-5xl font-black uppercase tracking-tighter mb-2 italic">Lobby</h1>
-            <div className="h-1 w-24 bg-primary mx-auto mb-4" />
+        <div className="mb-8 text-center">
+            <h1 className="text-4xl font-black uppercase tracking-tighter mb-1 italic">Lobby</h1>
+            <div className="h-1 w-16 bg-primary mx-auto mb-4" />
         </div>
 
-        <div className="flex flex-wrap justify-center items-center gap-8 mb-20 w-full">
+        <div className="flex flex-wrap justify-center items-center gap-6 mb-12 w-full">
             {Array.from({ length: mode === '2v2' ? 2 : 5 }).map((_, i) => {
               const myPos = mode === '2v2' ? 0 : 2;
               return i === myPos ? (
-                <div key="player" className="relative pt-8">
+                <div key="player" className="relative pt-6">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 text-primary z-20">
                       <Crown className="h-2 w-2" fill="currentColor" />
                   </div>
-                  <Card className="w-48 h-64 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg">
+                  <Card className="w-44 h-60 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg">
                     <div className="absolute inset-0">
                         <Image src={userProfile.bannerUrl} alt="banner" fill className="object-cover opacity-30" />
                         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
                     </div>
                     <div className="relative text-center flex flex-col items-center">
-                      <Avatar className="h-24 w-24 border-4 border-background ring-2 ring-primary mb-3">
+                      <Avatar className="h-20 w-20 border-4 border-background ring-2 ring-primary mb-2">
                         <AvatarImage src={userProfile.avatarUrl} alt={userProfile.name} />
                         <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex items-center gap-1.5">
-                        <p className="font-bold text-xl tracking-tight">{userProfile.name}</p>
+                        <p className="font-bold text-lg tracking-tight">{userProfile.name}</p>
                       </div>
-                      <div className="mt-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5 text-sm backdrop-blur-md border border-white/10">
-                          <LevelIcon level={userProfile.level} className="h-6 w-6" />
+                      <div className="mt-3 flex items-center gap-2 bg-black/60 rounded-full px-2.5 py-1 text-xs backdrop-blur-md border border-white/10">
+                          <LevelIcon level={userProfile.level} className="h-5 w-5" />
                           <span className='text-white font-bold tracking-tighter'>{userProfile.elo}</span>
                       </div>
                     </div>
                   </Card>
                 </div>
               ) : (
-                <div key={`empty-${i}`} className="pt-8">
+                <div key={`empty-${i}`} className="pt-6">
                   <Card 
                     onClick={() => setIsInviteOpen(true)}
-                    className="w-48 h-64 bg-card/5 border-border/20 border-dashed flex flex-col items-center justify-center p-4 text-muted-foreground cursor-pointer group"
+                    className="w-44 h-60 bg-card/5 border-border/20 border-dashed flex flex-col items-center justify-center p-4 text-muted-foreground cursor-pointer group"
                   >
                       <div className="bg-muted/10 p-4 rounded-full group-hover:bg-primary/10 transition-colors">
-                        <Plus className="h-8 w-8" />
+                        <Plus className="h-6 w-6" />
                       </div>
-                      <p className="mt-3 text-xs font-bold uppercase tracking-widest opacity-60">{t.invite}</p>
+                      <p className="mt-2 text-[10px] font-bold uppercase tracking-widest opacity-60">{t.invite}</p>
                   </Card>
                 </div>
               );
             })}
         </div>
         
-        <div className="flex flex-col items-center gap-10 w-full max-w-md">
+        <div className="flex flex-col items-center gap-8 w-full max-w-md">
             <RadioGroup 
               disabled={status === 'searching'}
               value={mode} 
               onValueChange={setMode} 
-              className="flex items-center justify-center gap-4 bg-card/40 p-2 rounded-xl border border-white/5 backdrop-blur-sm w-full"
+              className="flex items-center justify-center gap-3 bg-card/40 p-1.5 rounded-xl border border-white/5 backdrop-blur-sm w-full"
             >
                 <div className="flex-1">
                   <RadioGroupItem value="2v2" id="2v2" className="sr-only"/>
-                  <Label htmlFor="2v2" className={`flex items-center justify-center text-sm font-bold uppercase tracking-widest py-3 rounded-lg cursor-pointer transition-all duration-200 ${mode === '2v2' ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)]' : 'text-muted-foreground hover:bg-white/5'}`}>
+                  <Label htmlFor="2v2" className={`flex items-center justify-center text-[10px] font-bold uppercase tracking-widest py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${mode === '2v2' ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)]' : 'text-muted-foreground hover:bg-white/5'}`}>
                       2v2 Wingman
                   </Label>
                 </div>
                 <div className="flex-1">
                   <RadioGroupItem value="5v5" id="5v5" className="sr-only"/>
-                  <Label htmlFor="5v5" className={`flex items-center justify-center text-sm font-bold uppercase tracking-widest py-3 rounded-lg cursor-pointer transition-all duration-200 ${mode === '5v5' ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)]' : 'text-muted-foreground hover:bg-white/5'}`}>
+                  <Label htmlFor="5v5" className={`flex items-center justify-center text-[10px] font-bold uppercase tracking-widest py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${mode === '5v5' ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)]' : 'text-muted-foreground hover:bg-white/5'}`}>
                       5v5 Ranked
                   </Label>
                 </div>
@@ -523,23 +526,23 @@ export default function MatchmakingPage() {
 
             <div className="w-full flex flex-col items-center gap-4">
               {status === 'searching' ? (
-                <div className="w-full space-y-4">
+                <div className="w-full space-y-3">
                   <Button 
                     variant="destructive"
                     size="lg" 
-                    className="w-full h-16 text-2xl font-black italic tracking-tighter bg-red-600 hover:bg-red-700 transition-all" 
+                    className="w-full h-14 text-xl font-black italic tracking-tighter bg-red-600 hover:bg-red-700 transition-all" 
                     onClick={() => setStatus('lobby')}
                   >
                       {t.cancel}
                   </Button>
-                  <div className="text-center space-y-2">
-                    <p className="text-3xl font-mono font-bold text-primary animate-pulse">{formatTime(searchTime)}</p>
+                  <div className="text-center space-y-1">
+                    <p className="text-2xl font-mono font-bold text-primary animate-pulse">{formatTime(searchTime)}</p>
                   </div>
                 </div>
               ) : (
                 <Button 
                   size="lg" 
-                  className="w-full h-16 text-2xl font-black italic tracking-tighter shadow-[0_10px_40px_-10px_rgba(var(--primary),0.5)] hover:shadow-[0_15px_50px_-10px_rgba(var(--primary),0.6)] transition-all" 
+                  className="w-full h-14 text-xl font-black italic tracking-tighter shadow-[0_10px_40px_-10px_rgba(var(--primary),0.5)] hover:shadow-[0_15px_50px_-10px_rgba(var(--primary),0.6)] transition-all" 
                   onClick={() => setStatus('searching')}
                 >
                     {t.play}
@@ -554,7 +557,7 @@ export default function MatchmakingPage() {
           <DialogHeader>
             <DialogTitle>{t.invite}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {friendsData.map((friend) => (
               <div key={friend.name} className="flex items-center justify-between p-2 hover:bg-white/5 rounded-lg transition-colors">
                 <div className="flex items-center gap-3">
@@ -563,12 +566,13 @@ export default function MatchmakingPage() {
                     <AvatarFallback>{friend.name[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-bold">{friend.name}</p>
-                    <p className="text-xs text-muted-foreground">{friend.status}</p>
+                    <p className="font-bold text-sm">{friend.name}</p>
+                    <p className="text-[10px] text-muted-foreground">{friend.status}</p>
                   </div>
                 </div>
                 <Button 
                   size="sm" 
+                  className="h-8 text-[10px]"
                   onClick={() => {
                     toast({ title: "Invite Sent", description: `Invited ${friend.name} to lobby.` });
                     setIsInviteOpen(false);
