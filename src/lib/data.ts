@@ -22,7 +22,7 @@ export const statsData = [
   { id: '1', title: 'K/D Ratio', value: '2.45', icon: Swords, progress: 49 },
   { id: '2', title: 'Win Rate', value: '68%', icon: Trophy, progress: 68 },
   { id: '5', title: 'Matches Won', value: '816', icon: Star, progress: 54 },
-  { id: '6', title: 'Avg. Kills', value: '18.5', icon: Crosshair, progress: 62 },
+  { id: '6', title: 'Avg. Kills', value: '18', icon: Crosshair, progress: 62 },
 ];
 
 export const matchHistoryData = [
@@ -96,7 +96,7 @@ export const friendsData = [
       { id: '1', title: 'K/D Ratio', value: '3.12', icon: Swords, progress: 85 },
       { id: '2', title: 'Win Rate', value: '74%', icon: Trophy, progress: 74 },
       { id: '5', title: 'Matches Won', value: '2450', icon: Star, progress: 90 },
-      { id: '6', title: 'Avg. Kills', value: '24.1', icon: Crosshair, progress: 88 },
+      { id: '6', title: 'Avg. Kills', value: '24', icon: Crosshair, progress: 88 },
     ],
     matchHistory: matchHistoryData.map(m => ({ ...m, skillLevel: 3842 + Math.floor(Math.random() * 100) })),
     chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3842 + Math.floor(Math.random() * 100), kdRatio: m.kdRatio + 0.5, krRatio: m.krRatio + 0.5 })).reverse(),
@@ -119,7 +119,7 @@ export const friendsData = [
       { id: '1', title: 'K/D Ratio', value: '2.89', icon: Swords, progress: 78 },
       { id: '2', title: 'Win Rate', value: '71%', icon: Trophy, progress: 71 },
       { id: '5', title: 'Matches Won', value: '1890', icon: Star, progress: 82 },
-      { id: '6', title: 'Avg. Kills', value: '22.5', icon: Crosshair, progress: 84 },
+      { id: '6', title: 'Avg. Kills', value: '22', icon: Crosshair, progress: 84 },
     ],
     matchHistory: matchHistoryData.map(m => ({ ...m, skillLevel: 3612 + Math.floor(Math.random() * 100) })),
     chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3612 + Math.floor(Math.random() * 100), kdRatio: m.kdRatio + 0.3, krRatio: m.krRatio + 0.3 })).reverse(),
@@ -142,7 +142,7 @@ export const friendsData = [
       { id: '1', title: 'K/D Ratio', value: '3.45', icon: Swords, progress: 95 },
       { id: '2', title: 'Win Rate', value: '78%', icon: Trophy, progress: 78 },
       { id: '5', title: 'Matches Won', value: '1200', icon: Star, progress: 75 },
-      { id: '6', title: 'Avg. Kills', value: '28.2', icon: Crosshair, progress: 98 },
+      { id: '6', title: 'Avg. Kills', value: '28', icon: Crosshair, progress: 98 },
     ],
     matchHistory: matchHistoryData.map(m => ({ ...m, skillLevel: 3589 + Math.floor(Math.random() * 100) })),
     chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3589 + Math.floor(Math.random() * 100), kdRatio: m.kdRatio + 0.8, krRatio: m.krRatio + 0.8 })).reverse(),
