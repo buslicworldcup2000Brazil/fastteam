@@ -126,6 +126,39 @@ export default function MatchmakingPage() {
   const teamA = useMemo(() => generateTeam(teamSize, 'A'), [teamSize]);
   const teamB = useMemo(() => generateTeam(teamSize, 'B'), [teamSize]);
 
+  // Pick one captain to host
+  const serverHost = useMemo(() => {
+    return Math.random() > 0.5 ? teamA[0] : teamB[0];
+  }, [teamA, teamB]);
+
+  // Load state from localStorage on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('matchmaking_active_match');
+    if (savedState) {
+        const parsed = JSON.parse(savedState);
+        setStatus(parsed.status);
+        setMatchStatus(parsed.matchStatus);
+        setMode(parsed.mode);
+        setConnectTime(parsed.connectTime);
+        setSelectedMap(parsed.selectedMap);
+    }
+  }, []);
+
+  // Save state to localStorage when active
+  useEffect(() => {
+    if (status === 'match_room' && matchStatus === 'active') {
+        localStorage.setItem('matchmaking_active_match', JSON.stringify({
+            status,
+            matchStatus,
+            mode,
+            connectTime,
+            selectedMap
+        }));
+    } else if (status === 'lobby') {
+        localStorage.removeItem('matchmaking_active_match');
+    }
+  }, [status, matchStatus, mode, connectTime, selectedMap]);
+
   // Handle Search transition
   useEffect(() => {
     let interval: any;
@@ -165,20 +198,25 @@ export default function MatchmakingPage() {
     return () => clearInterval(interval);
   }, [status, totalPlayers]);
 
-  const handleReadyCheckEnd = useCallback(() => {
+  const handleMatchCompletion = useCallback(() => {
     if (status === 'ready_check' && readyCheckTime === 0) {
       if (!(isReady && playersReady >= totalPlayers - 1)) {
         setStatus('lobby');
-        toast({ title: "Match cancelled", description: "Not enough players were ready.", variant: "destructive" });
+        // Toast is handled in useEffect to avoid react update while rendering warning
       } else {
         setStatus('match_room');
       }
     }
-  }, [readyCheckTime, status, isReady, playersReady, totalPlayers, toast]);
+  }, [readyCheckTime, status, isReady, playersReady, totalPlayers]);
 
   useEffect(() => {
-    handleReadyCheckEnd();
-  }, [readyCheckTime, handleReadyCheckEnd]);
+    if (status === 'ready_check' && readyCheckTime === 0) {
+        if (!(isReady && playersReady >= totalPlayers - 1)) {
+            toast({ title: "Match cancelled", description: "Not enough players were ready.", variant: "destructive" });
+        }
+        handleMatchCompletion();
+    }
+  }, [readyCheckTime, status, isReady, playersReady, totalPlayers, toast, handleMatchCompletion]);
 
   // Auto transition to Match Room when all are ready
   useEffect(() => {
@@ -301,6 +339,15 @@ export default function MatchmakingPage() {
   if (status === 'match_room') {
     return (
       <div className="min-h-screen bg-[#0d0d0d] text-[#e0e0e0] font-body p-4 md:p-6 flex flex-col scrollbar-hide">
+        <div className="fixed top-6 left-6 z-50">
+          <Button asChild variant="outline" className="border-primary/20 bg-background/50 backdrop-blur-md hover:bg-primary/10 transition-all font-bold">
+            <Link href="/">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {t.view_profile}
+            </Link>
+          </Button>
+        </div>
+
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between border-b border-white/5 pb-2 mb-4 shrink-0">
           <div className="flex gap-8">
             <button className="text-primary font-bold uppercase tracking-tighter italic border-b-2 border-primary pb-2 -mb-2">{mode} Ranked</button>
@@ -383,16 +430,16 @@ export default function MatchmakingPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4 w-full mb-4">
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Server</p>
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{t.server_host}</p>
                         <div className="flex items-center gap-3 bg-black/40 p-2 rounded border border-white/5">
-                           <div className="relative w-7 h-4 overflow-hidden rounded-xs border border-white/10 shrink-0">
-                              <Image src="https://flagcdn.com/w80/de.png" alt="Germany" fill className="object-cover" unoptimized />
-                            </div>
-                            <span className="text-xs font-bold uppercase italic">Germany</span>
+                            <Avatar className="h-6 w-6">
+                                <AvatarImage src={serverHost.avatarUrl} />
+                            </Avatar>
+                            <span className="text-xs font-bold uppercase italic truncate max-w-[80px]">{serverHost.name}</span>
                         </div>
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Map</p>
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{t.map}</p>
                         <div className="flex items-center gap-3 bg-black/40 p-2 rounded border border-white/5">
                             <div className="relative w-7 h-4 overflow-hidden rounded-xs border border-white/10 shrink-0">
                               <Image src={selectedMap?.image} alt={selectedMap?.name} fill className="object-cover" />

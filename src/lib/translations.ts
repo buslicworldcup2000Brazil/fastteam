@@ -69,7 +69,8 @@ export const translations = {
     losses_short: "L",
     map_factory: "Завод",
     map_house: "Дом",
-    map_warehouses: "Военные склады"
+    map_warehouses: "Военные склады",
+    server_host: "Server Host"
   },
   en: {
     play: "Play",
@@ -141,6 +142,7 @@ export const translations = {
     losses_short: "L",
     map_factory: "Factory",
     map_house: "House",
-    map_warehouses: "Mil. Warehouses"
+    map_warehouses: "Mil. Warehouses",
+    server_host: "Server Host"
   }
 };

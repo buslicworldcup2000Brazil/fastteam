@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -40,6 +40,18 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLevelInfoOpen, setIsLevelInfoOpen] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
+  const [activeMatchMode, setActiveMatchMode] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check for active match in localStorage
+    const savedMatch = localStorage.getItem('matchmaking_active_match');
+    if (savedMatch) {
+      const parsed = JSON.parse(savedMatch);
+      if (parsed.status === 'match_room' && parsed.matchStatus === 'active') {
+        setActiveMatchMode(parsed.mode);
+      }
+    }
+  }, []);
 
   const handleProfileUpdate = (values: any) => {
     setProfile((prevProfile: any) => ({
@@ -102,7 +114,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                 <Button asChild size="lg" className="flex-1 md:flex-none font-bold px-8 shadow-lg shadow-primary/20">
                   <Link href="/matchmaking">
                     <Swords className="mr-2 h-5 w-5" /> 
-                    {t.play}
+                    {activeMatchMode ? `${activeMatchMode} Ranked` : t.play}
                   </Link>
                 </Button>
               </div>
