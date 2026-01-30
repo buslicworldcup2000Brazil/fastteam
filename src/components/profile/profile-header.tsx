@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Settings, Search, UserPlus } from 'lucide-react';
+import { Settings, Search, UserPlus, Calendar } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getFlagEmoji } from '@/lib/countries';
 import { useTheme } from '@/components/theme-provider';
@@ -18,6 +18,7 @@ type UserProfile = {
   elo: number;
   level: number;
   country: string;
+  registeredAt?: string;
 };
 
 type ProfileHeaderProps = {
@@ -70,9 +71,17 @@ export default function ProfileHeader({ user, onEdit, hideButtons = false }: Pro
                 />
               </div>
             </div>
-            {user.bio && (
-              <p className="text-muted-foreground text-sm font-medium mt-1">{user.bio}</p>
-            )}
+            <div className="flex flex-col md:flex-row items-center gap-x-4 gap-y-1 mt-1">
+              {user.bio && (
+                <p className="text-muted-foreground text-sm font-medium">{user.bio}</p>
+              )}
+              {user.registeredAt && (
+                <div className="flex items-center gap-1.5 text-muted-foreground/60 text-[10px] uppercase font-bold tracking-wider">
+                  <Calendar className="h-3 w-3" />
+                  <span>{t.member_since.replace('{date}', user.registeredAt)}</span>
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="md:ml-auto flex flex-col md:flex-row items-center gap-2 md:pb-4 w-full md:w-auto">

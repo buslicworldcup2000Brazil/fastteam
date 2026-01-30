@@ -55,7 +55,8 @@ export const translations = {
     accept: "Принять",
     decline: "Отклонить",
     view_profile: "Профиль",
-    map_veto: "Выбор карты"
+    map_veto: "Выбор карты",
+    member_since: "В системе с {date}"
   },
   en: {
     play: "Play",
@@ -113,6 +114,7 @@ export const translations = {
     accept: "Accept",
     decline: "Decline",
     view_profile: "View Profile",
-    map_veto: "Map Veto"
+    map_veto: "Map Veto",
+    member_since: "Member since {date}"
   }
 };

@@ -18,7 +18,6 @@ export const calculateLevel = (elo: number): number => {
 const DEFAULT_BANNER = PlaceHolderImages.find(img => img.id === 'profile-banner')?.imageUrl || 'https://picsum.photos/seed/1/1200/400';
 const DEFAULT_AVATAR = PlaceHolderImages.find(img => img.id === 'profile-avatar')?.imageUrl || 'https://picsum.photos/seed/2/200/200';
 
-// Global shared stats for "Self"
 export const statsData = [
   { id: '1', title: 'K/D Ratio', value: '2.45', icon: Swords, progress: 49 },
   { id: '2', title: 'Win Rate', value: '68%', icon: Trophy, progress: 68 },
@@ -32,6 +31,16 @@ export const matchHistoryData = [
     { id: '3', date: '28 Jan 2026', time: '00:31', result: 'win' as const, score: '13 : 4', skillLevel: 1429, skillChange: 29, kd: '23/10', kdRatio: 2.30, krRatio: 1.35, map: 'Factory' },
     { id: '4', date: '27 Jan 2026', time: '23:50', result: 'win' as const, score: '13 : 8', skillLevel: 1400, skillChange: 30, kd: '32/14', kdRatio: 2.29, krRatio: 1.52, map: 'Mil. Warehouses' },
     { id: '5', date: '27 Jan 2026', time: '21:46', result: 'win' as const, score: '13 : 9', skillLevel: 1370, skillChange: 29, kd: '31/13', kdRatio: 2.38, krRatio: 1.41, map: 'House' },
+    { id: '6', date: '27 Jan 2026', time: '20:10', result: 'loss' as const, score: '10 : 13', skillLevel: 1341, skillChange: -25, kd: '18/22', kdRatio: 0.81, krRatio: 0.85, map: 'Factory' },
+    { id: '7', date: '26 Jan 2026', time: '23:15', result: 'win' as const, score: '13 : 7', skillLevel: 1366, skillChange: 28, kd: '27/12', kdRatio: 2.25, krRatio: 1.28, map: 'House' },
+    { id: '8', date: '26 Jan 2026', time: '22:00', result: 'loss' as const, score: '9 : 13', skillLevel: 1338, skillChange: -24, kd: '20/24', kdRatio: 0.83, krRatio: 0.91, map: 'Mil. Warehouses' },
+    { id: '9', date: '26 Jan 2026', time: '21:05', result: 'win' as const, score: '13 : 10', skillLevel: 1362, skillChange: 26, kd: '24/18', kdRatio: 1.33, krRatio: 1.04, map: 'Factory' },
+    { id: '10', date: '25 Jan 2026', time: '23:40', result: 'win' as const, score: '13 : 5', skillLevel: 1336, skillChange: 31, kd: '28/9', kdRatio: 3.11, krRatio: 1.55, map: 'House' },
+    { id: '11', date: '25 Jan 2026', time: '22:30', result: 'loss' as const, score: '11 : 13', skillLevel: 1305, skillChange: -26, kd: '22/25', kdRatio: 0.88, krRatio: 0.92, map: 'Factory' },
+    { id: '12', date: '25 Jan 2026', time: '21:15', result: 'win' as const, score: '13 : 8', skillLevel: 1331, skillChange: 27, kd: '26/15', kdRatio: 1.73, krRatio: 1.23, map: 'Mil. Warehouses' },
+    { id: '13', date: '24 Jan 2026', time: '23:55', result: 'win' as const, score: '13 : 6', skillLevel: 1304, skillChange: 29, kd: '25/11', kdRatio: 2.27, krRatio: 1.31, map: 'House' },
+    { id: '14', date: '24 Jan 2026', time: '22:45', result: 'loss' as const, score: '7 : 13', skillLevel: 1275, skillChange: -28, kd: '15/23', kdRatio: 0.65, krRatio: 0.75, map: 'Factory' },
+    { id: '15', date: '24 Jan 2026', time: '21:30', result: 'win' as const, score: '13 : 4', skillLevel: 1303, skillChange: 32, kd: '24/8', kdRatio: 3.00, krRatio: 1.41, map: 'Mil. Warehouses' },
 ];
 
 export const userProfile = {
@@ -46,6 +55,7 @@ export const userProfile = {
   winStreak: 5,
   country: "Соединённые Штаты Америки (США)",
   language: "ru",
+  registeredAt: "Jan 2024",
   stats: statsData,
   matchHistory: matchHistoryData,
   chartData: matchHistoryData.map(match => ({
@@ -67,6 +77,7 @@ export const friendsData = [
     tags: ["Pro", "MVP", "Legend"],
     bannerUrl: "https://picsum.photos/seed/s1-banner/1200/400",
     winStreak: 12,
+    registeredAt: "May 2016",
     stats: [
       { id: '1', title: 'K/D Ratio', value: '3.12', icon: Swords, progress: 85 },
       { id: '2', title: 'Win Rate', value: '74%', icon: Trophy, progress: 74 },
@@ -88,6 +99,7 @@ export const friendsData = [
     tags: ["Pro", "AWP"],
     bannerUrl: "https://picsum.photos/seed/mo-banner/1200/400",
     winStreak: 8,
+    registeredAt: "Feb 2020",
     stats: [
       { id: '1', title: 'K/D Ratio', value: '2.89', icon: Swords, progress: 78 },
       { id: '2', title: 'Win Rate', value: '71%', icon: Trophy, progress: 71 },
@@ -109,6 +121,7 @@ export const friendsData = [
     tags: ["Pro", "Rifle"],
     bannerUrl: "https://picsum.photos/seed/do-banner/1200/400",
     winStreak: 15,
+    registeredAt: "Jan 2022",
     stats: [
       { id: '1', title: 'K/D Ratio', value: '3.45', icon: Swords, progress: 95 },
       { id: '2', title: 'Win Rate', value: '78%', icon: Trophy, progress: 78 },
