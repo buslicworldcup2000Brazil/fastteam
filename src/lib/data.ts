@@ -62,7 +62,7 @@ export const userProfile = {
     date: `${match.date} ${match.time}`,
     skillLevel: match.skillLevel,
     kdRatio: match.kdRatio,
-    krRatio: match.krRatio, // We will treat this as AVG
+    krRatio: match.krRatio,
   })).reverse(),
   last90Stats: {
     wins: 60,
@@ -71,11 +71,9 @@ export const userProfile = {
     lowestElo: 4138,
     eloChange: 440,
     mapWinRates: [
-      { name: 'Dust2', winRate: 65 },
-      { name: 'Mirage', winRate: 58 },
-      { name: 'Inferno', winRate: 42 },
-      { name: 'Overpass', winRate: 55 },
-      { name: 'Ancient', winRate: 38 },
+      { name: 'Mil. Warehouses', winRate: 65 },
+      { name: 'House', winRate: 58 },
+      { name: 'Factory', winRate: 42 },
     ]
   }
 };

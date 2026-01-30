@@ -34,9 +34,9 @@ const TimerProgressBar = ({ current, total }: { current: number, total: number }
 
 // --- MOCK DATA ---
 const MAPS = [
-  { id: 'dust2', name: 'Dust2', image: 'https://picsum.photos/seed/dust2/400/200' },
-  { id: 'mirage', name: 'Mirage', image: 'https://picsum.photos/seed/mirage/400/200' },
-  { id: 'inferno', name: 'Inferno', image: 'https://picsum.photos/seed/inferno/400/200' },
+  { id: 'warehouses', name: 'Mil. Warehouses', image: 'https://picsum.photos/seed/warehouses/400/200' },
+  { id: 'house', name: 'House', image: 'https://picsum.photos/seed/house/400/200' },
+  { id: 'factory', name: 'Factory', image: 'https://picsum.photos/seed/factory/400/200' },
 ];
 
 const generateTeam = (size: number, seed: string) => {
@@ -113,7 +113,7 @@ export default function MatchmakingPage() {
   
   const [mode, setMode] = useState('5v5');
   const [myVote, setMyVote] = useState<string | null>(null);
-  const [otherVotes, setOtherVotes] = useState<Record<string, number>>({ dust2: 0, mirage: 0, inferno: 0 });
+  const [otherVotes, setOtherVotes] = useState<Record<string, number>>({ warehouses: 0, house: 0, factory: 0 });
   const [selectedMap, setSelectedMap] = useState<any>(null);
   const [isReady, setIsReady] = useState(false);
   const [playersReady, setPlayersReady] = useState(0);
@@ -130,6 +130,13 @@ export default function MatchmakingPage() {
   const serverHost = useMemo(() => {
     return Math.random() > 0.5 ? teamA[0] : teamB[0];
   }, [teamA, teamB]);
+
+  const getTranslatedMapName = (name: string) => {
+    if (name === 'Factory') return t.map_factory;
+    if (name === 'House') return t.map_house;
+    if (name === 'Mil. Warehouses') return t.map_warehouses;
+    return name;
+  };
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -202,7 +209,6 @@ export default function MatchmakingPage() {
     if (status === 'ready_check' && readyCheckTime === 0) {
       if (!(isReady && playersReady >= totalPlayers - 1)) {
         setStatus('lobby');
-        // Toast is handled in useEffect to avoid react update while rendering warning
       } else {
         setStatus('match_room');
       }
@@ -259,15 +265,15 @@ export default function MatchmakingPage() {
 
   const votes = useMemo(() => {
     return {
-      dust2: (otherVotes.dust2 || 0) + (myVote === 'dust2' ? 1 : 0),
-      mirage: (otherVotes.mirage || 0) + (myVote === 'mirage' ? 1 : 0),
-      inferno: (otherVotes.inferno || 0) + (myVote === 'inferno' ? 1 : 0),
+      warehouses: (otherVotes.warehouses || 0) + (myVote === 'warehouses' ? 1 : 0),
+      house: (otherVotes.house || 0) + (myVote === 'house' ? 1 : 0),
+      factory: (otherVotes.factory || 0) + (myVote === 'factory' ? 1 : 0),
     };
   }, [otherVotes, myVote]);
 
   useEffect(() => {
     if (status === 'match_room' && matchStatus === 'veto') {
-      const initialOthers = { dust2: 0, mirage: 0, inferno: 0 };
+      const initialOthers = { warehouses: 0, house: 0, factory: 0 };
       for (let i = 0; i < totalPlayers - 1; i++) {
         const randomMap = MAPS[Math.floor(Math.random() * 3)].id;
         initialOthers[randomMap as keyof typeof initialOthers]++;
@@ -381,7 +387,7 @@ export default function MatchmakingPage() {
                </h2>
             </div>
 
-            <Card className="w-full bg-[#121212] border-white/5 p-4 md:p-4 flex flex-col items-center shadow-2xl relative overflow-hidden">
+            <Card className="w-full bg-[#121212] border-white/5 p-4 flex flex-col items-center shadow-2xl relative overflow-hidden">
                 {matchStatus === 'veto' ? (
                   <div className="w-full space-y-4">
                     <div className="text-center space-y-1">
@@ -407,7 +413,7 @@ export default function MatchmakingPage() {
                               <Image src={map.image} alt={map.name} fill className="object-cover" />
                               <div className="absolute inset-0 bg-black/40" />
                               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="text-xs font-black uppercase italic">{map.name}</span>
+                                <span className="text-[10px] font-black uppercase italic">{getTranslatedMapName(map.name)}</span>
                                 <span className="text-[10px] font-bold mt-1">{count}/{totalPlayers}</span>
                                 <div className="h-1 w-10 bg-white/20 mt-1 rounded-full overflow-hidden">
                                   <div className="h-full bg-primary" style={{ width: `${percentage}%` }} />
@@ -444,7 +450,7 @@ export default function MatchmakingPage() {
                             <div className="relative w-7 h-4 overflow-hidden rounded-xs border border-white/10 shrink-0">
                               <Image src={selectedMap?.image} alt={selectedMap?.name} fill className="object-cover" />
                             </div>
-                            <span className="text-xs font-bold uppercase italic">{selectedMap?.name}</span>
+                            <span className="text-xs font-bold uppercase italic">{getTranslatedMapName(selectedMap?.name)}</span>
                         </div>
                       </div>
                     </div>
