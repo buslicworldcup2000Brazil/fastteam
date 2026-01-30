@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableBody,
@@ -36,8 +35,17 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
   const { language } = useTheme();
   const t = translations[language];
 
+  const getTranslatedMapName = (mapName: string) => {
+    switch (mapName) {
+      case 'Factory': return t.map_factory;
+      case 'House': return t.map_house;
+      case 'Mil. Warehouses': return t.map_warehouses;
+      default: return mapName;
+    }
+  };
+
   return (
-    <div className="border rounded-lg bg-card scrollbar-hide">
+    <div className="border rounded-lg bg-card scrollbar-hide overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow className="border-b-border/50">
@@ -95,7 +103,7 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
               )}>
                 {match.krRatio.toFixed(2)}
               </TableCell>
-              <TableCell className="font-semibold">{match.map}</TableCell>
+              <TableCell className="font-semibold">{getTranslatedMapName(match.map)}</TableCell>
               <TableCell className="text-right">
                 <button className="text-muted-foreground hover:text-foreground">
                     <X className="h-4 w-4" />

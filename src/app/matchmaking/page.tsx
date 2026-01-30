@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { userProfile, friendsData } from '@/lib/data';
-import { Crown, Plus, Share2, MoreVertical, CheckCircle2, ShieldCheck, X } from 'lucide-react';
+import { Crown, Plus, Share2, MoreVertical, CheckCircle2, X, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import LevelIcon from '@/components/ui/level-icon';
 import { getFlagEmoji } from '@/lib/countries';
@@ -165,8 +165,7 @@ export default function MatchmakingPage() {
     return () => clearInterval(interval);
   }, [status, totalPlayers]);
 
-  // Separate effect for toast to avoid setState in render
-  useEffect(() => {
+  const handleReadyCheckEnd = useCallback(() => {
     if (status === 'ready_check' && readyCheckTime === 0) {
       if (!(isReady && playersReady >= totalPlayers - 1)) {
         setStatus('lobby');
@@ -176,6 +175,10 @@ export default function MatchmakingPage() {
       }
     }
   }, [readyCheckTime, status, isReady, playersReady, totalPlayers, toast]);
+
+  useEffect(() => {
+    handleReadyCheckEnd();
+  }, [readyCheckTime, handleReadyCheckEnd]);
 
   // Auto transition to Match Room when all are ready
   useEffect(() => {
@@ -297,7 +300,7 @@ export default function MatchmakingPage() {
 
   if (status === 'match_room') {
     return (
-      <div className="min-h-screen bg-[#0d0d0d] text-[#e0e0e0] font-body p-4 md:p-6 flex flex-col">
+      <div className="min-h-screen bg-[#0d0d0d] text-[#e0e0e0] font-body p-4 md:p-6 flex flex-col scrollbar-hide">
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between border-b border-white/5 pb-2 mb-4 shrink-0">
           <div className="flex gap-8">
             <button className="text-primary font-bold uppercase tracking-tighter italic border-b-2 border-primary pb-2 -mb-2">{mode} Ranked</button>
@@ -308,7 +311,7 @@ export default function MatchmakingPage() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 overflow-hidden">
           <div className="lg:col-span-3 flex flex-col gap-2 overflow-hidden">
              <div className="flex items-center justify-between mb-1 px-1 shrink-0">
                 <div className="flex items-center gap-2">
@@ -318,24 +321,24 @@ export default function MatchmakingPage() {
                   <span className="font-bold text-sm uppercase tracking-tighter italic">team_A</span>
                 </div>
              </div>
-             <div className="flex flex-col gap-2 overflow-y-auto pr-1 scrollbar-hide">
+             <div className="flex flex-col gap-2 overflow-y-auto pr-1 scrollbar-hide pb-4">
               {teamA.map((p, i) => <MatchPlayerCard key={i} player={p} />)}
              </div>
           </div>
 
-          <div className="lg:col-span-6 flex flex-col items-center justify-start pt-2">
+          <div className="lg:col-span-6 flex flex-col items-center justify-start pt-0">
             <div className="text-center mb-2">
                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-1">{mode} · EU</p>
-               <h2 className="text-xl font-black italic uppercase text-white leading-none">
+               <h2 className="text-lg font-black italic uppercase text-white leading-none">
                  {matchStatus === 'veto' ? t.map_veto : "Match Ready"}
                </h2>
             </div>
 
-            <Card className="w-full bg-[#121212] border-white/5 p-4 md:p-5 flex flex-col items-center shadow-2xl relative overflow-hidden">
+            <Card className="w-full bg-[#121212] border-white/5 p-4 md:p-4 flex flex-col items-center shadow-2xl relative overflow-hidden">
                 {matchStatus === 'veto' ? (
                   <div className="w-full space-y-4">
                     <div className="text-center space-y-1">
-                       <p className="text-3xl font-mono font-black text-primary">{formatTime(vetoTime)}</p>
+                       <p className="text-2xl font-mono font-black text-primary">{formatTime(vetoTime)}</p>
                        <div className="w-[100px] mx-auto">
                          <TimerProgressBar current={vetoTime} total={20} />
                        </div>
@@ -428,7 +431,7 @@ export default function MatchmakingPage() {
                   <span className="font-bold text-sm uppercase tracking-tighter italic">team_B</span>
                 </div>
              </div>
-             <div className="flex flex-col gap-2 overflow-y-auto pr-1 scrollbar-hide">
+             <div className="flex flex-col gap-2 overflow-y-auto pr-1 scrollbar-hide pb-4">
               {teamB.map((p, i) => <MatchPlayerCard key={i} player={p} />)}
              </div>
           </div>
@@ -438,10 +441,13 @@ export default function MatchmakingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 overflow-hidden relative">
-      <div className="absolute top-6 left-6">
-        <Button asChild variant="outline" className="border-primary/20 hover:bg-primary/10 transition-all">
-          <Link href="/">Back to Profile</Link>
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 overflow-hidden relative scrollbar-hide">
+      <div className="fixed top-6 left-6 z-50">
+        <Button asChild variant="outline" className="border-primary/20 bg-background/50 backdrop-blur-md hover:bg-primary/10 transition-all font-bold">
+          <Link href="/">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t.view_profile}
+          </Link>
         </Button>
       </div>
 
