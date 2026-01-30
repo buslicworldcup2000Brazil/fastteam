@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -35,18 +34,18 @@ export default function LeaderboardDialog({ isOpen, setIsOpen }: LeaderboardDial
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-2">
           <DialogTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-500" />
             {t.top_players}
           </DialogTitle>
         </DialogHeader>
-        <div className="max-h-[60vh] overflow-y-auto">
+        <div className="flex-1 overflow-y-auto px-6 pb-6 scrollbar-hide">
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 bg-background z-10">
               <TableRow>
-                <TableHead className="w-[100px]">{t.rank_position}</TableHead>
+                <TableHead className="w-[80px]">{t.rank_position}</TableHead>
                 <TableHead>{t.nickname}</TableHead>
                 <TableHead>{t.level}</TableHead>
                 <TableHead className="text-right">{t.elo}</TableHead>
@@ -54,9 +53,9 @@ export default function LeaderboardDialog({ isOpen, setIsOpen }: LeaderboardDial
             </TableHeader>
             <TableBody>
               {topPlayersData.map((player, index) => (
-                <TableRow key={player.name}>
+                <TableRow key={player.name} className="border-b-white/5">
                   <TableCell>
-                    <RankBadge rank={index + 1} className="h-10 w-10" />
+                    <RankBadge rank={index + 1} className="h-9 w-9" />
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -69,13 +68,13 @@ export default function LeaderboardDialog({ isOpen, setIsOpen }: LeaderboardDial
                           unoptimized 
                         />
                       </div>
-                      <span className="font-semibold">{player.name}</span>
+                      <span className="font-semibold text-sm">{player.name}</span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <LevelIcon level={player.level} className="h-7 w-7" />
+                    <LevelIcon level={player.level} className="h-6 w-6" />
                   </TableCell>
-                  <TableCell className="text-right font-mono font-bold">
+                  <TableCell className="text-right font-mono font-bold text-sm">
                     {player.elo}
                   </TableCell>
                 </TableRow>
