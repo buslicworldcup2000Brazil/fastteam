@@ -8,14 +8,28 @@ import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { userProfile } from '@/lib/data';
-import { Crown, Plus, Timer, Copy, ExternalLink, ShieldCheck, Share2, MoreVertical, CheckCircle2 } from 'lucide-react';
+import { Crown, Plus, Share2, MoreVertical, CheckCircle2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import LevelIcon from '@/components/ui/level-icon';
 import { getFlagEmoji } from '@/lib/countries';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-// --- MOCK DATA FOR TEAMS ---
+// --- COMPONENTS ---
+
+const TimerProgressBar = ({ current, total }: { current: number, total: number }) => {
+  const percentage = (current / total) * 100;
+  return (
+    <div className="w-full h-1.5 bg-white/5 relative overflow-hidden rounded-full">
+      <div 
+        className="absolute inset-0 bg-primary transition-all duration-1000 ease-linear origin-center"
+        style={{ transform: `scaleX(${percentage / 100})` }}
+      />
+    </div>
+  );
+};
+
+// --- MOCK DATA ---
 const MAPS = [
   { id: 'dust2', name: 'Dust2', image: 'https://picsum.photos/seed/dust2/400/200' },
   { id: 'mirage', name: 'Mirage', image: 'https://picsum.photos/seed/mirage/400/200' },
@@ -55,7 +69,6 @@ const MatchPlayerCard = ({ player }: { player: any }) => (
         </div>
       </div>
       <div className="flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded">
-         <span className="text-[10px] font-mono opacity-60">~</span>
          <span className="text-xs font-bold">{player.elo}</span>
          <LevelIcon level={player.level} className="h-4 w-4" />
       </div>
@@ -67,15 +80,15 @@ const MatchPlayerCard = ({ player }: { player: any }) => (
         <p className="text-[10px] font-bold">1450</p>
       </div>
       <div className="bg-black/20 p-1 rounded">
-        <p className="text-[8px] text-muted-foreground uppercase">Win Rate%</p>
+        <p className="text-[8px] text-muted-foreground uppercase font-bold">Win Rate%</p>
         <p className="text-[10px] font-bold text-green-500">65%</p>
       </div>
       <div className="bg-black/20 p-1 rounded">
-        <p className="text-[8px] text-muted-foreground uppercase">AVG</p>
+        <p className="text-[8px] text-muted-foreground uppercase font-bold">AVG</p>
         <p className="text-[10px] font-bold">24</p>
       </div>
       <div className="bg-black/20 p-1 rounded">
-        <p className="text-[8px] text-muted-foreground uppercase">K/D</p>
+        <p className="text-[8px] text-muted-foreground uppercase font-bold">K/D</p>
         <p className="text-[10px] font-bold">1.51</p>
       </div>
     </div>
@@ -88,6 +101,7 @@ export default function MatchmakingPage() {
   const [searchTime, setSearchTime] = useState(0);
   const [readyCheckTime, setReadyCheckTime] = useState(20);
   const [vetoTime, setVetoTime] = useState(60);
+  const [connectTime, setConnectTime] = useState(180); // 3 minutes
   const [mode, setMode] = useState('5v5');
   const [myVote, setMyVote] = useState<string | null>(null);
   const [otherVotes, setOtherVotes] = useState<Record<string, number>>({ dust2: 0, mirage: 0, inferno: 0 });
@@ -102,7 +116,7 @@ export default function MatchmakingPage() {
   const teamA = useMemo(() => generateTeam(teamSize, 'A'), [teamSize]);
   const teamB = useMemo(() => generateTeam(teamSize, 'B'), [teamSize]);
 
-  // Search Timer Logic
+  // Search Timer
   useEffect(() => {
     let interval: any;
     if (status === 'searching') {
@@ -122,7 +136,7 @@ export default function MatchmakingPage() {
     return () => clearInterval(interval);
   }, [status, searchTime]);
 
-  // Ready Check Timer Logic
+  // Ready Check Timer
   useEffect(() => {
     let interval: any;
     if (status === 'ready_check') {
@@ -135,7 +149,6 @@ export default function MatchmakingPage() {
           return prev - 1;
         });
 
-        // Simulate other players becoming ready
         setPlayersReady(prev => {
           if (prev < totalPlayers - 1 && Math.random() > 0.6) {
             return prev + 1;
@@ -147,7 +160,35 @@ export default function MatchmakingPage() {
     return () => clearInterval(interval);
   }, [status, totalPlayers]);
 
-  // Auto-move to Veto if everyone ready
+  // Veto Timer
+  useEffect(() => {
+    let interval: any;
+    if (status === 'veto') {
+      interval = setInterval(() => {
+        setVetoTime(prev => {
+          if (prev <= 1) {
+            handleVetoEnd();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [status]);
+
+  // Connection Timer
+  useEffect(() => {
+    let interval: any;
+    if (status === 'ready' && connectTime > 0) {
+      interval = setInterval(() => {
+        setConnectTime(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [status, connectTime]);
+
+  // Transitions
   useEffect(() => {
     if (status === 'ready_check' && isReady && playersReady === totalPlayers - 1) {
       setTimeout(() => setStatus('veto'), 1000);
@@ -163,11 +204,15 @@ export default function MatchmakingPage() {
     }
   };
 
-  const handleSetReady = () => {
-    setIsReady(true);
+  const handleSetReady = () => setIsReady(true);
+
+  const handleVetoEnd = () => {
+    const sorted = Object.entries(votes).sort((a, b) => b[1] - a[1]);
+    const winnerId = sorted[0][1] > 0 ? sorted[0][0] : MAPS[Math.floor(Math.random() * 3)].id;
+    setSelectedMap(MAPS.find(m => m.id === winnerId));
+    setStatus('ready');
   };
 
-  // Veto Logic
   const votes = useMemo(() => {
     return {
       dust2: otherVotes.dust2 + (myVote === 'dust2' ? 1 : 0),
@@ -189,33 +234,6 @@ export default function MatchmakingPage() {
     }
   }, [status, totalPlayers]);
 
-  useEffect(() => {
-    let interval: any;
-    if (status === 'veto' && vetoTime > 0) {
-      interval = setInterval(() => {
-        setVetoTime(prev => {
-          if (prev <= 1) {
-            handleVetoEnd();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [status, vetoTime]);
-
-  const handleVetoEnd = () => {
-    const sorted = Object.entries(votes).sort((a, b) => b[1] - a[1]);
-    const winnerId = sorted[0][1] > 0 ? sorted[0][0] : MAPS[Math.floor(Math.random() * 3)].id;
-    setSelectedMap(MAPS.find(m => m.id === winnerId));
-    setStatus('ready');
-  };
-
-  const handleVote = (mapId: string) => {
-    setMyVote(mapId);
-  };
-
   const copyPassword = () => {
     navigator.clipboard.writeText(password.toString());
     toast({ title: "Copied!", description: "Server password copied to clipboard." });
@@ -227,7 +245,7 @@ export default function MatchmakingPage() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // --- RENDERING ---
+  // --- RENDER STATES ---
 
   if (status === 'ready_check') {
     const displayPlayersReady = isReady ? playersReady + 1 : playersReady;
@@ -256,7 +274,13 @@ export default function MatchmakingPage() {
             })}
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
+            <div className="space-y-2">
+               <p className="text-4xl font-mono font-bold text-primary">{formatTime(readyCheckTime)}</p>
+               <div className="max-w-[200px] mx-auto">
+                 <TimerProgressBar current={readyCheckTime} total={20} />
+               </div>
+            </div>
             <Button 
               disabled={isReady}
               onClick={handleSetReady}
@@ -264,7 +288,6 @@ export default function MatchmakingPage() {
             >
               {isReady ? "Ready" : "Accept Match"}
             </Button>
-            <p className="text-4xl font-mono font-bold text-primary">{formatTime(readyCheckTime)}</p>
           </div>
         </div>
       </div>
@@ -278,7 +301,12 @@ export default function MatchmakingPage() {
           <div className="text-center mb-12">
             <h1 className="text-4xl font-black uppercase italic tracking-tighter mb-2">Map Veto</h1>
             <p className="text-muted-foreground uppercase tracking-widest text-xs">{mode} · All players are voting</p>
-            <div className="mt-4 text-5xl font-mono font-bold text-primary">{formatTime(vetoTime)}</div>
+            <div className="mt-4 space-y-3">
+              <div className="text-5xl font-mono font-bold text-primary">{formatTime(vetoTime)}</div>
+              <div className="max-w-[300px] mx-auto">
+                <TimerProgressBar current={vetoTime} total={60} />
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -293,7 +321,9 @@ export default function MatchmakingPage() {
                     "relative overflow-hidden cursor-pointer transition-all border-2",
                     myVote === map.id ? "border-primary ring-2 ring-primary/20 scale-105" : "border-white/5 hover:border-white/20",
                   )}
-                  onClick={() => handleVote(map.id)}
+                  onClick={() => {
+                    setMyVote(map.id);
+                  }}
                 >
                   <div className="h-48 relative">
                     <Image src={map.image} alt={map.name} fill className="object-cover" />
@@ -338,8 +368,6 @@ export default function MatchmakingPage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between border-b border-white/5 pb-4 mb-8">
           <div className="flex gap-8">
             <button className="text-primary font-bold uppercase tracking-tighter italic border-b-2 border-primary pb-4 -mb-4">{mode} Ranked</button>
-            <button className="text-muted-foreground hover:text-white font-bold uppercase tracking-tighter italic pb-4 -mb-4 transition-colors">Overview</button>
-            <button className="text-muted-foreground hover:text-white font-bold uppercase tracking-tighter italic pb-4 -mb-4 transition-colors">Scoreboard</button>
           </div>
           <div className="flex items-center gap-4">
             <Share2 className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-white" />
@@ -348,31 +376,34 @@ export default function MatchmakingPage() {
         </div>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Team A */}
           <div className="lg:col-span-3 flex flex-col gap-3">
-             <div className="flex items-center justify-between mb-2">
+             <div className="flex items-center justify-between mb-2 px-1">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={teamA[0].avatarUrl} />
                   </Avatar>
-                  <span className="font-bold text-sm">team_A</span>
+                  <span className="font-bold text-sm uppercase tracking-tighter italic">team_A</span>
                 </div>
                 <div className="h-1 w-12 bg-primary/20 rounded-full" />
              </div>
              {teamA.map((p, i) => <MatchPlayerCard key={i} player={p} />)}
           </div>
 
-          {/* Middle Stats / Connection */}
           <div className="lg:col-span-6 flex flex-col items-center">
             <div className="text-center mb-8">
                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-1">{mode} · EU</p>
                <h2 className="text-2xl font-black italic uppercase text-white leading-none">Match Ready</h2>
-               <p className="text-[10px] text-muted-foreground font-bold mt-1">Best of 1</p>
+               <p className="text-[10px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter">Best of 1</p>
             </div>
 
-            <Card className="w-full bg-[#121212] border-white/5 p-8 flex flex-col items-center shadow-2xl">
+            <Card className="w-full bg-[#121212] border-white/5 p-8 flex flex-col items-center shadow-2xl relative overflow-hidden">
                 <p className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground mb-4">Time to connect</p>
-                <p className="text-5xl font-mono font-black text-primary mb-8">04:17</p>
+                <div className="text-center space-y-3 mb-8">
+                  <p className="text-5xl font-mono font-black text-primary">{formatTime(connectTime)}</p>
+                  <div className="w-[200px] mx-auto">
+                    <TimerProgressBar current={connectTime} total={180} />
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-2 gap-8 w-full mb-8">
                    <div>
@@ -424,14 +455,13 @@ export default function MatchmakingPage() {
             </Card>
           </div>
 
-          {/* Team B */}
           <div className="lg:col-span-3 flex flex-col gap-3">
-             <div className="flex items-center justify-between mb-2">
+             <div className="flex items-center justify-between mb-2 px-1">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={teamB[0].avatarUrl} />
                   </Avatar>
-                  <span className="font-bold text-sm">team_B</span>
+                  <span className="font-bold text-sm uppercase tracking-tighter italic">team_B</span>
                 </div>
                 <div className="h-1 w-12 bg-primary/20 rounded-full" />
              </div>
@@ -442,7 +472,6 @@ export default function MatchmakingPage() {
     );
   }
 
-  // --- LOBBY STATE ---
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 overflow-hidden">
        <div className="absolute top-6 left-6">
@@ -525,17 +554,19 @@ export default function MatchmakingPage() {
 
             <div className="w-full flex flex-col items-center gap-4">
               {status === 'searching' ? (
-                <>
+                <div className="w-full space-y-4">
                   <Button 
                     variant="destructive"
                     size="lg" 
-                    className="w-full h-16 text-2xl font-black italic tracking-tighter bg-red-600 hover:bg-red-700 shadow-[0_10px_40px_-10px_rgba(220,38,38,0.5)] transition-all" 
+                    className="w-full h-16 text-2xl font-black italic tracking-tighter bg-red-600 hover:bg-red-700 transition-all" 
                     onClick={() => setStatus('lobby')}
                   >
                       Cancel
                   </Button>
-                  <p className="text-3xl font-mono font-bold text-primary animate-pulse">{formatTime(searchTime)}</p>
-                </>
+                  <div className="text-center space-y-2">
+                    <p className="text-3xl font-mono font-bold text-primary animate-pulse">{formatTime(searchTime)}</p>
+                  </div>
+                </div>
               ) : (
                 <Button 
                   size="lg" 
