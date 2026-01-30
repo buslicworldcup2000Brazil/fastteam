@@ -12,10 +12,10 @@ type ChartDataPoint = {
   date: string;
   skillLevel: number;
   kdRatio: number;
-  krRatio: number; // This is AVG
+  krRatio: number;
 };
 
-type Metric = 'elo' | 'kd' | 'avg';
+type Metric = 'elo' | 'kd' | 'kr';
 
 type GameStatsChartProps = {
   data: ChartDataPoint[];
@@ -35,7 +35,7 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
   const metricConfigs = {
     elo: { label: 'ELO', key: 'skillLevel' },
     kd: { label: 'K/D', key: 'kdRatio' },
-    avg: { label: 'AVG', key: 'krRatio' },
+    kr: { label: 'K/R', key: 'krRatio' },
   };
 
   const currentMetric = metricConfigs[activeMetric];
@@ -115,7 +115,7 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
                         return (
                           <div className="flex flex-col gap-1">
                             <span className="font-semibold text-[10px] opacity-40">{props.payload.date}</span>
-                            <span className='text-xs font-black uppercase italic text-primary'>{currentMetric.label}: {value}</span>
+                            <span className='text-xs font-black uppercase italic text-primary'>{currentMetric.label}: {Number(value).toFixed(2)}</span>
                           </div>
                         )
                     }}

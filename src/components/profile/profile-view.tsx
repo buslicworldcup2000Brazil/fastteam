@@ -205,12 +205,12 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                   showSidePanel={false}
                 />
                 
-                {/* Toggleable KD/AVG Chart */}
+                {/* Toggleable KD/KR Chart */}
                 <GameStatsChart 
                   data={(profile.chartData || []).slice(-15)} 
                   title="Combat Trends"
-                  subtitle="Detailed K/D and AVG performance"
-                  metrics={['kd', 'avg']}
+                  subtitle="Detailed K/D and K/R performance"
+                  metrics={['kd', 'kr']}
                   showSidePanel={true}
                 />
               </div>
