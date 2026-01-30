@@ -13,6 +13,8 @@ export default function UserProfilePage() {
   const friend = friendsData.find(f => f.name === name) || {
     name: name,
     bio: "Competitor",
+    handle: `@${name.toLowerCase()}`,
+    tags: ["Pro"],
     elo: 1500,
     level: 8,
     country: "Германия",

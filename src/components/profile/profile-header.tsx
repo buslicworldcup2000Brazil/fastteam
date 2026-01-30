@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { getFlagEmoji } from '@/lib/countries';
 import { useTheme } from '@/components/theme-provider';
 import { translations } from '@/lib/translations';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 type UserProfile = {
   name: string;
@@ -25,17 +26,23 @@ type ProfileHeaderProps = {
   hideButtons?: boolean;
 };
 
+const DEFAULT_BANNER = PlaceHolderImages.find(img => img.id === 'profile-banner')?.imageUrl || 'https://picsum.photos/seed/banner/1200/400';
+const DEFAULT_AVATAR = PlaceHolderImages.find(img => img.id === 'profile-avatar')?.imageUrl || 'https://picsum.photos/seed/avatar/200/200';
+
 export default function ProfileHeader({ user, onEdit, hideButtons = false }: ProfileHeaderProps) {
   const { language } = useTheme();
   const t = translations[language];
   const flagUrl = getFlagEmoji(user.country);
 
+  const bannerSrc = user.bannerUrl && user.bannerUrl.trim() !== "" ? user.bannerUrl : DEFAULT_BANNER;
+  const avatarSrc = user.avatarUrl && user.avatarUrl.trim() !== "" ? user.avatarUrl : DEFAULT_AVATAR;
+
   return (
     <header className="relative">
       <div className="h-64 md:h-80 w-full relative">
         <Image
-          key={user.bannerUrl}
-          src={user.bannerUrl}
+          key={bannerSrc}
+          src={bannerSrc}
           alt="Profile banner"
           fill
           className="object-cover"
@@ -47,7 +54,7 @@ export default function ProfileHeader({ user, onEdit, hideButtons = false }: Pro
       <div className="container mx-auto px-4">
         <div className="relative -mt-16 md:-mt-20 flex flex-col md:flex-row items-center md:items-end gap-4">
           <Avatar className="h-32 w-32 md:h-40 md:w-40 border-4 border-background ring-2 ring-primary">
-            <AvatarImage key={user.avatarUrl} src={user.avatarUrl} alt={user.name} data-ai-hint="gaming avatar" />
+            <AvatarImage key={avatarSrc} src={avatarSrc} alt={user.name} data-ai-hint="gaming avatar" />
             <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-center md:items-start md:pb-4">

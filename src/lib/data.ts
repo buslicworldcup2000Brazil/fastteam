@@ -18,13 +18,16 @@ export const calculateLevel = (elo: number): number => {
 const elo = 1450;
 const level = calculateLevel(elo);
 
+const DEFAULT_BANNER = PlaceHolderImages.find(img => img.id === 'profile-banner')?.imageUrl || 'https://picsum.photos/seed/1/1200/400';
+const DEFAULT_AVATAR = PlaceHolderImages.find(img => img.id === 'profile-avatar')?.imageUrl || 'https://picsum.photos/seed/2/200/200';
+
 export const userProfile = {
   name: "ShadowStriker",
   bio: "Pro player & Streamer",
   handle: "@shadowstriker99",
   tags: ["Pro", "Streamer", "MVP"],
-  bannerUrl: PlaceHolderImages.find(img => img.id === 'profile-banner')?.imageUrl || 'https://picsum.photos/seed/1/1200/400',
-  avatarUrl: PlaceHolderImages.find(img => img.id === 'profile-avatar')?.imageUrl || 'https://picsum.photos/seed/2/200/200',
+  bannerUrl: DEFAULT_BANNER,
+  avatarUrl: DEFAULT_AVATAR,
   elo: elo,
   level: level,
   winStreak: 5,
@@ -34,10 +37,58 @@ export const userProfile = {
 };
 
 export const friendsData = [
-  { name: "S1mple", avatarUrl: "https://picsum.photos/seed/s1/100/100", status: "online", country: "Украина", level: 10, elo: 3842 },
-  { name: "m0NESY", avatarUrl: "https://picsum.photos/seed/mo/100/100", status: "ingame", country: "Россия", level: 10, elo: 3612 },
-  { name: "donk", avatarUrl: "https://picsum.photos/seed/do/100/100", status: "online", country: "Россия", level: 10, elo: 3589 },
-  { name: "ZywOo", avatarUrl: "https://picsum.photos/seed/zy/100/100", status: "offline", country: "Франция", level: 10, elo: 3721 },
+  { 
+    name: "S1mple", 
+    avatarUrl: "https://picsum.photos/seed/s1/200/200", 
+    status: "online", 
+    country: "Украина", 
+    level: 10, 
+    elo: 3842,
+    bio: "GOAT of CS",
+    handle: "@s1mpleO",
+    tags: ["Pro", "MVP", "Legend"],
+    bannerUrl: "https://picsum.photos/seed/s1-banner/1200/400",
+    winStreak: 12
+  },
+  { 
+    name: "m0NESY", 
+    avatarUrl: "https://picsum.photos/seed/mo/200/200", 
+    status: "ingame", 
+    country: "Россия", 
+    level: 10, 
+    elo: 3612,
+    bio: "Young star",
+    handle: "@m0nesy13",
+    tags: ["Pro", "AWP"],
+    bannerUrl: "https://picsum.photos/seed/mo-banner/1200/400",
+    winStreak: 8
+  },
+  { 
+    name: "donk", 
+    avatarUrl: "https://picsum.photos/seed/do/200/200", 
+    status: "online", 
+    country: "Россия", 
+    level: 10, 
+    elo: 3589,
+    bio: "Headshot machine",
+    handle: "@donk66",
+    tags: ["Pro", "Rifle"],
+    bannerUrl: "https://picsum.photos/seed/do-banner/1200/400",
+    winStreak: 15
+  },
+  { 
+    name: "ZywOo", 
+    avatarUrl: "https://picsum.photos/seed/zy/200/200", 
+    status: "offline", 
+    country: "Франция", 
+    level: 10, 
+    elo: 3721,
+    bio: "The Chosen One",
+    handle: "@zywoo",
+    tags: ["Pro", "Star"],
+    bannerUrl: "https://picsum.photos/seed/zy-banner/1200/400",
+    winStreak: 4
+  },
 ];
 
 export const statsData = [
