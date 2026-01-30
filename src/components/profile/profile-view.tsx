@@ -129,14 +129,38 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                     </CardContent>
                   </Card>
                   
-                  <Card className="bg-gradient-to-br from-card to-primary/5">
-                    <CardHeader className="pb-2">
+                  <Card className="bg-gradient-to-br from-card to-primary/5 relative overflow-hidden">
+                    {/* Watermark Typography Background */}
+                    <div className="absolute right-[-10%] bottom-[-20%] select-none pointer-events-none opacity-25 z-0">
+                      <svg width="250" height="250" viewBox="0 0 250 250" className="overflow-visible">
+                        <defs>
+                          <linearGradient id="streakFade" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" />
+                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+                          </linearGradient>
+                        </defs>
+                        <text
+                          x="240"
+                          y="230"
+                          textAnchor="end"
+                          fill="none"
+                          stroke="url(#streakFade)"
+                          strokeWidth="3"
+                          className="font-black italic"
+                          style={{ fontSize: '280px', lineHeight: '1' }}
+                        >
+                          {profile.winStreak}
+                        </text>
+                      </svg>
+                    </div>
+
+                    <CardHeader className="pb-2 relative z-10">
                       <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                         <Flame className="h-4 w-4 text-orange-500" />
                         {t.win_streak}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="relative z-10">
                       <p className="text-5xl font-black italic tracking-tighter text-primary">
                         {profile.winStreak}
                       </p>
