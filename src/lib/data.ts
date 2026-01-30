@@ -30,8 +30,15 @@ export const userProfile = {
   winStreak: 5,
   country: "Россия",
   language: "ru",
-  lastFlagChange: 0, // Timestamp
+  lastFlagChange: 0,
 };
+
+export const friendsData = [
+  { name: "S1mple", avatarUrl: "https://picsum.photos/seed/s1/100/100", status: "online", country: "Украина", level: 10, elo: 3842 },
+  { name: "m0NESY", avatarUrl: "https://picsum.photos/seed/mo/100/100", status: "ingame", country: "Россия", level: 10, elo: 3612 },
+  { name: "donk", avatarUrl: "https://picsum.photos/seed/do/100/100", status: "online", country: "Россия", level: 10, elo: 3589 },
+  { name: "ZywOo", avatarUrl: "https://picsum.photos/seed/zy/100/100", status: "offline", country: "Франция", level: 10, elo: 3721 },
+];
 
 export const statsData = [
   { id: '1', title: 'K/D Ratio', value: '2.45', icon: Swords, progress: 49 },
@@ -46,11 +53,6 @@ export const matchHistoryData = [
     { id: '3', date: '28 Jan 2026', time: '00:31', result: 'win', score: '13 : 4', skillLevel: 1429, skillChange: 29, kd: '23/10', kdRatio: 2.30, krRatio: 1.35, map: 'Factory' },
     { id: '4', date: '27 Jan 2026', time: '23:50', result: 'win', score: '13 : 8', skillLevel: 1400, skillChange: 30, kd: '32/14', kdRatio: 2.29, krRatio: 1.52, map: 'Mil. Warehouses' },
     { id: '5', date: '27 Jan 2026', time: '21:46', result: 'win', score: '13 : 9', skillLevel: 1370, skillChange: 29, kd: '31/13', kdRatio: 2.38, krRatio: 1.41, map: 'House' },
-    { id: '6', date: '25 Jan 2026', time: '17:05', result: 'loss', score: '11 : 13', skillLevel: 1341, skillChange: -34, kd: '16/17', kdRatio: 0.94, krRatio: 0.96, map: 'Factory' },
-    { id: '7', date: '25 Jan 2026', time: '16:19', result: 'loss', score: '9 : 13', skillLevel: 1375, skillChange: -32, kd: '15/16', kdRatio: 0.94, krRatio: 1.36, map: 'Mil. Warehouses' },
-    { id: '8', date: '25 Jan 2026', time: '15:08', result: 'win', score: '13 : 11', skillLevel: 1407, skillChange: 25, kd: '39/15', kdRatio: 2.60, krRatio: 1.62, map: 'House' },
-    { id: '9', date: '25 Jan 2026', time: '14:18', result: 'win', score: '13 : 2', skillLevel: 1382, skillChange: 26, kd: '15/10', kdRatio: 1.50, krRatio: 1.00, map: 'Factory' },
-    { id: '10', date: '25 Jan 2026', time: '00:20', result: 'win', score: '13 : 6', skillLevel: 1356, skillChange: 25, kd: '29/12', kdRatio: 2.42, krRatio: 1.53, map: 'Mil. Warehouses' },
 ];
 
 export const gameStatsChartData = matchHistoryData.map(match => ({
@@ -69,14 +71,4 @@ export const topPlayersData = [
   { name: "Twistzz", country: "Канада", elo: 3385, level: 10 },
   { name: "frozen", country: "Словакия", elo: 3312, level: 10 },
   { name: "broky", country: "Латвия", elo: 3290, level: 10 },
-  { name: "EliGE", country: "Соединённые Штаты Америки (США)", elo: 3245, level: 10 },
-  { name: "sh1ro", country: "Россия", elo: 3210, level: 10 },
-  { name: "Ax1Le", country: "Россия", elo: 3185, level: 10 },
-  { name: "blameF", country: "Дания", elo: 3150, level: 10 },
-  { name: "Spinx", country: "Израиль", elo: 3125, level: 10 },
-  { name: "stavn", country: "Дания", elo: 3095, level: 10 },
-  { name: "jabbi", country: "Дания", elo: 3070, level: 10 },
-  { name: "jks", country: "Австралия", elo: 3045, level: 10 },
-  { name: "KSCERATO", country: "Бразилия", elo: 3020, level: 10 },
-  { name: "YEKINDAR", country: "Латвия", elo: 2995, level: 10 },
 ];

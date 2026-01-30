@@ -47,7 +47,15 @@ export const translations = {
     avg_kills: "AVG",
     win_streak: "Вин стрик",
     top_players: "Лидеры",
-    rank_position: "Место"
+    rank_position: "Место",
+    friends: "Друзья",
+    invite: "Пригласить",
+    invitation_received: "Получено приглашение",
+    invite_msg: "{name} приглашает вас в лобби {mode}",
+    accept: "Принять",
+    decline: "Отклонить",
+    view_profile: "Профиль",
+    map_veto: "Выбор карты"
   },
   en: {
     play: "Play",
@@ -97,6 +105,14 @@ export const translations = {
     avg_kills: "AVG",
     win_streak: "Win Streak",
     top_players: "Top Players",
-    rank_position: "Rank"
+    rank_position: "Rank",
+    friends: "Friends",
+    invite: "Invite",
+    invitation_received: "Invitation Received",
+    invite_msg: "{name} invites you to join {mode} lobby",
+    accept: "Accept",
+    decline: "Decline",
+    view_profile: "View Profile",
+    map_veto: "Map Veto"
   }
 };

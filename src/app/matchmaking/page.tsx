@@ -7,13 +7,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { userProfile } from '@/lib/data';
-import { Crown, Plus, Share2, MoreVertical, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { userProfile, friendsData } from '@/lib/data';
+import { Crown, Plus, Share2, MoreVertical, CheckCircle2, ShieldCheck, X } from 'lucide-react';
 import Link from 'next/link';
 import LevelIcon from '@/components/ui/level-icon';
 import { getFlagEmoji } from '@/lib/countries';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { translations } from '@/lib/translations';
+import { useTheme } from '@/components/theme-provider';
 
 // --- COMPONENTS ---
 
@@ -65,7 +68,7 @@ const MatchPlayerCard = ({ player }: { player: any }) => (
               </div>
               <span className="text-sm font-bold truncate max-w-[80px]">{player.name}</span>
           </div>
-          <p className="text-[10px] text-muted-foreground leading-none">Overall Stats</p>
+          <p className="text-[10px] text-muted-foreground leading-none">Stats</p>
         </div>
       </div>
       <div className="flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded">
@@ -80,8 +83,8 @@ const MatchPlayerCard = ({ player }: { player: any }) => (
         <p className="text-[10px] font-bold">1450</p>
       </div>
       <div className="bg-black/20 p-1 rounded">
-        <p className="text-[8px] text-muted-foreground uppercase font-bold">Win Rate%</p>
-        <p className="text-[10px] font-bold text-green-500">65%</p>
+        <p className="text-[8px] text-muted-foreground uppercase font-bold text-green-500">Win Rate%</p>
+        <p className="text-[10px] font-bold">65</p>
       </div>
       <div className="bg-black/20 p-1 rounded">
         <p className="text-[8px] text-muted-foreground uppercase font-bold">AVG</p>
@@ -97,11 +100,17 @@ const MatchPlayerCard = ({ player }: { player: any }) => (
 
 export default function MatchmakingPage() {
   const { toast } = useToast();
-  const [status, setStatus] = useState<'lobby' | 'searching' | 'ready_check' | 'veto' | 'ready'>('lobby');
+  const { language } = useTheme();
+  const t = translations[language];
+
+  const [status, setStatus] = useState<'lobby' | 'searching' | 'ready_check' | 'match_room'>('lobby');
+  const [matchStatus, setMatchStatus] = useState<'veto' | 'active'>('veto');
+  
   const [searchTime, setSearchTime] = useState(0);
   const [readyCheckTime, setReadyCheckTime] = useState(20);
-  const [vetoTime, setVetoTime] = useState(60);
-  const [connectTime, setConnectTime] = useState(180); // 3 minutes
+  const [vetoTime, setVetoTime] = useState(20);
+  const [connectTime, setConnectTime] = useState(180);
+  
   const [mode, setMode] = useState('5v5');
   const [myVote, setMyVote] = useState<string | null>(null);
   const [otherVotes, setOtherVotes] = useState<Record<string, number>>({ dust2: 0, mirage: 0, inferno: 0 });
@@ -109,6 +118,7 @@ export default function MatchmakingPage() {
   const [isReady, setIsReady] = useState(false);
   const [playersReady, setPlayersReady] = useState(0);
   const [password] = useState(() => Math.floor(Math.random() * (956 - 165 + 1)) + 165);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
 
   const teamSize = mode === '5v5' ? 5 : 2;
   const totalPlayers = teamSize * 2;
@@ -160,10 +170,17 @@ export default function MatchmakingPage() {
     return () => clearInterval(interval);
   }, [status, totalPlayers]);
 
-  // Veto Timer
+  // Transition to Match Room
+  useEffect(() => {
+    if (status === 'ready_check' && isReady && playersReady === totalPlayers - 1) {
+      setTimeout(() => setStatus('match_room'), 1000);
+    }
+  }, [isReady, playersReady, totalPlayers, status]);
+
+  // Veto Timer (Integrated)
   useEffect(() => {
     let interval: any;
-    if (status === 'veto') {
+    if (status === 'match_room' && matchStatus === 'veto') {
       interval = setInterval(() => {
         setVetoTime(prev => {
           if (prev <= 1) {
@@ -175,29 +192,22 @@ export default function MatchmakingPage() {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [status]);
+  }, [status, matchStatus]);
 
   // Connection Timer
   useEffect(() => {
     let interval: any;
-    if (status === 'ready' && connectTime > 0) {
+    if (status === 'match_room' && matchStatus === 'active' && connectTime > 0) {
       interval = setInterval(() => {
         setConnectTime(prev => prev - 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [status, connectTime]);
-
-  // Transitions
-  useEffect(() => {
-    if (status === 'ready_check' && isReady && playersReady === totalPlayers - 1) {
-      setTimeout(() => setStatus('veto'), 1000);
-    }
-  }, [isReady, playersReady, totalPlayers, status]);
+  }, [status, matchStatus, connectTime]);
 
   const handleReadyCheckEnd = () => {
     if (isReady && playersReady >= totalPlayers - 1) {
-      setStatus('veto');
+      setStatus('match_room');
     } else {
       setStatus('lobby');
       toast({ title: "Match cancelled", description: "Not enough players were ready.", variant: "destructive" });
@@ -205,13 +215,6 @@ export default function MatchmakingPage() {
   };
 
   const handleSetReady = () => setIsReady(true);
-
-  const handleVetoEnd = () => {
-    const sorted = Object.entries(votes).sort((a, b) => b[1] - a[1]);
-    const winnerId = sorted[0][1] > 0 ? sorted[0][0] : MAPS[Math.floor(Math.random() * 3)].id;
-    setSelectedMap(MAPS.find(m => m.id === winnerId));
-    setStatus('ready');
-  };
 
   const votes = useMemo(() => {
     return {
@@ -221,22 +224,29 @@ export default function MatchmakingPage() {
     };
   }, [otherVotes, myVote]);
 
+  const handleVetoEnd = () => {
+    const sorted = Object.entries(votes).sort((a, b) => b[1] - a[1]);
+    const winnerId = sorted[0][1] > 0 ? sorted[0][0] : MAPS[Math.floor(Math.random() * 3)].id;
+    setSelectedMap(MAPS.find(m => m.id === winnerId));
+    setMatchStatus('active');
+  };
+
   useEffect(() => {
-    if (status === 'veto') {
+    if (status === 'match_room' && matchStatus === 'veto') {
       const initialOthers = { dust2: 0, mirage: 0, inferno: 0 };
       for (let i = 0; i < totalPlayers - 1; i++) {
         const randomMap = MAPS[Math.floor(Math.random() * 3)].id;
         initialOthers[randomMap as keyof typeof initialOthers]++;
       }
       setOtherVotes(initialOthers);
-      setVetoTime(60);
+      setVetoTime(20);
       setMyVote(null);
     }
-  }, [status, totalPlayers]);
+  }, [status, matchStatus, totalPlayers]);
 
   const copyPassword = () => {
     navigator.clipboard.writeText(password.toString());
-    toast({ title: "Copied!", description: "Server password copied to clipboard." });
+    toast({ title: "Copied!", description: "Server password copied." });
   };
 
   const formatTime = (s: number) => {
@@ -256,7 +266,6 @@ export default function MatchmakingPage() {
             <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-2">Match Found!</h2>
             <p className="text-muted-foreground uppercase tracking-[0.2em] text-xs">Confirm your readiness</p>
           </div>
-
           <div className="flex flex-wrap justify-center gap-4">
             {Array.from({ length: totalPlayers }).map((_, i) => {
               const ready = i < displayPlayersReady;
@@ -273,7 +282,6 @@ export default function MatchmakingPage() {
               );
             })}
           </div>
-
           <div className="space-y-6">
             <div className="space-y-2">
                <p className="text-4xl font-mono font-bold text-primary">{formatTime(readyCheckTime)}</p>
@@ -294,75 +302,7 @@ export default function MatchmakingPage() {
     );
   }
 
-  if (status === 'veto') {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-black uppercase italic tracking-tighter mb-2">Map Veto</h1>
-            <p className="text-muted-foreground uppercase tracking-widest text-xs">{mode} · All players are voting</p>
-            <div className="mt-4 space-y-3">
-              <div className="text-5xl font-mono font-bold text-primary">{formatTime(vetoTime)}</div>
-              <div className="max-w-[300px] mx-auto">
-                <TimerProgressBar current={vetoTime} total={60} />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {MAPS.map((map) => {
-              const count = votes[map.id as keyof typeof votes];
-              const percentage = (count / totalPlayers) * 100;
-              
-              return (
-                <Card 
-                  key={map.id} 
-                  className={cn(
-                    "relative overflow-hidden cursor-pointer transition-all border-2",
-                    myVote === map.id ? "border-primary ring-2 ring-primary/20 scale-105" : "border-white/5 hover:border-white/20",
-                  )}
-                  onClick={() => {
-                    setMyVote(map.id);
-                  }}
-                >
-                  <div className="h-48 relative">
-                    <Image src={map.image} alt={map.name} fill className="object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                    <div className="absolute bottom-4 left-4">
-                      <h3 className="text-2xl font-black italic uppercase">{map.name}</h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="h-1.5 w-32 bg-white/20 rounded-full overflow-hidden">
-                          <div className="h-full bg-primary transition-all duration-500" style={{ width: `${percentage}%` }} />
-                        </div>
-                        <span className="text-xs font-bold">{count} / {totalPlayers}</span>
-                      </div>
-                    </div>
-                  </div>
-                  {myVote === map.id && (
-                    <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-                      My Vote
-                    </div>
-                  )}
-                </Card>
-              );
-            })}
-          </div>
-          
-          <div className="mt-12 text-center">
-            <Button 
-              size="lg" 
-              className="px-12 font-black italic uppercase tracking-tighter"
-              onClick={handleVetoEnd}
-            >
-              Skip Waiting
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (status === 'ready') {
+  if (status === 'match_room') {
     return (
       <div className="min-h-screen bg-[#0d0d0d] text-[#e0e0e0] font-body p-4 md:p-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between border-b border-white/5 pb-4 mb-8">
@@ -390,68 +330,98 @@ export default function MatchmakingPage() {
           </div>
 
           <div className="lg:col-span-6 flex flex-col items-center">
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-1">{mode} · EU</p>
-               <h2 className="text-2xl font-black italic uppercase text-white leading-none">Match Ready</h2>
-               <p className="text-[10px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter">Best of 1</p>
+               <h2 className="text-2xl font-black italic uppercase text-white leading-none">
+                 {matchStatus === 'veto' ? t.map_veto : "Match Ready"}
+               </h2>
             </div>
 
             <Card className="w-full bg-[#121212] border-white/5 p-8 flex flex-col items-center shadow-2xl relative overflow-hidden">
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground mb-4">Time to connect</p>
-                <div className="text-center space-y-3 mb-8">
-                  <p className="text-5xl font-mono font-black text-primary">{formatTime(connectTime)}</p>
-                  <div className="w-[200px] mx-auto">
-                    <TimerProgressBar current={connectTime} total={180} />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-8 w-full mb-8">
-                   <div>
-                      <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Server</p>
-                      <div className="flex items-center gap-3 bg-black/40 p-3 rounded border border-white/5">
-                         <div className="relative w-8 h-5 overflow-hidden rounded-xs border border-white/10 shrink-0">
-                            <Image src="https://flagcdn.com/w80/de.png" alt="Germany" fill className="object-cover" unoptimized />
-                          </div>
-                          <span className="text-sm font-bold uppercase italic">Germany</span>
-                      </div>
-                   </div>
-                   <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground">Map</p>
-                        <div className="flex items-center gap-1 text-[8px] font-bold text-primary cursor-pointer hover:underline">
-                          <ShieldCheck className="h-3 w-3" />
-                          VETO
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 bg-black/40 p-3 rounded border border-white/5">
-                          <div className="relative w-8 h-5 overflow-hidden rounded-xs border border-white/10 shrink-0">
-                            <Image src={selectedMap?.image} alt={selectedMap?.name} fill className="object-cover" />
-                          </div>
-                          <span className="text-sm font-bold uppercase italic">{selectedMap?.name}</span>
-                      </div>
-                   </div>
-                </div>
-
-                <div className="w-full space-y-4">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Connect with in game console</p>
-                    <div className="flex items-center bg-black/60 rounded border border-white/10 overflow-hidden">
-                       <div className="flex-1 px-4 py-3 font-mono text-sm text-muted-foreground tracking-widest italic uppercase">
-                          {password}
+                {matchStatus === 'veto' ? (
+                  <div className="w-full space-y-8">
+                    <div className="text-center space-y-2">
+                       <p className="text-4xl font-mono font-black text-primary">{formatTime(vetoTime)}</p>
+                       <div className="w-[150px] mx-auto">
+                         <TimerProgressBar current={vetoTime} total={20} />
                        </div>
-                       <button 
-                        onClick={copyPassword}
-                        className="bg-white/5 hover:bg-white/10 px-4 py-3 text-xs font-black uppercase italic tracking-tighter border-l border-white/10 transition-colors"
-                       >
-                          Copy
-                       </button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      {MAPS.map((map) => {
+                        const count = votes[map.id as keyof typeof votes];
+                        const percentage = (count / totalPlayers) * 100;
+                        return (
+                          <div 
+                            key={map.id} 
+                            onClick={() => setMyVote(map.id)}
+                            className={cn(
+                              "relative group cursor-pointer border rounded overflow-hidden transition-all",
+                              myVote === map.id ? "border-primary scale-105" : "border-white/5 opacity-60 hover:opacity-100"
+                            )}
+                          >
+                            <div className="h-24 relative">
+                              <Image src={map.image} alt={map.name} fill className="object-cover" />
+                              <div className="absolute inset-0 bg-black/40" />
+                              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="text-xs font-black uppercase italic">{map.name}</span>
+                                <span className="text-[10px] font-bold mt-1">{count}/{totalPlayers}</span>
+                                <div className="h-1 w-12 bg-white/20 mt-1 rounded-full overflow-hidden">
+                                  <div className="h-full bg-primary" style={{ width: `${percentage}%` }} />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-
-                  <Button className="w-full h-14 bg-primary text-primary-foreground font-black italic uppercase tracking-tighter text-xl shadow-[0_0_30px_rgba(var(--primary),0.2)] hover:shadow-[0_0_40px_rgba(var(--primary),0.3)] transition-all">
-                    Connect
-                  </Button>
-                </div>
+                ) : (
+                  <>
+                    <p className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground mb-4">Connect now</p>
+                    <div className="text-center space-y-3 mb-8 w-full">
+                      <p className="text-5xl font-mono font-black text-primary">{formatTime(connectTime)}</p>
+                      <div className="w-[200px] mx-auto">
+                        <TimerProgressBar current={connectTime} total={180} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-8 w-full mb-8">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Server</p>
+                        <div className="flex items-center gap-3 bg-black/40 p-3 rounded border border-white/5">
+                           <div className="relative w-8 h-5 overflow-hidden rounded-xs border border-white/10 shrink-0">
+                              <Image src="https://flagcdn.com/w80/de.png" alt="Germany" fill className="object-cover" unoptimized />
+                            </div>
+                            <span className="text-sm font-bold uppercase italic">Germany</span>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Map</p>
+                        <div className="flex items-center gap-3 bg-black/40 p-3 rounded border border-white/5">
+                            <div className="relative w-8 h-5 overflow-hidden rounded-xs border border-white/10 shrink-0">
+                              <Image src={selectedMap?.image} alt={selectedMap?.name} fill className="object-cover" />
+                            </div>
+                            <span className="text-sm font-bold uppercase italic">{selectedMap?.name}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-full space-y-4">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Password</p>
+                        <div className="flex items-center bg-black/60 rounded border border-white/10 overflow-hidden">
+                           <div 
+                            onClick={copyPassword}
+                            className="flex-1 px-4 py-3 font-mono text-sm text-muted-foreground tracking-widest italic cursor-pointer hover:text-white"
+                           >
+                              {password}
+                           </div>
+                        </div>
+                      </div>
+                      <Button className="w-full h-14 bg-primary text-primary-foreground font-black italic uppercase tracking-tighter text-xl">
+                        Connect
+                      </Button>
+                    </div>
+                  </>
+                )}
             </Card>
           </div>
 
@@ -473,8 +443,8 @@ export default function MatchmakingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 overflow-hidden">
-       <div className="absolute top-6 left-6">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 overflow-hidden relative">
+      <div className="absolute top-6 left-6">
         <Button asChild variant="outline" className="border-primary/20 hover:bg-primary/10 transition-all">
           <Link href="/">Back to Profile</Link>
         </Button>
@@ -484,7 +454,6 @@ export default function MatchmakingPage() {
         <div className="mb-16 text-center">
             <h1 className="text-5xl font-black uppercase tracking-tighter mb-2 italic">Lobby</h1>
             <div className="h-1 w-24 bg-primary mx-auto mb-4" />
-            <p className="text-muted-foreground font-medium uppercase tracking-[0.2em] text-xs">Party Leader Status Active</p>
         </div>
 
         <div className="flex flex-wrap justify-center items-center gap-8 mb-20 w-full">
@@ -501,15 +470,12 @@ export default function MatchmakingPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
                     </div>
                     <div className="relative text-center flex flex-col items-center">
-                      <Avatar className="h-24 w-24 border-4 border-background/80 ring-2 ring-primary mb-3">
+                      <Avatar className="h-24 w-24 border-4 border-background ring-2 ring-primary mb-3">
                         <AvatarImage src={userProfile.avatarUrl} alt={userProfile.name} />
                         <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex items-center gap-1.5">
                         <p className="font-bold text-xl tracking-tight">{userProfile.name}</p>
-                        <div className="relative w-5 h-4 overflow-hidden rounded-xs border border-white/5">
-                          <Image src={getFlagEmoji(userProfile.country)} alt={userProfile.country} fill className="object-cover" unoptimized />
-                        </div>
                       </div>
                       <div className="mt-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5 text-sm backdrop-blur-md border border-white/10">
                           <LevelIcon level={userProfile.level} className="h-6 w-6" />
@@ -520,11 +486,14 @@ export default function MatchmakingPage() {
                 </div>
               ) : (
                 <div key={`empty-${i}`} className="pt-8">
-                  <Card className="w-48 h-64 bg-card/5 border-border/20 border-dashed flex flex-col items-center justify-center p-4 text-muted-foreground cursor-pointer group">
+                  <Card 
+                    onClick={() => setIsInviteOpen(true)}
+                    className="w-48 h-64 bg-card/5 border-border/20 border-dashed flex flex-col items-center justify-center p-4 text-muted-foreground cursor-pointer group"
+                  >
                       <div className="bg-muted/10 p-4 rounded-full group-hover:bg-primary/10 transition-colors">
                         <Plus className="h-8 w-8" />
                       </div>
-                      <p className="mt-3 text-xs font-bold uppercase tracking-widest opacity-60">Invite</p>
+                      <p className="mt-3 text-xs font-bold uppercase tracking-widest opacity-60">{t.invite}</p>
                   </Card>
                 </div>
               );
@@ -561,7 +530,7 @@ export default function MatchmakingPage() {
                     className="w-full h-16 text-2xl font-black italic tracking-tighter bg-red-600 hover:bg-red-700 transition-all" 
                     onClick={() => setStatus('lobby')}
                   >
-                      Cancel
+                      {t.cancel}
                   </Button>
                   <div className="text-center space-y-2">
                     <p className="text-3xl font-mono font-bold text-primary animate-pulse">{formatTime(searchTime)}</p>
@@ -573,12 +542,45 @@ export default function MatchmakingPage() {
                   className="w-full h-16 text-2xl font-black italic tracking-tighter shadow-[0_10px_40px_-10px_rgba(var(--primary),0.5)] hover:shadow-[0_15px_50px_-10px_rgba(var(--primary),0.6)] transition-all" 
                   onClick={() => setStatus('searching')}
                 >
-                    Play
+                    {t.play}
                 </Button>
               )}
             </div>
         </div>
       </div>
+
+      <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t.invite}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {friendsData.map((friend) => (
+              <div key={friend.name} className="flex items-center justify-between p-2 hover:bg-white/5 rounded-lg transition-colors">
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage src={friend.avatarUrl} />
+                    <AvatarFallback>{friend.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-bold">{friend.name}</p>
+                    <p className="text-xs text-muted-foreground">{friend.status}</p>
+                  </div>
+                </div>
+                <Button 
+                  size="sm" 
+                  onClick={() => {
+                    toast({ title: "Invite Sent", description: `Invited ${friend.name} to lobby.` });
+                    setIsInviteOpen(false);
+                  }}
+                >
+                  {t.invite}
+                </Button>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

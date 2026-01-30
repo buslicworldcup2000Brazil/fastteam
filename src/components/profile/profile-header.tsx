@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Settings, Search } from 'lucide-react';
+import { Settings, Search, UserPlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getFlagEmoji } from '@/lib/countries';
 import { useTheme } from '@/components/theme-provider';
@@ -22,9 +22,10 @@ type UserProfile = {
 type ProfileHeaderProps = {
   user: UserProfile;
   onEdit: () => void;
+  hideButtons?: boolean;
 };
 
-export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
+export default function ProfileHeader({ user, onEdit, hideButtons = false }: ProfileHeaderProps) {
   const { language } = useTheme();
   const t = translations[language];
   const flagUrl = getFlagEmoji(user.country);
@@ -66,19 +67,30 @@ export default function ProfileHeader({ user, onEdit }: ProfileHeaderProps) {
               <p className="text-muted-foreground text-sm font-medium mt-1">{user.bio}</p>
             )}
           </div>
+          
           <div className="md:ml-auto flex flex-col md:flex-row items-center gap-2 md:pb-4 w-full md:w-auto">
-            <div className="relative w-full md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder={t.search_placeholder} 
-                className="pl-9 bg-background/50 backdrop-blur-sm border-primary/20 focus:border-primary"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon" onClick={onEdit} title={t.edit_profile}>
-                <Settings className="h-4 w-4" />
+            {!hideButtons && (
+              <>
+                <div className="relative w-full md:w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder={t.search_placeholder} 
+                    className="pl-9 bg-background/50 backdrop-blur-sm border-primary/20 focus:border-primary"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="icon" onClick={onEdit} title={t.edit_profile}>
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </div>
+              </>
+            )}
+            {hideButtons && (
+              <Button className="flex items-center gap-2">
+                <UserPlus className="h-4 w-4" />
+                {t.invite}
               </Button>
-            </div>
+            )}
           </div>
         </div>
       </div>
