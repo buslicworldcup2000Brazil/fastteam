@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -59,7 +60,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-20">
+    <div className="min-h-screen bg-background text-foreground pb-20 scrollbar-hide">
       {!isSelf && (
         <div className="fixed top-6 left-6 z-50">
           <Button asChild variant="outline" className="border-primary/20 bg-background/50 backdrop-blur-md hover:bg-primary/10 transition-all font-bold">
@@ -77,7 +78,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
         hideButtons={!isSelf}
       />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 scrollbar-hide">
         <Tabs defaultValue="overview" className="w-full">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
             <TabsList className="grid w-full max-w-md grid-cols-3 bg-card border">
@@ -107,7 +108,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
             )}
           </div>
 
-          <TabsContent value="overview">
+          <TabsContent value="overview" className="scrollbar-hide">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -130,7 +131,6 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                   </Card>
                   
                   <Card className="bg-gradient-to-br from-card to-primary/5 relative overflow-hidden">
-                    {/* Watermark Typography Background */}
                     <div className="absolute right-[-10%] bottom-[-20%] select-none pointer-events-none opacity-25 z-0">
                       <svg width="250" height="250" viewBox="0 0 250 250" className="overflow-visible">
                         <defs>
@@ -184,10 +184,10 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="game_stats">
+          <TabsContent value="game_stats" className="scrollbar-hide">
              <GameStatsChart data={profile.chartData || []} />
           </TabsContent>
-          <TabsContent value="match_history">
+          <TabsContent value="match_history" className="scrollbar-hide">
             <MatchHistoryTable matches={profile.matchHistory || []} />
           </TabsContent>
         </Tabs>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { z } from 'zod';
@@ -24,6 +25,7 @@ import { Label } from '@/components/ui/label';
 import { Check, Settings } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { translations } from '@/lib/translations';
+import { cn } from '@/lib/utils';
 
 const profileSchema = z.object({
   name: z.string().min(2, "Nickname must be at least 2 characters."),
@@ -176,7 +178,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
+          <form onSubmit={form.handleSubmit(onSubmit)} className={cn("space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2 scrollbar-hide")}>
             <div className="space-y-4">
               <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t.profile}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -227,7 +229,7 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
                             <SelectValue placeholder="Select a country" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="max-h-[250px]">
+                        <SelectContent className="max-h-[250px] scrollbar-hide">
                           {countries.map((country) => (
                             <SelectItem key={country} value={country}>
                               <span className="flex items-center gap-2">

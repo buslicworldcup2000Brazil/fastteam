@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -36,7 +37,7 @@ export default function MatchHistoryTable({ matches }: MatchHistoryTableProps) {
   const t = translations[language];
 
   return (
-    <div className="border rounded-lg bg-card">
+    <div className="border rounded-lg bg-card scrollbar-hide">
       <Table>
         <TableHeader>
           <TableRow className="border-b-border/50">
