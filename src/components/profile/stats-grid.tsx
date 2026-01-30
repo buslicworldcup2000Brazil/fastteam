@@ -30,6 +30,13 @@ export default function StatsGrid({ stats }: StatsGridProps) {
     }
   };
 
+  const formatDisplayValue = (title: string, value: string) => {
+    if (title === 'Avg. Kills') {
+      return Math.round(parseFloat(value)).toString();
+    }
+    return value;
+  };
+
   return (
     <Card>
       <CardContent className="p-6 space-y-6">
@@ -38,7 +45,9 @@ export default function StatsGrid({ stats }: StatsGridProps) {
             <div className="flex items-center gap-2 mb-2">
               <stat.icon className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium text-muted-foreground">{getTranslatedTitle(stat.title)}</span>
-              <span className="ml-auto text-sm text-foreground font-bold">{stat.value}</span>
+              <span className="ml-auto text-sm text-foreground font-bold">
+                {formatDisplayValue(stat.title, stat.value)}
+              </span>
             </div>
             <Progress value={stat.progress} className="h-2" />
           </div>

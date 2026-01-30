@@ -49,6 +49,11 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
     };
   }, [data, currentMetric]);
 
+  const formatValue = (val: number) => {
+    if (activeMetric === 'elo') return Math.round(val).toString();
+    return val.toFixed(2);
+  };
+
   return (
     <Card className="bg-[#121212] border-white/5 overflow-hidden">
       <div className="p-6 space-y-6">
@@ -89,7 +94,7 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
               }} 
               className="h-full w-full"
             >
-              <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
                 <XAxis 
                   dataKey="index"
@@ -103,8 +108,9 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
                   tickLine={false}
                   axisLine={false}
                   tickMargin={10}
-                  width={40}
+                  width={55}
                   tick={{ fill: 'rgba(255,255,255,0.2)', fontSize: 10, fontWeight: 'bold' }}
+                  tickFormatter={(value) => formatValue(value)}
                 />
                 <ChartTooltip
                   cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }}
@@ -112,13 +118,12 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
                     indicator="dot"
                     labelClassName="hidden"
                     formatter={(value, name, props) => {
-                        const formattedValue = activeMetric === 'elo' 
-                          ? Math.round(Number(value)) 
-                          : Number(value).toFixed(2);
                         return (
                           <div className="flex flex-col gap-1">
                             <span className="font-semibold text-[10px] opacity-40">{props.payload.date}</span>
-                            <span className='text-xs font-black uppercase italic text-primary'>{currentMetric.label}: {formattedValue}</span>
+                            <span className='text-xs font-black uppercase italic text-primary'>
+                              {currentMetric.label}: {formatValue(Number(value))}
+                            </span>
                           </div>
                         )
                     }}
@@ -142,10 +147,10 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
           </div>
 
           {showSidePanel && (
-            <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 rounded-lg p-4 flex flex-col justify-between">
+            <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 rounded-lg p-5 flex flex-col justify-between min-w-0">
               <div>
-                <p className="text-3xl font-black italic text-white">
-                  {activeMetric === 'elo' ? Math.round(stats.latest) : stats.latest.toFixed(2)}
+                <p className="text-3xl font-black italic text-white whitespace-nowrap">
+                  {formatValue(stats.latest)}
                 </p>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">
                   Current {currentMetric.label}
@@ -153,16 +158,16 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
-                  <span className="text-muted-foreground">Highest</span>
-                  <span className="text-white text-right">
-                    {activeMetric === 'elo' ? Math.round(stats.highest) : stats.highest.toFixed(2)}
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider gap-2">
+                  <span className="text-muted-foreground whitespace-nowrap">Highest</span>
+                  <span className="text-white text-right font-mono">
+                    {formatValue(stats.highest)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
-                  <span className="text-muted-foreground">Lowest</span>
-                  <span className="text-white text-right">
-                    {activeMetric === 'elo' ? Math.round(stats.lowest) : stats.lowest.toFixed(2)}
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider gap-2">
+                  <span className="text-muted-foreground whitespace-nowrap">Lowest</span>
+                  <span className="text-white text-right font-mono">
+                    {formatValue(stats.lowest)}
                   </span>
                 </div>
               </div>
