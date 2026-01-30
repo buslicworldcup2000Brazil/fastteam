@@ -79,7 +79,7 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
         </div>
 
         <div className={cn("grid grid-cols-1 gap-6", showSidePanel ? "lg:grid-cols-12" : "grid-cols-1")}>
-          <div className={cn("h-[250px] relative", showSidePanel ? "lg:col-span-9" : "w-full")}>
+          <div className={cn("h-[250px] relative", showSidePanel ? "lg:col-span-8" : "w-full")}>
             <ChartContainer 
               config={{
                 [currentMetric.key]: {
@@ -139,24 +139,24 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
           </div>
 
           {showSidePanel && (
-            <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 rounded-lg p-4 flex flex-col justify-between">
-              <div>
-                <p className="text-2xl font-black italic tracking-tighter text-white">
+            <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 rounded-lg p-4 flex flex-col justify-between min-w-0">
+              <div className="overflow-hidden">
+                <p className="text-2xl font-black italic text-white truncate">
                   {activeMetric === 'elo' ? stats.latest : stats.latest.toFixed(2)}
                 </p>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60 truncate">
                   Current {currentMetric.label}
                 </p>
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
-                  <span className="text-muted-foreground">Highest</span>
-                  <span className="text-white">{activeMetric === 'elo' ? stats.highest : stats.highest.toFixed(2)}</span>
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider gap-2">
+                  <span className="text-muted-foreground shrink-0">Highest</span>
+                  <span className="text-white truncate">{activeMetric === 'elo' ? stats.highest : stats.highest.toFixed(2)}</span>
                 </div>
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
-                  <span className="text-muted-foreground">Lowest</span>
-                  <span className="text-white">{activeMetric === 'elo' ? stats.lowest : stats.lowest.toFixed(2)}</span>
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider gap-2">
+                  <span className="text-muted-foreground shrink-0">Lowest</span>
+                  <span className="text-white truncate">{activeMetric === 'elo' ? stats.lowest : stats.lowest.toFixed(2)}</span>
                 </div>
               </div>
             </div>
