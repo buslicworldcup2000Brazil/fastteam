@@ -194,9 +194,25 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                 <MapWinRates rates={profile.last90Stats?.mapWinRates || []} />
               </div>
 
-              {/* Right Column: Comprehensive Chart */}
-              <div className="lg:col-span-2">
-                <GameStatsChart data={(profile.chartData || []).slice(-15)} />
+              {/* Right Column: Two Charts */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Standalone ELO Chart */}
+                <GameStatsChart 
+                  data={(profile.chartData || []).slice(-15)} 
+                  title={t.performance_trend}
+                  subtitle={t.skill_over_matches.replace('{count}', '15')}
+                  metrics={['elo']}
+                  showSidePanel={false}
+                />
+                
+                {/* Toggleable KD/AVG Chart */}
+                <GameStatsChart 
+                  data={(profile.chartData || []).slice(-15)} 
+                  title="Combat Trends"
+                  subtitle="Detailed K/D and AVG performance"
+                  metrics={['kd', 'avg']}
+                  showSidePanel={true}
+                />
               </div>
             </div>
           </TabsContent>

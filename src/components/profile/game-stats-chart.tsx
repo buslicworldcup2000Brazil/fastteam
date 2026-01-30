@@ -1,8 +1,8 @@
 "use client"
 
 import React, { useState, useMemo } from 'react';
-import { Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { Card, CardContent } from '@/components/ui/card';
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { Card } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { useTheme } from '@/components/theme-provider';
 import { translations } from '@/lib/translations';
@@ -15,26 +15,30 @@ type ChartDataPoint = {
   krRatio: number; // This is AVG
 };
 
-type GameStatsChartProps = {
-  data: ChartDataPoint[];
-};
-
 type Metric = 'elo' | 'kd' | 'avg';
 
-export default function GameStatsChart({ data }: GameStatsChartProps) {
+type GameStatsChartProps = {
+  data: ChartDataPoint[];
+  title?: string;
+  subtitle?: string;
+  metrics: Metric[];
+  showSidePanel?: boolean;
+};
+
+export default function GameStatsChart({ data, title, subtitle, metrics, showSidePanel = false }: GameStatsChartProps) {
   const { language } = useTheme();
   const t = translations[language];
-  const [activeMetric, setActiveMetric] = useState<Metric>('elo');
+  const [activeMetric, setActiveMetric] = useState<Metric>(metrics[0]);
 
   const chartData = useMemo(() => data.map((d, i) => ({ ...d, index: i + 1 })), [data]);
 
-  const metrics = {
-    elo: { label: 'ELO', key: 'skillLevel', color: 'hsl(var(--primary))' },
-    kd: { label: 'K/D', key: 'kdRatio', color: 'hsl(var(--primary))' },
-    avg: { label: 'AVG', key: 'krRatio', color: 'hsl(var(--primary))' },
+  const metricConfigs = {
+    elo: { label: 'ELO', key: 'skillLevel' },
+    kd: { label: 'K/D', key: 'kdRatio' },
+    avg: { label: 'AVG', key: 'krRatio' },
   };
 
-  const currentMetric = metrics[activeMetric];
+  const currentMetric = metricConfigs[activeMetric];
 
   const stats = useMemo(() => {
     const values = data.map(d => d[currentMetric.key as keyof ChartDataPoint] as number);
@@ -47,33 +51,40 @@ export default function GameStatsChart({ data }: GameStatsChartProps) {
 
   return (
     <Card className="bg-[#121212] border-white/5 overflow-hidden">
-      <div className="p-4 flex flex-col gap-6">
-        {/* Tabs */}
-        <div className="flex gap-2">
-          {(Object.keys(metrics) as Metric[]).map((m) => (
-            <button
-              key={m}
-              onClick={() => setActiveMetric(m)}
-              className={cn(
-                "px-4 py-1.5 rounded-full text-xs font-black uppercase italic transition-all border",
-                activeMetric === m 
-                  ? "bg-primary/20 border-primary text-primary" 
-                  : "bg-white/5 border-transparent text-muted-foreground hover:bg-white/10"
-              )}
-            >
-              {metrics[m].label}
-            </button>
-          ))}
+      <div className="p-6 space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            {title && <h3 className="text-lg font-bold uppercase italic tracking-tighter">{title}</h3>}
+            {subtitle && <p className="text-[10px] uppercase tracking-widest text-muted-foreground opacity-60">{subtitle}</p>}
+          </div>
+          
+          {metrics.length > 1 && (
+            <div className="flex gap-2">
+              {metrics.map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setActiveMetric(m)}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-[10px] font-black uppercase italic transition-all border",
+                    activeMetric === m 
+                      ? "bg-primary/20 border-primary text-primary" 
+                      : "bg-white/5 border-transparent text-muted-foreground hover:bg-white/10"
+                  )}
+                >
+                  {metricConfigs[m].label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* Chart Area */}
-          <div className="lg:col-span-9 h-[250px] relative">
+        <div className={cn("grid grid-cols-1 gap-6", showSidePanel ? "lg:grid-cols-12" : "grid-cols-1")}>
+          <div className={cn("h-[250px] relative", showSidePanel ? "lg:col-span-9" : "w-full")}>
             <ChartContainer 
               config={{
                 [currentMetric.key]: {
                   label: currentMetric.label,
-                  color: currentMetric.color,
+                  color: "hsl(var(--primary))",
                 }
               }} 
               className="h-full w-full"
@@ -112,7 +123,7 @@ export default function GameStatsChart({ data }: GameStatsChartProps) {
                 />
                 <Line
                   dataKey={currentMetric.key}
-                  type="linear" // SHARP EDGES
+                  type="linear"
                   stroke="hsl(var(--primary))"
                   strokeWidth={2}
                   dot={false}
@@ -127,28 +138,29 @@ export default function GameStatsChart({ data }: GameStatsChartProps) {
             </ChartContainer>
           </div>
 
-          {/* Info Panel */}
-          <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 rounded-lg p-4 flex flex-col justify-between">
-            <div>
-              <p className="text-2xl font-black italic tracking-tighter text-white">
-                {activeMetric === 'elo' ? stats.latest : stats.latest.toFixed(2)}
-              </p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">
-                Current {currentMetric.label}
-              </p>
-            </div>
+          {showSidePanel && (
+            <div className="lg:col-span-3 bg-white/[0.02] border border-white/5 rounded-lg p-4 flex flex-col justify-between">
+              <div>
+                <p className="text-2xl font-black italic tracking-tighter text-white">
+                  {activeMetric === 'elo' ? stats.latest : stats.latest.toFixed(2)}
+                </p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">
+                  Current {currentMetric.label}
+                </p>
+              </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
-                <span className="text-muted-foreground">Highest</span>
-                <span className="text-white">{activeMetric === 'elo' ? stats.highest : stats.highest.toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
-                <span className="text-muted-foreground">Lowest</span>
-                <span className="text-white">{activeMetric === 'elo' ? stats.lowest : stats.lowest.toFixed(2)}</span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
+                  <span className="text-muted-foreground">Highest</span>
+                  <span className="text-white">{activeMetric === 'elo' ? stats.highest : stats.highest.toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
+                  <span className="text-muted-foreground">Lowest</span>
+                  <span className="text-white">{activeMetric === 'elo' ? stats.lowest : stats.lowest.toFixed(2)}</span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </Card>
