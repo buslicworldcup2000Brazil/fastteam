@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -74,11 +74,11 @@ const MatchPlayerCard = ({ player }: { player: any }) => (
         <p className="text-[10px] font-bold">1450</p>
       </div>
       <div className="bg-black/20 p-1 rounded">
-        <p className="text-[8px] text-muted-foreground uppercase">Win Rate</p>
+        <p className="text-[8px] text-muted-foreground uppercase">Win Rate%</p>
         <p className="text-[10px] font-bold text-green-500">65%</p>
       </div>
       <div className="bg-black/20 p-1 rounded">
-        <p className="text-[8px] text-muted-foreground uppercase">AVG Kills</p>
+        <p className="text-[8px] text-muted-foreground uppercase">AVG</p>
         <p className="text-[10px] font-bold">24/40%</p>
       </div>
       <div className="bg-black/20 p-1 rounded">
@@ -95,10 +95,19 @@ export default function MatchmakingPage() {
   const [searchTime, setSearchTime] = useState(0);
   const [vetoTime, setVetoTime] = useState(60);
   const [mode, setMode] = useState('5v5');
-  const [votes, setVotes] = useState<Record<string, number>>({ dust2: 0, mirage: 0, inferno: 0 });
   const [myVote, setMyVote] = useState<string | null>(null);
+  const [otherVotes, setOtherVotes] = useState<Record<string, number>>({ dust2: 0, mirage: 0, inferno: 0 });
   const [selectedMap, setSelectedMap] = useState<any>(null);
   const [password] = useState(() => Math.floor(Math.random() * (956 - 165 + 1)) + 165);
+
+  // Calculate total votes for each map
+  const votes = useMemo(() => {
+    return {
+      dust2: otherVotes.dust2 + (myVote === 'dust2' ? 1 : 0),
+      mirage: otherVotes.mirage + (myVote === 'mirage' ? 1 : 0),
+      inferno: otherVotes.inferno + (myVote === 'inferno' ? 1 : 0),
+    };
+  }, [otherVotes, myVote]);
 
   // Search Timer
   useEffect(() => {
@@ -114,6 +123,20 @@ export default function MatchmakingPage() {
     }
     return () => clearInterval(interval);
   }, [status, searchTime]);
+
+  // Veto Initialization - Simulate 9 other votes once
+  useEffect(() => {
+    if (status === 'veto') {
+      const initialOthers = { dust2: 0, mirage: 0, inferno: 0 };
+      for (let i = 0; i < 9; i++) {
+        const randomMap = MAPS[Math.floor(Math.random() * 3)].id;
+        initialOthers[randomMap as keyof typeof initialOthers]++;
+      }
+      setOtherVotes(initialOthers);
+      setVetoTime(60);
+      setMyVote(null);
+    }
+  }, [status]);
 
   // Veto Timer
   useEffect(() => {
@@ -133,7 +156,6 @@ export default function MatchmakingPage() {
   }, [status, vetoTime]);
 
   const handleVetoEnd = () => {
-    // Choose map with most votes or random if none
     const sorted = Object.entries(votes).sort((a, b) => b[1] - a[1]);
     const winnerId = sorted[0][1] > 0 ? sorted[0][0] : MAPS[Math.floor(Math.random() * 3)].id;
     setSelectedMap(MAPS.find(m => m.id === winnerId));
@@ -141,19 +163,8 @@ export default function MatchmakingPage() {
   };
 
   const handleVote = (mapId: string) => {
-    if (myVote) return;
+    // Simply change the vote. The memoized 'votes' object handles the logic.
     setMyVote(mapId);
-    setVotes(prev => ({ ...prev, [mapId]: prev[mapId] + 1 }));
-    
-    // Simulate other 9 players voting quickly
-    setTimeout(() => {
-      const newVotes = { ...votes, [mapId]: votes[mapId] + 1 };
-      for(let i=0; i<9; i++) {
-        const randomMap = MAPS[Math.floor(Math.random() * 3)].id;
-        newVotes[randomMap] = (newVotes[randomMap] || 0) + 1;
-      }
-      setVotes(newVotes);
-    }, 500);
   };
 
   const copyPassword = () => {
@@ -200,8 +211,8 @@ export default function MatchmakingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {MAPS.map((map) => {
-              const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0);
-              const percentage = totalVotes > 0 ? (votes[map.id] / totalVotes) * 100 : 0;
+              const count = votes[map.id as keyof typeof votes];
+              const percentage = (count / 10) * 100;
               
               return (
                 <Card 
@@ -209,7 +220,6 @@ export default function MatchmakingPage() {
                   className={cn(
                     "relative overflow-hidden cursor-pointer transition-all border-2",
                     myVote === map.id ? "border-primary ring-2 ring-primary/20 scale-105" : "border-white/5 hover:border-white/20",
-                    myVote && myVote !== map.id ? "opacity-50 grayscale" : ""
                   )}
                   onClick={() => handleVote(map.id)}
                 >
@@ -222,7 +232,7 @@ export default function MatchmakingPage() {
                         <div className="h-1.5 w-32 bg-white/20 rounded-full overflow-hidden">
                           <div className="h-full bg-primary transition-all duration-500" style={{ width: `${percentage}%` }} />
                         </div>
-                        <span className="text-xs font-bold">{votes[map.id]} / 10</span>
+                        <span className="text-xs font-bold">{count} / 10</span>
                       </div>
                     </div>
                   </div>
@@ -234,6 +244,16 @@ export default function MatchmakingPage() {
                 </Card>
               );
             })}
+          </div>
+          
+          <div className="mt-12 text-center">
+            <Button 
+              size="lg" 
+              className="px-12 font-black italic uppercase tracking-tighter"
+              onClick={handleVetoEnd}
+            >
+              Skip Waiting
+            </Button>
           </div>
         </div>
       </div>
@@ -321,7 +341,7 @@ export default function MatchmakingPage() {
                     <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2">Connect with in game console</p>
                     <div className="flex items-center bg-black/60 rounded border border-white/10 overflow-hidden">
                        <div className="flex-1 px-4 py-3 font-mono text-sm text-muted-foreground tracking-widest italic uppercase">
-                          Hidden
+                          {password}
                        </div>
                        <button 
                         onClick={copyPassword}
