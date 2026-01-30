@@ -162,7 +162,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="relative z-10">
-                      <p className="text-5xl font-black italic tracking-tighter text-primary">
+                      <p className="text-6xl font-black italic tracking-tighter text-primary">
                         {profile.winStreak}
                       </p>
                     </CardContent>
