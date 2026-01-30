@@ -194,11 +194,9 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                 <MapWinRates rates={profile.last90Stats?.mapWinRates || []} />
               </div>
 
-              {/* Right Column: Trend Charts */}
-              <div className="lg:col-span-2 space-y-6">
-                <GameStatsChart data={(profile.chartData || []).slice(-15)} type="elo" />
-                <GameStatsChart data={(profile.chartData || []).slice(-15)} type="kd" />
-                <GameStatsChart data={(profile.chartData || []).slice(-15)} type="avg" />
+              {/* Right Column: Comprehensive Chart */}
+              <div className="lg:col-span-2">
+                <GameStatsChart data={(profile.chartData || []).slice(-15)} />
               </div>
             </div>
           </TabsContent>
