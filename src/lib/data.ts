@@ -15,11 +15,24 @@ export const calculateLevel = (elo: number): number => {
   return 1;
 };
 
-const elo = 1450;
-const level = calculateLevel(elo);
-
 const DEFAULT_BANNER = PlaceHolderImages.find(img => img.id === 'profile-banner')?.imageUrl || 'https://picsum.photos/seed/1/1200/400';
 const DEFAULT_AVATAR = PlaceHolderImages.find(img => img.id === 'profile-avatar')?.imageUrl || 'https://picsum.photos/seed/2/200/200';
+
+// Global shared stats for "Self"
+export const statsData = [
+  { id: '1', title: 'K/D Ratio', value: '2.45', icon: Swords, progress: 49 },
+  { id: '2', title: 'Win Rate', value: '68%', icon: Trophy, progress: 68 },
+  { id: '5', title: 'Matches Won', value: '816', icon: Star, progress: 54 },
+  { id: '6', title: 'Avg. Kills', value: '18.5', icon: Crosshair, progress: 62 },
+];
+
+export const matchHistoryData = [
+    { id: '1', date: '28 Jan 2026', time: '02:04', result: 'win' as const, score: '13 : 11', skillLevel: 1471, skillChange: 17, kd: '30/20', kdRatio: 1.50, krRatio: 1.25, map: 'Mil. Warehouses' },
+    { id: '2', date: '28 Jan 2026', time: '01:20', result: 'win' as const, score: '13 : 11', skillLevel: 1454, skillChange: 25, kd: '25/16', kdRatio: 1.56, krRatio: 1.04, map: 'House' },
+    { id: '3', date: '28 Jan 2026', time: '00:31', result: 'win' as const, score: '13 : 4', skillLevel: 1429, skillChange: 29, kd: '23/10', kdRatio: 2.30, krRatio: 1.35, map: 'Factory' },
+    { id: '4', date: '27 Jan 2026', time: '23:50', result: 'win' as const, score: '13 : 8', skillLevel: 1400, skillChange: 30, kd: '32/14', kdRatio: 2.29, krRatio: 1.52, map: 'Mil. Warehouses' },
+    { id: '5', date: '27 Jan 2026', time: '21:46', result: 'win' as const, score: '13 : 9', skillLevel: 1370, skillChange: 29, kd: '31/13', kdRatio: 2.38, krRatio: 1.41, map: 'House' },
+];
 
 export const userProfile = {
   name: "ShadowStriker",
@@ -28,12 +41,17 @@ export const userProfile = {
   tags: ["Pro", "Streamer", "MVP"],
   bannerUrl: DEFAULT_BANNER,
   avatarUrl: DEFAULT_AVATAR,
-  elo: elo,
-  level: level,
+  elo: 1450,
+  level: calculateLevel(1450),
   winStreak: 5,
   country: "Россия",
   language: "ru",
-  lastFlagChange: 0,
+  stats: statsData,
+  matchHistory: matchHistoryData,
+  chartData: matchHistoryData.map(match => ({
+    date: `${match.date} ${match.time}`,
+    skillLevel: match.skillLevel
+  })).reverse()
 };
 
 export const friendsData = [
@@ -48,7 +66,15 @@ export const friendsData = [
     handle: "@s1mpleO",
     tags: ["Pro", "MVP", "Legend"],
     bannerUrl: "https://picsum.photos/seed/s1-banner/1200/400",
-    winStreak: 12
+    winStreak: 12,
+    stats: [
+      { id: '1', title: 'K/D Ratio', value: '3.12', icon: Swords, progress: 85 },
+      { id: '2', title: 'Win Rate', value: '74%', icon: Trophy, progress: 74 },
+      { id: '5', title: 'Matches Won', value: '2450', icon: Star, progress: 90 },
+      { id: '6', title: 'Avg. Kills', value: '24.1', icon: Crosshair, progress: 88 },
+    ],
+    matchHistory: matchHistoryData.map(m => ({ ...m, skillLevel: 3842 + Math.floor(Math.random() * 100) })),
+    chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3842 + Math.floor(Math.random() * 100) })).reverse()
   },
   { 
     name: "m0NESY", 
@@ -61,7 +87,15 @@ export const friendsData = [
     handle: "@m0nesy13",
     tags: ["Pro", "AWP"],
     bannerUrl: "https://picsum.photos/seed/mo-banner/1200/400",
-    winStreak: 8
+    winStreak: 8,
+    stats: [
+      { id: '1', title: 'K/D Ratio', value: '2.89', icon: Swords, progress: 78 },
+      { id: '2', title: 'Win Rate', value: '71%', icon: Trophy, progress: 71 },
+      { id: '5', title: 'Matches Won', value: '1890', icon: Star, progress: 82 },
+      { id: '6', title: 'Avg. Kills', value: '22.5', icon: Crosshair, progress: 84 },
+    ],
+    matchHistory: matchHistoryData.map(m => ({ ...m, skillLevel: 3612 + Math.floor(Math.random() * 100) })),
+    chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3612 + Math.floor(Math.random() * 100) })).reverse()
   },
   { 
     name: "donk", 
@@ -74,42 +108,17 @@ export const friendsData = [
     handle: "@donk66",
     tags: ["Pro", "Rifle"],
     bannerUrl: "https://picsum.photos/seed/do-banner/1200/400",
-    winStreak: 15
-  },
-  { 
-    name: "ZywOo", 
-    avatarUrl: "https://picsum.photos/seed/zy/200/200", 
-    status: "offline", 
-    country: "Франция", 
-    level: 10, 
-    elo: 3721,
-    bio: "The Chosen One",
-    handle: "@zywoo",
-    tags: ["Pro", "Star"],
-    bannerUrl: "https://picsum.photos/seed/zy-banner/1200/400",
-    winStreak: 4
-  },
+    winStreak: 15,
+    stats: [
+      { id: '1', title: 'K/D Ratio', value: '3.45', icon: Swords, progress: 95 },
+      { id: '2', title: 'Win Rate', value: '78%', icon: Trophy, progress: 78 },
+      { id: '5', title: 'Matches Won', value: '1200', icon: Star, progress: 75 },
+      { id: '6', title: 'Avg. Kills', value: '28.2', icon: Crosshair, progress: 98 },
+    ],
+    matchHistory: matchHistoryData.map(m => ({ ...m, skillLevel: 3589 + Math.floor(Math.random() * 100) })),
+    chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3589 + Math.floor(Math.random() * 100) })).reverse()
+  }
 ];
-
-export const statsData = [
-  { id: '1', title: 'K/D Ratio', value: '2.45', icon: Swords, progress: 49 },
-  { id: '2', title: 'Win Rate', value: '68%', icon: Trophy, progress: 68 },
-  { id: '5', title: 'Matches Won', value: '816', icon: Star, progress: 54 },
-  { id: '6', title: 'Avg. Kills', value: '18.5', icon: Crosshair, progress: 62 },
-];
-
-export const matchHistoryData = [
-    { id: '1', date: '28 Jan 2026', time: '02:04', result: 'win', score: '13 : 11', skillLevel: 1471, skillChange: 17, kd: '30/20', kdRatio: 1.50, krRatio: 1.25, map: 'Mil. Warehouses' },
-    { id: '2', date: '28 Jan 2026', time: '01:20', result: 'win', score: '13 : 11', skillLevel: 1454, skillChange: 25, kd: '25/16', kdRatio: 1.56, krRatio: 1.04, map: 'House' },
-    { id: '3', date: '28 Jan 2026', time: '00:31', result: 'win', score: '13 : 4', skillLevel: 1429, skillChange: 29, kd: '23/10', kdRatio: 2.30, krRatio: 1.35, map: 'Factory' },
-    { id: '4', date: '27 Jan 2026', time: '23:50', result: 'win', score: '13 : 8', skillLevel: 1400, skillChange: 30, kd: '32/14', kdRatio: 2.29, krRatio: 1.52, map: 'Mil. Warehouses' },
-    { id: '5', date: '27 Jan 2026', time: '21:46', result: 'win', score: '13 : 9', skillLevel: 1370, skillChange: 29, kd: '31/13', kdRatio: 2.38, krRatio: 1.41, map: 'House' },
-];
-
-export const gameStatsChartData = matchHistoryData.map(match => ({
-    date: `${match.date} ${match.time}`,
-    skillLevel: match.skillLevel
-})).reverse();
 
 export const topPlayersData = [
   { name: "S1mple", country: "Украина", elo: 3842, level: 10 },

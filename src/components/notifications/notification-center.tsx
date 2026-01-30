@@ -50,8 +50,7 @@ export default function NotificationCenter() {
           variant="outline" 
           size="icon" 
           className={cn(
-            "h-12 w-12 rounded-full shadow-2xl transition-all border-primary/20",
-            notifications.length > 0 && "animate-bounce"
+            "h-12 w-12 rounded-full shadow-2xl transition-all border-primary/20"
           )}
           onClick={() => setIsOpen(!isOpen)}
         >

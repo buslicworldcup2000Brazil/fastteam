@@ -10,7 +10,6 @@ import {
 import ProfileHeader from '@/components/profile/profile-header';
 import StatsGrid from '@/components/profile/stats-grid';
 import EditProfileDialog from '@/components/profile/edit-profile-dialog';
-import { statsData, matchHistoryData, gameStatsChartData } from '@/lib/data';
 import MatchHistoryTable from '@/components/profile/match-history-table';
 import GameStatsChart from '@/components/profile/game-stats-chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +19,7 @@ import LeaderboardDialog from '@/components/profile/leaderboard-dialog';
 import { useTheme } from '@/components/theme-provider';
 import { translations } from '@/lib/translations';
 import { Button } from '@/components/ui/button';
-import { Swords, Flame, Trophy, Users } from 'lucide-react';
+import { Swords, Flame, Trophy, Users, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import FriendsList from './friends-list';
@@ -61,6 +60,17 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
+      {!isSelf && (
+        <div className="fixed top-6 left-6 z-50">
+          <Button asChild variant="outline" className="border-primary/20 bg-background/50 backdrop-blur-md hover:bg-primary/10 transition-all font-bold">
+            <Link href="/">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {t.view_profile}
+            </Link>
+          </Button>
+        </div>
+      )}
+
       <ProfileHeader
         user={profile}
         onEdit={() => setIsDialogOpen(true)}
@@ -137,7 +147,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                 <div>
                   <h2 className="text-2xl font-bold mb-1">{t.player_stats}</h2>
                   <p className="text-sm text-muted-foreground mb-4">{t.stats_subtitle}</p>
-                  <StatsGrid stats={statsData} />
+                  <StatsGrid stats={profile.stats || []} />
                 </div>
               </div>
 
@@ -151,10 +161,10 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
             </div>
           </TabsContent>
           <TabsContent value="game_stats">
-             <GameStatsChart data={gameStatsChartData} />
+             <GameStatsChart data={profile.chartData || []} />
           </TabsContent>
           <TabsContent value="match_history">
-            <MatchHistoryTable matches={matchHistoryData} />
+            <MatchHistoryTable matches={profile.matchHistory || []} />
           </TabsContent>
         </Tabs>
       </main>
