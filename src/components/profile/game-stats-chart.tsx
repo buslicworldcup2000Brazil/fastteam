@@ -112,10 +112,13 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
                     indicator="dot"
                     labelClassName="hidden"
                     formatter={(value, name, props) => {
+                        const formattedValue = activeMetric === 'elo' 
+                          ? Math.round(Number(value)) 
+                          : Number(value).toFixed(2);
                         return (
                           <div className="flex flex-col gap-1">
                             <span className="font-semibold text-[10px] opacity-40">{props.payload.date}</span>
-                            <span className='text-xs font-black uppercase italic text-primary'>{currentMetric.label}: {Number(value).toFixed(2)}</span>
+                            <span className='text-xs font-black uppercase italic text-primary'>{currentMetric.label}: {formattedValue}</span>
                           </div>
                         )
                     }}
@@ -142,7 +145,7 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
             <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 rounded-lg p-4 flex flex-col justify-between min-w-0">
               <div className="overflow-hidden">
                 <p className="text-2xl font-black italic text-white truncate">
-                  {activeMetric === 'elo' ? stats.latest : stats.latest.toFixed(2)}
+                  {activeMetric === 'elo' ? Math.round(stats.latest) : stats.latest.toFixed(2)}
                 </p>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60 truncate">
                   Current {currentMetric.label}
@@ -150,13 +153,17 @@ export default function GameStatsChart({ data, title, subtitle, metrics, showSid
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider gap-2">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider gap-4">
                   <span className="text-muted-foreground shrink-0">Highest</span>
-                  <span className="text-white truncate">{activeMetric === 'elo' ? stats.highest : stats.highest.toFixed(2)}</span>
+                  <span className="text-white truncate">
+                    {activeMetric === 'elo' ? Math.round(stats.highest) : stats.highest.toFixed(2)}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider gap-2">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider gap-4">
                   <span className="text-muted-foreground shrink-0">Lowest</span>
-                  <span className="text-white truncate">{activeMetric === 'elo' ? stats.lowest : stats.lowest.toFixed(2)}</span>
+                  <span className="text-white truncate">
+                    {activeMetric === 'elo' ? Math.round(stats.lowest) : stats.lowest.toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
