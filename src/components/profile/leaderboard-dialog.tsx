@@ -22,6 +22,7 @@ import Image from "next/image";
 import { getFlagEmoji } from "@/lib/countries";
 import { Trophy } from "lucide-react";
 import RankBadge from "@/components/ui/rank-badge";
+import { cn } from "@/lib/utils";
 
 type LeaderboardDialogProps = {
   isOpen: boolean;
@@ -41,7 +42,9 @@ export default function LeaderboardDialog({ isOpen, setIsOpen }: LeaderboardDial
             {t.top_players}
           </DialogTitle>
         </DialogHeader>
-        <div className="flex-1 overflow-y-auto px-6 pb-6 scrollbar-hide">
+        <div className={cn(
+          "flex-1 overflow-y-auto px-6 pb-6 scrollbar-hide"
+        )}>
           <Table>
             <TableHeader className="sticky top-0 bg-background z-10">
               <TableRow>

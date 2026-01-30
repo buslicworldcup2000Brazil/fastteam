@@ -35,16 +35,16 @@ export const matchHistoryData = [
 ];
 
 export const userProfile = {
-  name: "ShadowStriker",
+  name: "kelleN",
   bio: "Pro player & Streamer",
-  handle: "@shadowstriker99",
+  handle: "@kellen99",
   tags: ["Pro", "Streamer", "MVP"],
   bannerUrl: DEFAULT_BANNER,
   avatarUrl: DEFAULT_AVATAR,
   elo: 1450,
   level: calculateLevel(1450),
   winStreak: 5,
-  country: "Россия",
+  country: "Соединённые Штаты Америки (США)",
   language: "ru",
   stats: statsData,
   matchHistory: matchHistoryData,
