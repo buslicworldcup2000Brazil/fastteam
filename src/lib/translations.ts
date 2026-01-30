@@ -12,6 +12,8 @@ export const translations = {
     level_info: "Информация об уровне",
     performance_trend: "Тренды производительности",
     skill_over_matches: "Уровень навыка за последние {count} матчей",
+    kd_over_matches: "K/D за последние {count} матчей",
+    avg_over_matches: "AVG за последние {count} матчей",
     date: "Дата",
     score: "Счет",
     skill_level: "Уровень навыка",
@@ -56,7 +58,14 @@ export const translations = {
     decline: "Отклонить",
     view_profile: "Профиль",
     map_veto: "Выбор карты",
-    member_since: "В системе с {date}"
+    member_since: "В системе с {date}",
+    highest_elo: "Highest Elo",
+    lowest_elo: "Lowest Elo",
+    elo_change: "Elo change",
+    last_90_games: "За последние 90 игр",
+    map_win_rates: "Процент побед на картах",
+    wins_short: "W",
+    losses_short: "L"
   },
   en: {
     play: "Play",
@@ -71,6 +80,8 @@ export const translations = {
     level_info: "Level Information",
     performance_trend: "Performance Trend",
     skill_over_matches: "Skill level over the last {count} matches",
+    kd_over_matches: "K/D over the last {count} matches",
+    avg_over_matches: "AVG over the last {count} matches",
     date: "Date",
     score: "Score",
     skill_level: "Skill level",
@@ -115,6 +126,13 @@ export const translations = {
     decline: "Decline",
     view_profile: "View Profile",
     map_veto: "Map Veto",
-    member_since: "Member since {date}"
+    member_since: "Member since {date}",
+    highest_elo: "Highest Elo",
+    lowest_elo: "Lowest Elo",
+    elo_change: "Elo change",
+    last_90_games: "Last 90 games",
+    map_win_rates: "Map Win Rates",
+    wins_short: "W",
+    losses_short: "L"
   }
 };

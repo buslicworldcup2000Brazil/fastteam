@@ -60,8 +60,24 @@ export const userProfile = {
   matchHistory: matchHistoryData,
   chartData: matchHistoryData.map(match => ({
     date: `${match.date} ${match.time}`,
-    skillLevel: match.skillLevel
-  })).reverse()
+    skillLevel: match.skillLevel,
+    kdRatio: match.kdRatio,
+    krRatio: match.krRatio, // We will treat this as AVG
+  })).reverse(),
+  last90Stats: {
+    wins: 60,
+    losses: 30,
+    highestElo: 4655,
+    lowestElo: 4138,
+    eloChange: 440,
+    mapWinRates: [
+      { name: 'Dust2', winRate: 65 },
+      { name: 'Mirage', winRate: 58 },
+      { name: 'Inferno', winRate: 42 },
+      { name: 'Overpass', winRate: 55 },
+      { name: 'Ancient', winRate: 38 },
+    ]
+  }
 };
 
 export const friendsData = [
@@ -85,7 +101,8 @@ export const friendsData = [
       { id: '6', title: 'Avg. Kills', value: '24.1', icon: Crosshair, progress: 88 },
     ],
     matchHistory: matchHistoryData.map(m => ({ ...m, skillLevel: 3842 + Math.floor(Math.random() * 100) })),
-    chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3842 + Math.floor(Math.random() * 100) })).reverse()
+    chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3842 + Math.floor(Math.random() * 100), kdRatio: m.kdRatio + 0.5, krRatio: m.krRatio + 0.5 })).reverse(),
+    last90Stats: userProfile.last90Stats
   },
   { 
     name: "m0NESY", 
@@ -107,7 +124,8 @@ export const friendsData = [
       { id: '6', title: 'Avg. Kills', value: '22.5', icon: Crosshair, progress: 84 },
     ],
     matchHistory: matchHistoryData.map(m => ({ ...m, skillLevel: 3612 + Math.floor(Math.random() * 100) })),
-    chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3612 + Math.floor(Math.random() * 100) })).reverse()
+    chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3612 + Math.floor(Math.random() * 100), kdRatio: m.kdRatio + 0.3, krRatio: m.krRatio + 0.3 })).reverse(),
+    last90Stats: userProfile.last90Stats
   },
   { 
     name: "donk", 
@@ -129,7 +147,8 @@ export const friendsData = [
       { id: '6', title: 'Avg. Kills', value: '28.2', icon: Crosshair, progress: 98 },
     ],
     matchHistory: matchHistoryData.map(m => ({ ...m, skillLevel: 3589 + Math.floor(Math.random() * 100) })),
-    chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3589 + Math.floor(Math.random() * 100) })).reverse()
+    chartData: matchHistoryData.map(m => ({ date: `${m.date} ${m.time}`, skillLevel: 3589 + Math.floor(Math.random() * 100), kdRatio: m.kdRatio + 0.8, krRatio: m.krRatio + 0.8 })).reverse(),
+    last90Stats: userProfile.last90Stats
   }
 ];
 

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -25,6 +24,8 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import FriendsList from './friends-list';
 import { friendsData } from '@/lib/data';
+import ExtendedStatsCard from './extended-stats-card';
+import MapWinRates from './map-win-rates';
 
 type ProfileViewProps = {
   initialUser: any;
@@ -41,7 +42,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
   const handleProfileUpdate = (values: any) => {
-    setProfile(prevProfile => ({
+    setProfile((prevProfile: any) => ({
       ...prevProfile,
       name: values.name,
       bio: values.bio,
@@ -184,9 +185,24 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="game_stats" className="scrollbar-hide">
-             <GameStatsChart data={profile.chartData || []} />
+
+          <TabsContent value="game_stats" className="scrollbar-hide space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column: Summary and Map Rates */}
+              <div className="space-y-6">
+                <ExtendedStatsCard stats={profile.last90Stats || { wins: 0, losses: 0, highestElo: 0, lowestElo: 0, eloChange: 0 }} />
+                <MapWinRates rates={profile.last90Stats?.mapWinRates || []} />
+              </div>
+
+              {/* Right Column: Trend Charts */}
+              <div className="lg:col-span-2 space-y-6">
+                <GameStatsChart data={(profile.chartData || []).slice(-15)} type="elo" />
+                <GameStatsChart data={(profile.chartData || []).slice(-15)} type="kd" />
+                <GameStatsChart data={(profile.chartData || []).slice(-15)} type="avg" />
+              </div>
+            </div>
           </TabsContent>
+
           <TabsContent value="match_history" className="scrollbar-hide">
             <MatchHistoryTable matches={profile.matchHistory || []} />
           </TabsContent>
