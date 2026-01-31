@@ -40,7 +40,7 @@ export default function ProfileHeader({ user, onEdit, hideButtons = false }: Pro
 
   return (
     <header className="relative">
-      <div className="h-80 md:h-[416px] w-full relative">
+      <div className="h-[26rem] md:h-[540px] w-full relative">
         <Image
           key={bannerSrc}
           src={bannerSrc}

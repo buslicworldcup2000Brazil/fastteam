@@ -21,7 +21,7 @@ const LEVEL_THRESHOLDS = [
   { level: 6, start: 1100, end: 1300, color: '#FFEA00' },
   { level: 7, start: 1300, end: 1500, color: '#FFEA00' },
   { level: 8, start: 1500, end: 1700, color: '#FF9100' },
-  { level: 9, start: 1700, end: 1900, color: '#FF9100' },
+  { level: 9, start: 1700, end: 1899, color: '#FF9100' },
   { level: 10, start: 1900, end: 2100, color: '#D50000' },
 ];
 
@@ -42,7 +42,9 @@ export default function EloProgressCard({ currentElo, currentLevel }: EloProgres
           <div className="flex items-center gap-6">
             <LevelIcon level={currentLevel} className="h-16 w-16" />
             <div className="flex flex-col">
-              <span className="text-4xl font-black italic tracking-tighter text-white">{Math.round(currentElo).toLocaleString()}</span>
+              <span className="text-4xl font-black italic tracking-tighter text-white">
+                {Math.round(currentElo)}
+              </span>
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground opacity-60">
                 {t.elo}
               </span>
@@ -56,7 +58,7 @@ export default function EloProgressCard({ currentElo, currentLevel }: EloProgres
           </div>
         </div>
 
-        {/* Segmented Row with Bars and Icons */}
+        {/* Segmented Row: Icons on top, Bars below */}
         <div className="grid grid-cols-10 gap-1.5">
           {LEVEL_THRESHOLDS.map((threshold) => {
             // Calculate progress for this specific segment
@@ -70,8 +72,16 @@ export default function EloProgressCard({ currentElo, currentLevel }: EloProgres
             const isActive = currentLevel === threshold.level;
 
             return (
-              <div key={threshold.level} className="flex flex-col gap-3">
-                {/* Segment Bar */}
+              <div key={threshold.level} className="flex flex-col items-center gap-3">
+                {/* Icon */}
+                <div className={cn(
+                  "relative transition-all duration-300",
+                  isActive ? "scale-110" : "opacity-30 grayscale hover:opacity-100 hover:grayscale-0"
+                )}>
+                  <LevelIcon level={threshold.level} className="h-10 w-10" />
+                </div>
+
+                {/* Segment Bar (Progress bar under icon) */}
                 <div className="h-1.5 w-full bg-white/5 rounded-sm overflow-hidden">
                   <div 
                     className="h-full transition-all duration-500 ease-out"
@@ -82,21 +92,13 @@ export default function EloProgressCard({ currentElo, currentLevel }: EloProgres
                   />
                 </div>
                 
-                {/* Icon and Value */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className={cn(
-                    "relative transition-all duration-300",
-                    isActive ? "scale-110" : "opacity-30 grayscale hover:opacity-100 hover:grayscale-0"
-                  )}>
-                    <LevelIcon level={threshold.level} className="h-10 w-10" />
-                  </div>
-                  <span className={cn(
-                    "text-[9px] font-mono font-bold tracking-tight",
-                    isActive ? "text-white" : "text-muted-foreground/40"
-                  )}>
-                    {threshold.start}
-                  </span>
-                </div>
+                {/* Value */}
+                <span className={cn(
+                  "text-[9px] font-mono font-bold tracking-tight",
+                  isActive ? "text-white" : "text-muted-foreground/40"
+                )}>
+                  {threshold.start}
+                </span>
               </div>
             );
           })}
