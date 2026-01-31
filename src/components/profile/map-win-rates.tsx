@@ -25,6 +25,8 @@ export default function MapWinRates({ rates }: MapWinRatesProps) {
       case 'Factory': return t.map_factory;
       case 'House': return t.map_house;
       case 'Mil. Warehouses': return t.map_warehouses;
+      case 'Mil_Base': return t.map_mil_base;
+      case 'North': return t.map_north;
       default: return name;
     }
   };

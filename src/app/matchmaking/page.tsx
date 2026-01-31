@@ -37,6 +37,8 @@ const MAPS = [
   { id: 'warehouses', name: 'Mil. Warehouses', image: 'https://picsum.photos/seed/warehouses/400/200' },
   { id: 'house', name: 'House', image: 'https://picsum.photos/seed/house/400/200' },
   { id: 'factory', name: 'Factory', image: 'https://picsum.photos/seed/factory/400/200' },
+  { id: 'mil_base', name: 'Mil_Base', image: '/maps/mil_base.jpg' },
+  { id: 'north', name: 'North', image: '/maps/north.jpg' },
 ];
 
 const generateTeam = (size: number, seed: string) => {
@@ -113,7 +115,7 @@ export default function MatchmakingPage() {
   
   const [mode, setMode] = useState('5v5');
   const [myVote, setMyVote] = useState<string | null>(null);
-  const [otherVotes, setOtherVotes] = useState<Record<string, number>>({ warehouses: 0, house: 0, factory: 0 });
+  const [otherVotes, setOtherVotes] = useState<Record<string, number>>({ warehouses: 0, house: 0, factory: 0, mil_base: 0, north: 0 });
   const [selectedMap, setSelectedMap] = useState<any>(null);
   const [isReady, setIsReady] = useState(false);
   const [playersReady, setPlayersReady] = useState(0);
@@ -135,6 +137,8 @@ export default function MatchmakingPage() {
     if (name === 'Factory') return t.map_factory;
     if (name === 'House') return t.map_house;
     if (name === 'Mil. Warehouses') return t.map_warehouses;
+    if (name === 'Mil_Base') return t.map_mil_base;
+    if (name === 'North') return t.map_north;
     return name;
   };
 
@@ -246,7 +250,7 @@ export default function MatchmakingPage() {
   useEffect(() => {
     if (status === 'match_room' && matchStatus === 'veto' && vetoTime === 0) {
         const sorted = Object.entries(votes).sort((a, b) => b[1] - a[1]);
-        const winnerId = sorted[0][1] > 0 ? sorted[0][0] : MAPS[Math.floor(Math.random() * 3)].id;
+        const winnerId = sorted[0][1] > 0 ? sorted[0][0] : MAPS[Math.floor(Math.random() * MAPS.length)].id;
         setSelectedMap(MAPS.find(m => m.id === winnerId));
         setMatchStatus('active');
     }
@@ -268,14 +272,16 @@ export default function MatchmakingPage() {
       warehouses: (otherVotes.warehouses || 0) + (myVote === 'warehouses' ? 1 : 0),
       house: (otherVotes.house || 0) + (myVote === 'house' ? 1 : 0),
       factory: (otherVotes.factory || 0) + (myVote === 'factory' ? 1 : 0),
+      mil_base: (otherVotes.mil_base || 0) + (myVote === 'mil_base' ? 1 : 0),
+      north: (otherVotes.north || 0) + (myVote === 'north' ? 1 : 0),
     };
   }, [otherVotes, myVote]);
 
   useEffect(() => {
     if (status === 'match_room' && matchStatus === 'veto') {
-      const initialOthers = { warehouses: 0, house: 0, factory: 0 };
+      const initialOthers = { warehouses: 0, house: 0, factory: 0, mil_base: 0, north: 0 };
       for (let i = 0; i < totalPlayers - 1; i++) {
-        const randomMap = MAPS[Math.floor(Math.random() * 3)].id;
+        const randomMap = MAPS[Math.floor(Math.random() * MAPS.length)].id;
         initialOthers[randomMap as keyof typeof initialOthers]++;
       }
       setOtherVotes(initialOthers);
