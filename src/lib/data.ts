@@ -71,9 +71,9 @@ export const userProfile = {
     lowestElo: 4138,
     eloChange: 440,
     mapWinRates: [
-      { name: 'Mil. Warehouses', winRate: 65 },
-      { name: 'House', winRate: 58 },
-      { name: 'Factory', winRate: 42 },
+      { name: 'Mil. Warehouses', winRate: 65, matches: 42 },
+      { name: 'House', winRate: 58, matches: 28 },
+      { name: 'Factory', winRate: 42, matches: 20 },
     ]
   }
 };

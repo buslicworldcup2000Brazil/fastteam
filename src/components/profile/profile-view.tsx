@@ -26,6 +26,7 @@ import FriendsList from './friends-list';
 import { friendsData } from '@/lib/data';
 import ExtendedStatsCard from './extended-stats-card';
 import MapWinRates from './map-win-rates';
+import EloProgressCard from './elo-progress-card';
 
 type ProfileViewProps = {
   initialUser: any;
@@ -199,6 +200,8 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
           </TabsContent>
 
           <TabsContent value="game_stats" className="scrollbar-hide space-y-8">
+            <EloProgressCard currentElo={profile.elo} currentLevel={profile.level} />
+            
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left Column: Summary and Map Rates */}
               <div className="space-y-6">
