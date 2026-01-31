@@ -34,9 +34,9 @@ const TimerProgressBar = ({ current, total }: { current: number, total: number }
 
 // --- MOCK DATA ---
 const MAPS = [
-  { id: 'warehouses', name: 'Mil. Warehouses', image: 'https://picsum.photos/seed/warehouses/400/200' },
-  { id: 'house', name: 'House', image: 'https://picsum.photos/seed/house/400/200' },
-  { id: 'factory', name: 'Factory', image: 'https://picsum.photos/seed/factory/400/200' },
+  { id: 'warehouses', name: 'Mil. Warehouses', image: '/maps/warehouses.jpg' },
+  { id: 'house', name: 'House', image: '/maps/house.jpg' },
+  { id: 'factory', name: 'Factory', image: '/maps/factory.jpg' },
   { id: 'mil_base', name: 'Mil_Base', image: '/maps/mil_base.jpg' },
   { id: 'north', name: 'North', image: '/maps/north.jpg' },
 ];
