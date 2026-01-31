@@ -139,7 +139,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                         <LevelIcon level={profile.level} className="h-20 w-20" />
                       </button>
                       <div>
-                        <p className="text-3xl font-bold">{profile.elo} <span className="text-sm text-muted-foreground">{t.elo}</span></p>
+                        <p className="text-3xl font-bold">{Math.round(profile.elo)} <span className="text-sm text-muted-foreground">{t.elo}</span></p>
                         <p className="text-muted-foreground text-sm">{t.level} {profile.level}</p>
                       </div>
                     </CardContent>

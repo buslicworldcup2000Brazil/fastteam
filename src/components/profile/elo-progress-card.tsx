@@ -13,19 +13,19 @@ type EloProgressCardProps = {
 };
 
 const LEVEL_THRESHOLDS = [
-  { level: 1, elo: 100, color: '#3b3b3b' },
-  { level: 2, elo: 501, color: '#00ff16' },
-  { level: 3, elo: 751, color: '#00ff16' },
-  { level: 4, elo: 901, color: '#FFEA00' },
-  { level: 5, elo: 1051, color: '#FFEA00' },
-  { level: 6, elo: 1201, color: '#FFEA00' },
-  { level: 7, elo: 1351, color: '#FF9100' },
-  { level: 8, elo: 1531, color: '#FF9100' },
-  { level: 9, elo: 1751, color: '#D50000' },
-  { level: 10, elo: 2001, color: '#D50000' },
+  { level: 1, elo: 100, color: '#00ff16' },
+  { level: 2, elo: 300, color: '#00ff16' },
+  { level: 3, elo: 500, color: '#00ff16' },
+  { level: 4, elo: 700, color: '#FFEA00' },
+  { level: 5, elo: 900, color: '#FFEA00' },
+  { level: 6, elo: 1100, color: '#FFEA00' },
+  { level: 7, elo: 1300, color: '#FFEA00' },
+  { level: 8, elo: 1500, color: '#FF9100' },
+  { level: 9, elo: 1700, color: '#FF9100' },
+  { level: 10, elo: 1900, color: '#D50000' },
 ];
 
-const PRO_THRESHOLD = 3663;
+const PRO_THRESHOLD = 2100;
 
 export default function EloProgressCard({ currentElo, currentLevel }: EloProgressCardProps) {
   const { language } = useTheme();
@@ -42,11 +42,11 @@ export default function EloProgressCard({ currentElo, currentLevel }: EloProgres
           <div className="flex items-center gap-6">
             <LevelIcon level={currentLevel} className="h-16 w-16" />
             <div className="flex flex-col">
-              <span className="text-4xl font-black italic tracking-tighter text-white">{currentElo.toLocaleString()}</span>
+              <span className="text-4xl font-black italic tracking-tighter text-white">{Math.round(currentElo).toLocaleString()}</span>
             </div>
           </div>
           <div className="text-right flex flex-col items-end">
-            <span className="text-xl font-black text-white">{eloToNext}</span>
+            <span className="text-xl font-black text-white">{Math.round(eloToNext)}</span>
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground opacity-60">
               {t.elo_needed_to_next}
             </span>
