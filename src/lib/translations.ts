@@ -72,7 +72,8 @@ export const translations = {
     map_warehouses: "Военные склады",
     server_host: "Server Host",
     elo_needed_to_next: "Elo до следующего уровня",
-    matches: "Матчи"
+    matches: "Матчи",
+    total_matches: "Всего матчей"
   },
   en: {
     play: "Play",
@@ -147,6 +148,7 @@ export const translations = {
     map_warehouses: "Mil. Warehouses",
     server_host: "Server Host",
     elo_needed_to_next: "Elo needed to next skill rank",
-    matches: "Matches"
+    matches: "Matches",
+    total_matches: "Total Matches"
   }
 };

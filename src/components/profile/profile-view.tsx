@@ -27,6 +27,7 @@ import { friendsData } from '@/lib/data';
 import ExtendedStatsCard from './extended-stats-card';
 import MapWinRates from './map-win-rates';
 import EloProgressCard from './elo-progress-card';
+import TotalMatchesCard from './total-matches-card';
 
 type ProfileViewProps = {
   initialUser: any;
@@ -125,7 +126,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
           <TabsContent value="overview" className="scrollbar-hide">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Card className={cn(
                     "bg-gradient-to-br to-card/5",
                     getLevelColorClass(profile.level)
@@ -180,6 +181,8 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                       </p>
                     </CardContent>
                   </Card>
+
+                  <TotalMatchesCard count={profile.totalMatches} />
                 </div>
 
                 <div>

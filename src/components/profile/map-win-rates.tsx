@@ -39,10 +39,7 @@ export default function MapWinRates({ rates }: MapWinRatesProps) {
         {rates.map((map) => (
           <div key={map.name} className="space-y-2">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider">
-              <div className="flex flex-col">
-                <span>{getTranslatedMapName(map.name)}</span>
-                <span className="text-[10px] text-muted-foreground font-normal lowercase">{t.matches}: {map.matches}</span>
-              </div>
+              <span>{getTranslatedMapName(map.name)}</span>
               <span className={map.winRate >= 50 ? 'text-green-500' : 'text-red-500'}>{map.winRate}%</span>
             </div>
             <Progress value={map.winRate} className="h-1.5 bg-white/5" />
