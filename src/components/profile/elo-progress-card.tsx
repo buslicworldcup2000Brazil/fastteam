@@ -13,26 +13,26 @@ type EloProgressCardProps = {
 };
 
 const LEVEL_THRESHOLDS = [
-  { level: 1, elo: 100, color: '#00ff16' },
-  { level: 2, elo: 300, color: '#00ff16' },
-  { level: 3, elo: 500, color: '#00ff16' },
-  { level: 4, elo: 700, color: '#FFEA00' },
-  { level: 5, elo: 900, color: '#FFEA00' },
-  { level: 6, elo: 1100, color: '#FFEA00' },
-  { level: 7, elo: 1300, color: '#FFEA00' },
-  { level: 8, elo: 1500, color: '#FF9100' },
-  { level: 9, elo: 1700, color: '#FF9100' },
-  { level: 10, elo: 1900, color: '#D50000' },
+  { level: 1, start: 100, end: 300, color: '#00ff16' },
+  { level: 2, start: 300, end: 500, color: '#00ff16' },
+  { level: 3, start: 500, end: 700, color: '#00ff16' },
+  { level: 4, start: 700, end: 900, color: '#FFEA00' },
+  { level: 5, start: 900, end: 1100, color: '#FFEA00' },
+  { level: 6, start: 1100, end: 1300, color: '#FFEA00' },
+  { level: 7, start: 1300, end: 1500, color: '#FFEA00' },
+  { level: 8, start: 1500, end: 1700, color: '#FF9100' },
+  { level: 9, start: 1700, end: 1900, color: '#FF9100' },
+  { level: 10, start: 1900, end: 2100, color: '#D50000' },
 ];
-
-const PRO_THRESHOLD = 2100;
 
 export default function EloProgressCard({ currentElo, currentLevel }: EloProgressCardProps) {
   const { language } = useTheme();
   const t = translations[language];
 
-  const nextThreshold = LEVEL_THRESHOLDS.find(t => t.elo > currentElo) || { elo: PRO_THRESHOLD, level: 11 };
-  const eloToNext = Math.max(0, nextThreshold.elo - currentElo);
+  const currentThreshold = LEVEL_THRESHOLDS.find(t => currentElo >= t.start && currentElo < t.end) || 
+                          (currentElo >= 2100 ? LEVEL_THRESHOLDS[9] : LEVEL_THRESHOLDS[0]);
+  
+  const eloToNext = currentElo >= 2100 ? 0 : Math.max(0, currentThreshold.end - currentElo);
 
   return (
     <Card className="bg-[#121212] border-white/5 overflow-hidden">
@@ -43,6 +43,9 @@ export default function EloProgressCard({ currentElo, currentLevel }: EloProgres
             <LevelIcon level={currentLevel} className="h-16 w-16" />
             <div className="flex flex-col">
               <span className="text-4xl font-black italic tracking-tighter text-white">{Math.round(currentElo).toLocaleString()}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground opacity-60">
+                {t.elo}
+              </span>
             </div>
           </div>
           <div className="text-right flex flex-col items-end">
@@ -53,51 +56,50 @@ export default function EloProgressCard({ currentElo, currentLevel }: EloProgres
           </div>
         </div>
 
-        {/* Levels Row */}
-        <div className="flex items-center justify-between gap-1 px-1">
-          {LEVEL_THRESHOLDS.map((threshold) => (
-            <div key={threshold.level} className="flex flex-col items-center gap-2 group">
-              <div className={cn(
-                "relative transition-all duration-300",
-                currentLevel === threshold.level ? "scale-110" : "opacity-40 grayscale hover:opacity-100 hover:grayscale-0"
-              )}>
-                <LevelIcon level={threshold.level} className="h-10 w-10" />
-              </div>
-              <span className={cn(
-                "text-[9px] font-mono font-bold tracking-tight",
-                currentLevel === threshold.level ? "text-white" : "text-muted-foreground/40"
-              )}>
-                {threshold.elo}
-              </span>
-            </div>
-          ))}
-          {/* Pro/Crown Badge */}
-          <div className="flex flex-col items-center gap-2 opacity-40 grayscale">
-             <div className="h-10 w-10 flex items-center justify-center border-2 border-primary/20 rounded-full">
-                <svg viewBox="0 0 24 24" className="h-6 w-6 text-primary" fill="currentColor">
-                   <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" />
-                </svg>
-             </div>
-             <span className="text-[9px] font-mono font-bold text-muted-foreground/40">{PRO_THRESHOLD}</span>
-          </div>
-        </div>
+        {/* Segmented Row with Bars and Icons */}
+        <div className="grid grid-cols-10 gap-1.5">
+          {LEVEL_THRESHOLDS.map((threshold) => {
+            // Calculate progress for this specific segment
+            let progress = 0;
+            if (currentElo >= threshold.end) {
+              progress = 100;
+            } else if (currentElo >= threshold.start) {
+              progress = ((currentElo - threshold.start) / (threshold.end - threshold.start)) * 100;
+            }
 
-        {/* Segmented Progress Bar */}
-        <div className="flex h-1.5 w-full gap-1 overflow-hidden">
-           {LEVEL_THRESHOLDS.map((threshold, idx) => {
-             const isActive = currentLevel >= threshold.level;
-             return (
-               <div 
-                 key={idx} 
-                 className={cn(
-                   "flex-1 rounded-sm transition-all duration-500",
-                   isActive ? "" : "bg-white/5"
-                 )}
-                 style={{ backgroundColor: isActive ? threshold.color : undefined }}
-               />
-             );
-           })}
-           <div className="flex-1 rounded-sm bg-white/5" />
+            const isActive = currentLevel === threshold.level;
+
+            return (
+              <div key={threshold.level} className="flex flex-col gap-3">
+                {/* Segment Bar */}
+                <div className="h-1.5 w-full bg-white/5 rounded-sm overflow-hidden">
+                  <div 
+                    className="h-full transition-all duration-500 ease-out"
+                    style={{ 
+                      width: `${progress}%`,
+                      backgroundColor: threshold.color
+                    }}
+                  />
+                </div>
+                
+                {/* Icon and Value */}
+                <div className="flex flex-col items-center gap-2">
+                  <div className={cn(
+                    "relative transition-all duration-300",
+                    isActive ? "scale-110" : "opacity-30 grayscale hover:opacity-100 hover:grayscale-0"
+                  )}>
+                    <LevelIcon level={threshold.level} className="h-10 w-10" />
+                  </div>
+                  <span className={cn(
+                    "text-[9px] font-mono font-bold tracking-tight",
+                    isActive ? "text-white" : "text-muted-foreground/40"
+                  )}>
+                    {threshold.start}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>
