@@ -1,4 +1,3 @@
-
 "use client";
 
 import { z } from 'zod';
@@ -28,7 +27,7 @@ import { translations } from '@/lib/translations';
 import { cn } from '@/lib/utils';
 
 const profileSchema = z.object({
-  name: z.string().min(2, "Nickname must be at least 2 characters."),
+  name: z.string().min(2, "Nickname must be at least 2 characters.").max(12, "Nickname must be at most 12 characters."),
   bio: z.string().max(30, "Bio must be at most 30 characters.").optional(),
   bannerUrl: z.string().url({ message: "Please enter a valid URL." }).or(z.literal('')),
   avatarUrl: z.string().url({ message: "Please enter a valid URL." }).or(z.literal('')),
@@ -189,8 +188,11 @@ export default function EditProfileDialog({ isOpen, setIsOpen, onUpdate, current
                     <FormItem>
                       <FormLabel>{t.nickname}</FormLabel>
                       <FormControl>
-                        <Input placeholder="CoolGamer123" {...field} />
+                        <Input placeholder="CoolGamer123" {...field} maxLength={12} />
                       </FormControl>
+                      <FormDescription className="text-xs">
+                        {language === 'ru' ? 'Максимум 12 символов' : 'Max 12 characters'}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
