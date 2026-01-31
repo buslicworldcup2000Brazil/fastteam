@@ -51,33 +51,33 @@ const generateTeam = (size: number, seed: string) => {
 };
 
 const MatchPlayerCard = ({ player }: { player: any }) => (
-  <div className="bg-[#151515] border border-white/5 rounded p-2 flex flex-col gap-2">
+  <div className="bg-[#151515] border border-white/5 rounded p-1 md:p-2 flex flex-col gap-1 md:gap-2">
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 md:gap-2">
         <div className="relative">
-          <Avatar className="h-10 w-10 border border-primary/40">
+          <Avatar className="h-6 w-6 md:h-10 md:w-10 border border-primary/40">
             <AvatarImage src={player.avatarUrl} />
             <AvatarFallback>{player.name[0]}</AvatarFallback>
           </Avatar>
-          {player.isCaptain && <Crown className="absolute -top-1 -right-1 h-3 w-3 text-primary" fill="currentColor" />}
+          {player.isCaptain && <Crown className="absolute -top-1 -right-1 h-2 w-2 md:h-3 md:w-3 text-primary" fill="currentColor" />}
         </div>
-        <div>
-          <div className="flex items-center gap-1">
-             <div className="relative w-4 h-2.5 overflow-hidden rounded-xs border border-white/10 shrink-0">
+        <div className="min-w-0">
+          <div className="flex items-center gap-0.5 md:gap-1">
+             <div className="relative w-3 h-2 md:w-4 md:h-2.5 overflow-hidden rounded-xs border border-white/10 shrink-0">
                 <Image src={getFlagEmoji(player.country)} alt={player.country} fill className="object-cover" unoptimized />
               </div>
-              <span className="text-sm font-bold truncate max-w-[80px]">{player.name}</span>
+              <span className="text-[8px] md:text-sm font-bold truncate max-w-[40px] md:max-w-[80px]">{player.name}</span>
           </div>
-          <p className="text-[10px] text-muted-foreground leading-none">Stats</p>
+          <p className="hidden md:block text-[10px] text-muted-foreground leading-none">Stats</p>
         </div>
       </div>
-      <div className="flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded">
-         <span className="text-xs font-bold">{player.elo}</span>
-         <LevelIcon level={player.level} className="h-4 w-4" />
+      <div className="flex items-center gap-0.5 md:gap-1.5 bg-black/40 px-1 py-0.5 md:px-2 md:py-1 rounded">
+         <span className="text-[8px] md:text-xs font-bold">{player.elo}</span>
+         <LevelIcon level={player.level} className="h-3 w-3 md:h-4 md:w-4" />
       </div>
     </div>
     
-    <div className="grid grid-cols-4 gap-1 text-center">
+    <div className="hidden md:grid grid-cols-4 gap-1 text-center">
       <div className="bg-black/20 p-1 rounded">
         <p className="text-[8px] text-muted-foreground uppercase font-bold">Matches</p>
         <p className="text-[10px] font-bold">1450</p>
@@ -344,19 +344,19 @@ export default function MatchmakingPage() {
 
   if (status === 'match_room') {
     return (
-      <div className="min-h-screen bg-[#0d0d0d] text-[#e0e0e0] font-body p-4 md:p-6 flex flex-col scrollbar-hide">
-        <div className="fixed top-6 left-6 z-50">
-          <Button asChild variant="outline" className="border-primary/20 bg-background/50 backdrop-blur-md hover:bg-primary/10 transition-all font-bold">
+      <div className="min-h-screen bg-[#0d0d0d] text-[#e0e0e0] font-body p-2 md:p-6 flex flex-col scrollbar-hide">
+        <div className="fixed top-4 left-4 z-50 md:top-6 md:left-6">
+          <Button asChild variant="outline" className="h-8 md:h-10 px-2 md:px-4 border-primary/20 bg-background/50 backdrop-blur-md hover:bg-primary/10 transition-all font-bold text-[10px] md:text-sm">
             <Link href="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
               {t.view_profile}
             </Link>
           </Button>
         </div>
 
-        <div className="max-w-7xl mx-auto w-full flex items-center justify-between border-b border-white/5 pb-2 mb-4 shrink-0">
-          <div className="flex gap-8">
-            <button className="text-primary font-bold uppercase tracking-tighter italic border-b-2 border-primary pb-2 -mb-2">{mode} Ranked</button>
+        <div className="max-w-7xl mx-auto w-full flex items-center justify-between border-b border-white/5 pb-2 mb-4 shrink-0 mt-10 md:mt-0">
+          <div className="flex gap-4 md:gap-8">
+            <button className="text-primary text-xs md:text-sm font-bold uppercase tracking-tighter italic border-b-2 border-primary pb-2 -mb-2">{mode} Ranked</button>
           </div>
           <div className="flex items-center gap-4">
             <Share2 className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-white" />
@@ -364,39 +364,39 @@ export default function MatchmakingPage() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 overflow-hidden">
-          <div className="lg:col-span-3 flex flex-col gap-2 overflow-hidden">
-             <div className="flex items-center justify-between mb-1 px-1 shrink-0">
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={teamA[0].avatarUrl} />
-                  </Avatar>
-                  <span className="font-bold text-sm uppercase tracking-tighter italic">team_A</span>
-                </div>
+        <div className="max-w-7xl mx-auto grid grid-cols-12 gap-2 md:gap-4 flex-1 overflow-hidden">
+          {/* Team A - Left Side */}
+          <div className="col-span-3 flex flex-col gap-2 overflow-hidden">
+             <div className="flex items-center gap-1 md:gap-2 mb-1 px-1 shrink-0">
+                <Avatar className="h-5 w-5 md:h-8 md:w-8">
+                  <AvatarImage src={teamA[0].avatarUrl} />
+                </Avatar>
+                <span className="font-bold text-[8px] md:text-sm uppercase tracking-tighter italic truncate">TEAM_A</span>
              </div>
-             <div className="flex flex-col gap-2 overflow-y-auto pr-1 scrollbar-hide pb-4">
+             <div className="flex flex-col gap-1 md:gap-2 overflow-y-auto pr-1 scrollbar-hide pb-4">
               {teamA.map((p, i) => <MatchPlayerCard key={i} player={p} />)}
              </div>
           </div>
 
-          <div className="lg:col-span-6 flex flex-col items-center justify-start pt-0">
+          {/* Center Content */}
+          <div className="col-span-6 flex flex-col items-center justify-start pt-0">
             <div className="text-center mb-2">
-               <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-1">{mode} · EU</p>
-               <h2 className="text-lg font-black italic uppercase text-white leading-none">
+               <p className="text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-1">{mode} · EU</p>
+               <h2 className="text-[10px] md:text-lg font-black italic uppercase text-white leading-none">
                  {matchStatus === 'veto' ? t.map_veto : "Match Ready"}
                </h2>
             </div>
 
-            <Card className="w-full bg-[#121212] border-white/5 p-4 flex flex-col items-center shadow-2xl relative overflow-hidden">
+            <Card className="w-full bg-[#121212] border-white/5 p-2 md:p-4 flex flex-col items-center shadow-2xl relative overflow-hidden">
                 {matchStatus === 'veto' ? (
-                  <div className="w-full space-y-4">
+                  <div className="w-full space-y-2 md:space-y-4">
                     <div className="text-center space-y-1">
-                       <p className="text-2xl font-mono font-black text-primary">{formatTime(vetoTime)}</p>
-                       <div className="w-[100px] mx-auto">
+                       <p className="text-sm md:text-2xl font-mono font-black text-primary">{formatTime(vetoTime)}</p>
+                       <div className="w-[60px] md:w-[100px] mx-auto">
                          <TimerProgressBar current={vetoTime} total={20} />
                        </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3">
                       {MAPS.map((map) => {
                         const count = (votes as any)[map.id];
                         const percentage = (count / totalPlayers) * 100;
@@ -406,16 +406,16 @@ export default function MatchmakingPage() {
                             onClick={() => setMyVote(map.id)}
                             className={cn(
                               "relative group cursor-pointer border rounded overflow-hidden transition-all",
-                              myVote === map.id ? "border-primary scale-105" : "border-white/5 opacity-60 hover:opacity-100"
+                              myVote === map.id ? "border-primary scale-102" : "border-white/5 opacity-60 hover:opacity-100"
                             )}
                           >
-                            <div className="h-20 relative">
+                            <div className="h-10 md:h-20 relative">
                               <Image src={map.image} alt={map.name} fill className="object-cover" />
                               <div className="absolute inset-0 bg-black/40" />
                               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="text-[10px] font-black uppercase italic">{getTranslatedMapName(map.name)}</span>
-                                <span className="text-[10px] font-bold mt-1">{count}/{totalPlayers}</span>
-                                <div className="h-1 w-10 bg-white/20 mt-1 rounded-full overflow-hidden">
+                                <span className="text-[7px] md:text-[10px] font-black uppercase italic">{getTranslatedMapName(map.name)}</span>
+                                <span className="text-[7px] md:text-[10px] font-bold mt-0.5">{count}/{totalPlayers}</span>
+                                <div className="h-0.5 md:h-1 w-6 md:w-10 bg-white/20 mt-0.5 rounded-full overflow-hidden">
                                   <div className="h-full bg-primary" style={{ width: `${percentage}%` }} />
                                 </div>
                               </div>
@@ -427,24 +427,24 @@ export default function MatchmakingPage() {
                   </div>
                 ) : (
                   <>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground mb-1">Connect now</p>
-                    <div className="text-center space-y-1 mb-4 w-full">
-                      <p className="text-4xl font-mono font-black text-primary">{formatTime(connectTime)}</p>
-                      <div className="w-[120px] mx-auto">
+                    <p className="text-[7px] md:text-[10px] font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-muted-foreground mb-1">Connect now</p>
+                    <div className="text-center space-y-1 mb-2 md:mb-4 w-full">
+                      <p className="text-xl md:text-4xl font-mono font-black text-primary">{formatTime(connectTime)}</p>
+                      <div className="w-[80px] md:w-[120px] mx-auto">
                         <TimerProgressBar current={connectTime} total={180} />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 w-full mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 w-full mb-2 md:mb-4">
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{t.server_host}</p>
-                        <div className="flex items-center gap-3 bg-black/40 p-2 rounded border border-white/5">
-                            <Avatar className="h-6 w-6">
+                        <p className="text-[7px] md:text-[10px] font-bold uppercase text-muted-foreground mb-1">{t.server_host}</p>
+                        <div className="flex items-center gap-1.5 md:gap-3 bg-black/40 p-1 md:p-2 rounded border border-white/5">
+                            <Avatar className="h-4 w-4 md:h-6 md:w-6">
                                 <AvatarImage src={serverHost.avatarUrl} />
                             </Avatar>
-                            <span className="text-xs font-bold uppercase italic truncate max-w-[80px]">{serverHost.name}</span>
+                            <span className="text-[8px] md:text-xs font-bold uppercase italic truncate">{serverHost.name}</span>
                         </div>
                       </div>
-                      <div>
+                      <div className="hidden md:block">
                         <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{t.map}</p>
                         <div className="flex items-center gap-3 bg-black/40 p-2 rounded border border-white/5">
                             <div className="relative w-7 h-4 overflow-hidden rounded-xs border border-white/10 shrink-0">
@@ -454,19 +454,19 @@ export default function MatchmakingPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="w-full space-y-3">
+                    <div className="w-full space-y-2 md:space-y-3">
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">Password</p>
+                        <p className="text-[7px] md:text-[10px] font-bold uppercase text-muted-foreground mb-0.5 md:mb-1">Password</p>
                         <div className="flex items-center bg-black/60 rounded border border-white/10 overflow-hidden">
                            <div 
                             onClick={copyPassword}
-                            className="flex-1 px-4 py-2 font-mono text-sm text-muted-foreground tracking-widest italic cursor-pointer hover:text-white"
+                            className="flex-1 px-2 md:px-4 py-1.5 md:py-2 font-mono text-[10px] md:text-sm text-muted-foreground tracking-widest italic cursor-pointer hover:text-white"
                            >
                               {password}
                            </div>
                         </div>
                       </div>
-                      <Button className="w-full h-11 bg-primary text-primary-foreground font-black italic uppercase tracking-tighter text-lg">
+                      <Button className="w-full h-8 md:h-11 bg-primary text-primary-foreground font-black italic uppercase tracking-tighter text-xs md:text-lg">
                         Connect
                       </Button>
                     </div>
@@ -475,16 +475,15 @@ export default function MatchmakingPage() {
             </Card>
           </div>
 
-          <div className="lg:col-span-3 flex flex-col gap-2 overflow-hidden">
-             <div className="flex items-center justify-between mb-1 px-1 shrink-0">
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={teamB[0].avatarUrl} />
-                  </Avatar>
-                  <span className="font-bold text-sm uppercase tracking-tighter italic">team_B</span>
-                </div>
+          {/* Team B - Right Side */}
+          <div className="col-span-3 flex flex-col gap-2 overflow-hidden">
+             <div className="flex items-center justify-end gap-1 md:gap-2 mb-1 px-1 shrink-0">
+                <span className="font-bold text-[8px] md:text-sm uppercase tracking-tighter italic truncate text-right">TEAM_B</span>
+                <Avatar className="h-5 w-5 md:h-8 md:w-8">
+                  <AvatarImage src={teamB[0].avatarUrl} />
+                </Avatar>
              </div>
-             <div className="flex flex-col gap-2 overflow-y-auto pr-1 scrollbar-hide pb-4">
+             <div className="flex flex-col gap-1 md:gap-2 overflow-y-auto pr-1 scrollbar-hide pb-4">
               {teamB.map((p, i) => <MatchPlayerCard key={i} player={p} />)}
              </div>
           </div>
@@ -510,7 +509,7 @@ export default function MatchmakingPage() {
             <div className="h-1 w-16 bg-primary mx-auto mb-4" />
         </div>
 
-        <div className="flex flex-wrap justify-center items-center gap-6 mb-12 w-full">
+        <div className="flex justify-center items-center gap-2 md:gap-6 mb-12 w-full overflow-x-hidden">
             {Array.from({ length: mode === '2v2' ? 2 : 5 }).map((_, i) => {
               const myPos = mode === '2v2' ? 0 : 2;
               return i === myPos ? (
@@ -518,21 +517,21 @@ export default function MatchmakingPage() {
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 text-primary z-20">
                       <Crown className="h-2 w-2" fill="currentColor" />
                   </div>
-                  <Card className="w-44 h-60 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg">
+                  <Card className="w-[18vw] h-[25vw] md:w-44 md:h-60 bg-card border-border/40 relative overflow-hidden flex flex-col items-center justify-center shadow-lg">
                     <div className="absolute inset-0">
                         <Image src={userProfile.bannerUrl} alt="banner" fill className="object-cover opacity-30" />
                         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
                     </div>
-                    <div className="relative text-center flex flex-col items-center">
-                      <Avatar className="h-20 w-20 border-4 border-background ring-2 ring-primary mb-2">
+                    <div className="relative text-center flex flex-col items-center p-1">
+                      <Avatar className="h-8 w-8 md:h-20 md:w-20 border-2 md:border-4 border-background ring-1 md:ring-2 ring-primary mb-1 md:mb-2">
                         <AvatarImage src={userProfile.avatarUrl} alt={userProfile.name} />
                         <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <div className="flex items-center gap-1.5">
-                        <p className="font-bold text-lg tracking-tight">{userProfile.name}</p>
+                      <div className="flex items-center gap-1">
+                        <p className="font-bold text-[7px] md:text-lg tracking-tight truncate max-w-[50px] md:max-w-full">{userProfile.name}</p>
                       </div>
-                      <div className="mt-3 flex items-center gap-2 bg-black/60 rounded-full px-2.5 py-1 text-xs backdrop-blur-md border border-white/10">
-                          <LevelIcon level={userProfile.level} className="h-5 w-5" />
+                      <div className="mt-1 md:mt-3 flex items-center gap-1 bg-black/60 rounded-full px-1 py-0.5 md:px-2.5 md:py-1 text-[6px] md:text-xs backdrop-blur-md border border-white/10">
+                          <LevelIcon level={userProfile.level} className="h-2 w-2 md:h-5 md:w-5" />
                           <span className='text-white font-bold tracking-tighter'>{userProfile.elo}</span>
                       </div>
                     </div>
@@ -542,12 +541,12 @@ export default function MatchmakingPage() {
                 <div key={`empty-${i}`} className="pt-6">
                   <Card 
                     onClick={() => setIsInviteOpen(true)}
-                    className="w-44 h-60 bg-card/5 border-border/20 border-dashed flex flex-col items-center justify-center p-4 text-muted-foreground cursor-pointer group"
+                    className="w-[18vw] h-[25vw] md:w-44 md:h-60 bg-card/5 border-border/20 border-dashed flex flex-col items-center justify-center p-1 text-muted-foreground cursor-pointer group"
                   >
-                      <div className="bg-muted/10 p-4 rounded-full group-hover:bg-primary/10 transition-colors">
-                        <Plus className="h-6 w-6" />
+                      <div className="bg-muted/10 p-1 md:p-4 rounded-full group-hover:bg-primary/10 transition-colors">
+                        <Plus className="h-3 w-3 md:h-6 md:w-6" />
                       </div>
-                      <p className="mt-2 text-[10px] font-bold uppercase tracking-widest opacity-60">{t.invite}</p>
+                      <p className="mt-1 text-[5px] md:text-[10px] font-bold uppercase tracking-widest opacity-60 text-center">{t.invite}</p>
                   </Card>
                 </div>
               );
