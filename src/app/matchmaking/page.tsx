@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -145,7 +144,7 @@ export default function MatchmakingPage() {
     return name;
   };
 
-  // Handle Search transition
+  // Handle Search transition - FAST SEARCH (3 SECONDS)
   useEffect(() => {
     let interval: any;
     if (status === 'searching') {
@@ -159,7 +158,7 @@ export default function MatchmakingPage() {
   }, [status]);
 
   useEffect(() => {
-    if (status === 'searching' && searchTime >= 5) {
+    if (status === 'searching' && searchTime >= 3) {
       setStatus('ready_check');
       setReadyCheckTime(20);
       setIsReady(false);
@@ -167,19 +166,21 @@ export default function MatchmakingPage() {
     }
   }, [status, searchTime]);
 
-  // Ready Check Timer
+  // Ready Check Timer - FAST READY (1-2 SECONDS)
   useEffect(() => {
     let interval: any;
     if (status === 'ready_check') {
       interval = setInterval(() => {
         setReadyCheckTime(prev => Math.max(0, prev - 1));
         setPlayersReady(prev => {
-          if (prev < totalPlayers - 1 && Math.random() > 0.6) {
-            return prev + 1;
+          // Increase probability of players getting ready quickly
+          if (prev < totalPlayers - 1) {
+            const added = Math.floor(Math.random() * 4) + 1; // Add 1-4 players at once
+            return Math.min(totalPlayers - 1, prev + added);
           }
           return prev;
         });
-      }, 1000);
+      }, 800); // Slightly faster interval too
     }
     return () => clearInterval(interval);
   }, [status, totalPlayers]);
@@ -206,7 +207,7 @@ export default function MatchmakingPage() {
   // Auto transition to Match Room when all are ready
   useEffect(() => {
     if (status === 'ready_check' && isReady && playersReady === totalPlayers - 1) {
-      const timer = setTimeout(() => setStatus('match_room'), 1000);
+      const timer = setTimeout(() => setStatus('match_room'), 800);
       return () => clearTimeout(timer);
     }
   }, [isReady, playersReady, totalPlayers, status]);
