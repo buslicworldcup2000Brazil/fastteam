@@ -34,7 +34,7 @@ const TimerProgressBar = ({ current, total }: { current: number, total: number }
 
 // --- MOCK DATA ---
 const MAPS = [
-  { id: 'warehouses', name: 'Mil. Warehouses', image: '/maps/Warehouses.jpg' },
+  { id: 'warehouses', name: 'Mil. Warehouses', image: '/maps/Mil_Warehouses.jpg' },
   { id: 'house', name: 'House', image: '/maps/House.jpg' },
   { id: 'factory', name: 'Factory', image: '/maps/Factory.jpg' },
   { id: 'mil_base', name: 'Mil_Base', image: '/maps/Mil_Base.jpg' },
