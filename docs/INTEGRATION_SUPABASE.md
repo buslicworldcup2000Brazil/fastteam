@@ -1,45 +1,74 @@
 # Интеграция с Supabase
 
-Руководство по миграции приложения на Supabase для работы с реальными данными.
+Это руководство поможет вам мигрировать ProfileMirror на Supabase для использования PostgreSQL и Realtime возможностей.
 
-## 1. Установка и настройка
-Необходимо установить пакет `@supabase/supabase-js` и настроить клиент в `src/lib/supabase.ts`, используя `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+## 1. Настройка клиента
+Установите пакет `@supabase/supabase-js` и создайте клиент в `src/lib/supabase.ts`:
+```ts
+import { createClient } from '@supabase/supabase-js';
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+```
 
-## 2. Схема базы данных (PostgreSQL)
+## 2. Схема базы данных (SQL)
 
-### Таблица `profiles`
-- `id`: uuid (references auth.users)
-- `nickname`: varchar(12)
-- `bio`: varchar(30)
-- `elo`: integer default 100
-- `country`: text
-- `avatar_url`: text
-- `banner_url`: text
-- `win_streak`: integer
-- `total_matches`: integer
+Выполните этот SQL в консоли Supabase для создания необходимых таблиц:
 
-### Таблица `matches`
-- `id`: uuid
-- `user_id`: uuid (FK to profiles)
-- `map_id`: text
-- `is_win`: boolean
-- `score`: text
-- `elo_change`: integer
-- `kd_ratio`: float
-- `created_at`: timestamp
+```sql
+-- Таблица профилей
+create table profiles (
+  id uuid references auth.users on delete cascade primary key,
+  nickname varchar(12) not null,
+  bio varchar(30),
+  elo integer default 1000,
+  win_streak integer default 0,
+  total_matches integer default 0,
+  country text,
+  avatar_url text,
+  banner_url text,
+  language text default 'ru',
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
 
-### Таблица `friends`
-- `user_id`: uuid
-- `friend_id`: uuid
-- `status`: text (online/offline/ingame)
+-- Таблица матчей
+create table matches (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references profiles(id) on delete cascade,
+  map_id text not null,
+  is_win boolean not null,
+  score text,
+  elo_at_time integer,
+  elo_change integer,
+  kd_ratio float,
+  kr_ratio float,
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
 
-## 3. Real-time возможности (Matchmaking)
-Для страницы `/matchmaking` необходимо использовать **Supabase Realtime (Channels)**:
-- Подписка на изменения в таблице лобби.
-- Использование `presence` для отслеживания игроков, которые сейчас находятся в поиске.
+-- Включение RLS
+alter table profiles enable row level security;
+alter table matches enable row level security;
+```
 
-## 4. Замена моков
-В файле `src/components/profile/profile-view.tsx` необходимо заменить состояние `useState(initialUser)` на фетчинг данных:
+## 3. Real-time Matchmaking
+Для страницы `/matchmaking` используйте подписки (Channels):
+
+```tsx
+const lobbyChannel = supabase.channel('lobby_room')
+  .on('presence', { event: 'sync' }, () => {
+    const state = lobbyChannel.presenceState();
+    // Обновление списка игроков в лобби
+  })
+  .subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      await lobbyChannel.track({ user_id: currentUserId });
+    }
+  });
+```
+
+## 4. Миграция данных
+В `src/components/profile/profile-view.tsx` замените инициализацию стейта на загрузку из Supabase:
 
 ```tsx
 useEffect(() => {
@@ -47,16 +76,13 @@ useEffect(() => {
     const { data } = await supabase
       .from('profiles')
       .select('*, matches(*)')
-      .eq('id', currentUserId)
+      .eq('id', user.id)
       .single();
-    setProfile(data);
+    if (data) setProfile(data);
   };
   fetchProfile();
-}, [currentUserId]);
+}, [user.id]);
 ```
 
-## 5. Расчет уровней
-Функция `calculateLevel` из `src/lib/data.ts` остается актуальной, так как она работает на основе числового значения `elo`, приходящего из БД.
-
 ---
-*Важно: Для защиты данных настройте RLS (Row Level Security) в консоли Supabase.*
+*Важно: Для корректной работы уровней используйте функцию `calculateLevel` из `src/lib/data.ts` на клиенте, передавая ей значение `elo` из базы.*

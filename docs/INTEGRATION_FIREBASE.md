@@ -1,53 +1,63 @@
 # Интеграция с Firebase Studio
 
-Это руководство описывает процесс перевода ProfileMirror с моковых данных на реальный бэкенд Firebase.
+Это руководство описывает процесс перевода ProfileMirror с моковых данных на реальный бэкенд Firebase с использованием инструментов Firebase Studio.
 
 ## 1. Подготовка (Scaffolding)
-Для начала работы в Firebase Studio необходимо вызвать команду `RequestFirebaseBackendTool`. Это создаст:
-- `docs/backend.json`: Основной чертеж вашей базы данных.
+Для начала работы вызовите команду `RequestFirebaseBackendTool`. Это сгенерирует необходимую инфраструктуру:
+- `docs/backend.json`: Описание структуры вашей базы данных.
 - `src/firebase/config.ts`: Конфигурация SDK.
 - `src/firebase/index.ts`: Точки доступа к Auth и Firestore.
 
 ## 2. Структура данных (Firestore)
 
-Все моковые данные из `src/lib/data.ts` должны быть распределены по следующим коллекциям:
+Все данные из `src/lib/data.ts` должны быть перенесены в Firestore.
 
 ### Коллекция `/users/{userId}`
-Содержит профиль игрока.
+Содержит основной профиль игрока.
 - `name`: string (max 12 chars)
 - `bio`: string (max 30 chars)
-- `elo`: number (используется для расчета level на лету)
-- `country`: string (название страны)
-- `avatarUrl` / `bannerUrl`: string
+- `elo`: number (используется для расчета уровня через `calculateLevel`)
 - `winStreak`: number
 - `totalMatches`: number
+- `country`: string (название страны)
+- `avatarUrl`: string
+- `bannerUrl`: string
+- `language`: "ru" | "en"
 - `registeredAt`: timestamp
+- `last90Stats`: object (содержит агрегированную статистику за 90 дней)
 
 ### Подколлекция `/users/{userId}/matches/{matchId}`
-История игр конкретного пользователя.
+История игр пользователя.
 - `date`: timestamp
 - `result`: "win" | "loss"
 - `score`: string (например, "13 : 11")
-- `map`: string (идентификатор карты: "factory", "mil_base" и т.д.)
-- `skillChange`: number (+/- ELO)
-- `kdRatio` / `krRatio`: number
+- `skillLevel`: number (ELO на момент матча)
+- `skillChange`: number (изменение ELO)
+- `kdRatio`: number
+- `krRatio`: number
+- `map`: string
 
 ### Коллекция `/lobbies/{lobbyId}`
-Для системы реального времени в Matchmaking.
+Для системы Matchmaking в реальном времени.
 - `players`: array of userIds
 - `status`: "searching" | "ready_check" | "match_room"
 - `mode`: "2v2" | "5v5"
+- `selectedMap`: string (id карты)
 
 ## 3. Аутентификация
-Используйте хук `useUser()` из `@/firebase` для получения текущего авторизованного игрока. Все записи в БД должны защищаться правилами (Security Rules), разрешающими запись только владельцу `userId`.
-
-## 4. Реализация в коде
-Вместо импорта `userProfile` из `lib/data.ts`, используйте:
+Используйте хук `useUser()` из `@/firebase` для получения текущего игрока. 
 ```tsx
+import { useUser, useFirestore, useDoc } from '@/firebase';
+import { doc } from 'firebase/firestore';
+
 const { user } = useUser();
-const userDoc = useMemoFirebase(() => doc(db, 'users', user.uid), [db, user]);
+const db = useFirestore();
+const userDoc = useMemoFirebase(() => user ? doc(db, 'users', user.uid) : null, [db, user]);
 const { data: profile } = useDoc(userDoc);
 ```
 
+## 4. Безопасность (Security Rules)
+Firebase Studio автоматически развернет правила на основе `backend.json`. Убедитесь, что запись в `/users/{userId}` разрешена только пользователю с соответствующим `request.auth.uid`.
+
 ---
-*Примечание: Firebase Studio автоматически разворачивает правила безопасности на основе структуры в backend.json.*
+*Примечание: Все изменения данных должны происходить на стороне клиента через SDK Firebase.*
