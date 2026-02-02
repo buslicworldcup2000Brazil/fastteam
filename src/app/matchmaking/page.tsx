@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { userProfile, friendsData } from '@/lib/data';
-import { Crown, Plus, Share2, MoreVertical, CheckCircle2, X, ArrowLeft, Trophy } from 'lucide-react';
+import { Crown, Plus, Share2, MoreVertical, CheckCircle2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import LevelIcon from '@/components/ui/level-icon';
 import { getFlagEmoji } from '@/lib/countries';
@@ -62,7 +62,7 @@ const MatchPlayerCard = ({ player }: { player: any }) => (
             <AvatarImage src={player.avatarUrl} />
             <AvatarFallback>{player.name[0]}</AvatarFallback>
           </Avatar>
-          {player.isCaptain && <Crown className="absolute -top-1 -right-1 h-2 w-2 md:h-3 md:w-3 text-primary" fill="currentColor" />}
+          {player.isCaptain && <Crown className="absolute -top-1 -right-1 h-2 w-2 md:h-3 w-3 text-primary" fill="currentColor" />}
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-0.5 md:gap-1">
@@ -144,34 +144,6 @@ export default function MatchmakingPage() {
     if (name === 'North') return t.map_north;
     return name;
   };
-
-  // Load state from localStorage on mount
-  useEffect(() => {
-    const savedState = localStorage.getItem('matchmaking_active_match');
-    if (savedState) {
-        const parsed = JSON.parse(savedState);
-        setStatus(parsed.status);
-        setMatchStatus(parsed.matchStatus);
-        setMode(parsed.mode);
-        setConnectTime(parsed.connectTime);
-        setSelectedMap(parsed.selectedMap);
-    }
-  }, []);
-
-  // Save state to localStorage when active
-  useEffect(() => {
-    if (status === 'match_room' && matchStatus === 'active') {
-        localStorage.setItem('matchmaking_active_match', JSON.stringify({
-            status,
-            matchStatus,
-            mode,
-            connectTime,
-            selectedMap
-        }));
-    } else if (status === 'lobby') {
-        localStorage.removeItem('matchmaking_active_match');
-    }
-  }, [status, matchStatus, mode, connectTime, selectedMap]);
 
   // Handle Search transition
   useEffect(() => {
@@ -301,7 +273,6 @@ export default function MatchmakingPage() {
   const handleFinishMatch = () => {
     setStatus('lobby');
     setMatchStatus('veto');
-    localStorage.removeItem('matchmaking_active_match');
     toast({ title: "Match Finished", description: "You can now search for a new match." });
   };
 
