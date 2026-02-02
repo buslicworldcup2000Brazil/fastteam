@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -8,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { userProfile, friendsData } from '@/lib/data';
-import { Crown, Plus, Share2, MoreVertical, CheckCircle2, X, ArrowLeft } from 'lucide-react';
+import { Crown, Plus, Share2, MoreVertical, CheckCircle2, X, ArrowLeft, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import LevelIcon from '@/components/ui/level-icon';
 import { getFlagEmoji } from '@/lib/countries';
@@ -132,6 +133,8 @@ export default function MatchmakingPage() {
   const serverHost = useMemo(() => {
     return Math.random() > 0.5 ? teamA[0] : teamB[0];
   }, [teamA, teamB]);
+
+  const isHost = serverHost.name === userProfile.name;
 
   const getTranslatedMapName = (name: string) => {
     if (name === 'Factory') return t.map_factory;
@@ -293,6 +296,13 @@ export default function MatchmakingPage() {
   const copyPassword = () => {
     navigator.clipboard.writeText(password.toString());
     toast({ title: "Copied!", description: "Server password copied." });
+  };
+
+  const handleFinishMatch = () => {
+    setStatus('lobby');
+    setMatchStatus('veto');
+    localStorage.removeItem('matchmaking_active_match');
+    toast({ title: "Match Finished", description: "You can now search for a new match." });
   };
 
   const formatTime = (s: number) => {
@@ -472,9 +482,22 @@ export default function MatchmakingPage() {
                            </div>
                         </div>
                       </div>
-                      <Button className="w-full h-8 md:h-11 bg-primary text-primary-foreground font-black italic uppercase tracking-tighter text-xs md:text-lg">
-                        Connect
-                      </Button>
+                      
+                      <div className="flex flex-col gap-2">
+                        <Button className="w-full h-8 md:h-11 bg-primary text-primary-foreground font-black italic uppercase tracking-tighter text-xs md:text-lg">
+                          Connect
+                        </Button>
+                        
+                        {isHost && (
+                          <Button 
+                            variant="outline"
+                            onClick={handleFinishMatch}
+                            className="w-full h-8 md:h-11 border-white/10 bg-white/5 hover:bg-white/10 text-[10px] md:text-sm font-bold uppercase tracking-widest"
+                          >
+                            Матч завершен
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </>
                 )}
