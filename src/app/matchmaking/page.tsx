@@ -130,8 +130,9 @@ export default function MatchmakingPage() {
 
   // Pick one captain to host
   const serverHost = useMemo(() => {
-    return Math.random() > 0.5 ? teamA[0] : teamB[0];
-  }, [teamA, teamB]);
+    // временно, надо будет исправить (всегда делаем пользователя хостом для тестов)
+    return teamA[0];
+  }, [teamA]);
 
   const isHost = serverHost.name === userProfile.name;
 
@@ -398,7 +399,7 @@ export default function MatchmakingPage() {
                             )}
                           >
                             <div className="h-10 md:h-20 relative">
-                              <Image src={map.image} alt={map.name} fill className="object-cover" />
+                              <Image src={map.image} alt={map.name} fill className="object-cover" unoptimized />
                               <div className="absolute inset-0 bg-black/40" />
                               <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <span className="text-[7px] md:text-[10px] font-black uppercase italic">{getTranslatedMapName(map.name)}</span>
@@ -436,7 +437,7 @@ export default function MatchmakingPage() {
                         <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{t.map}</p>
                         <div className="flex items-center gap-3 bg-black/40 p-2 rounded border border-white/5">
                             <div className="relative w-7 h-4 overflow-hidden rounded-xs border border-white/10 shrink-0">
-                              <Image src={selectedMap?.image} alt={selectedMap?.name} fill className="object-cover" />
+                              <Image src={selectedMap?.image} alt={selectedMap?.name} fill className="object-cover" unoptimized />
                             </div>
                             <span className="text-xs font-bold uppercase italic">{getTranslatedMapName(selectedMap?.name)}</span>
                         </div>
