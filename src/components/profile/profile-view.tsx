@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -42,18 +42,6 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLevelInfoOpen, setIsLevelInfoOpen] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
-  const [activeMatchMode, setActiveMatchMode] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Check for active match in localStorage
-    const savedMatch = localStorage.getItem('matchmaking_active_match');
-    if (savedMatch) {
-      const parsed = JSON.parse(savedMatch);
-      if (parsed.status === 'match_room' && parsed.matchStatus === 'active') {
-        setActiveMatchMode(parsed.mode);
-      }
-    }
-  }, []);
 
   const handleProfileUpdate = (values: any) => {
     setProfile((prevProfile: any) => ({
@@ -116,7 +104,7 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                 <Button asChild size="lg" className="flex-1 md:flex-none font-bold px-8 shadow-lg shadow-primary/20">
                   <Link href="/matchmaking">
                     <Swords className="mr-2 h-5 w-5" /> 
-                    {activeMatchMode ? `${activeMatchMode} Ranked` : t.play}
+                    {t.play}
                   </Link>
                 </Button>
               </div>
@@ -206,15 +194,12 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
             <EloProgressCard currentElo={profile.elo} currentLevel={profile.level} />
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Left Column: Summary and Map Rates */}
               <div className="space-y-6">
                 <ExtendedStatsCard stats={profile.last90Stats || { wins: 0, losses: 0, highestElo: 0, lowestElo: 0, eloChange: 0 }} />
                 <MapWinRates rates={profile.last90Stats?.mapWinRates || []} />
               </div>
 
-              {/* Right Column: Two Charts */}
               <div className="lg:col-span-2 space-y-8">
-                {/* Standalone ELO Chart */}
                 <GameStatsChart 
                   data={(profile.chartData || []).slice(-15)} 
                   title={t.performance_trend}
@@ -223,7 +208,6 @@ export default function ProfileView({ initialUser, isSelf = false }: ProfileView
                   showSidePanel={false}
                 />
                 
-                {/* Toggleable KD/KR Chart */}
                 <GameStatsChart 
                   data={(profile.chartData || []).slice(-15)} 
                   title="Combat Trends"
