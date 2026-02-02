@@ -174,14 +174,13 @@ export default function MatchmakingPage() {
       interval = setInterval(() => {
         setReadyCheckTime(prev => Math.max(0, prev - 1));
         setPlayersReady(prev => {
-          // Increase probability of players getting ready quickly
           if (prev < totalPlayers - 1) {
-            const added = Math.floor(Math.random() * 4) + 1; // Add 1-4 players at once
+            const added = Math.floor(Math.random() * 4) + 1;
             return Math.min(totalPlayers - 1, prev + added);
           }
           return prev;
         });
-      }, 800); // Slightly faster interval too
+      }, 800);
     }
     return () => clearInterval(interval);
   }, [status, totalPlayers]);
@@ -205,7 +204,6 @@ export default function MatchmakingPage() {
     }
   }, [readyCheckTime, status, isReady, playersReady, totalPlayers, toast, handleMatchCompletion]);
 
-  // Auto transition to Match Room when all are ready
   useEffect(() => {
     if (status === 'ready_check' && isReady && playersReady === totalPlayers - 1) {
       const timer = setTimeout(() => setStatus('match_room'), 800);
@@ -283,6 +281,17 @@ export default function MatchmakingPage() {
     const secs = s % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const MapImage = ({ src, alt, className }: { src: string, alt: string, className?: string }) => (
+    <img 
+      src={src} 
+      alt={alt} 
+      className={cn("absolute inset-0 w-full h-full object-cover", className)} 
+      onError={(e) => {
+        (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Map+Not+Found';
+      }}
+    />
+  );
 
   // --- RENDER STATES ---
 
@@ -399,7 +408,7 @@ export default function MatchmakingPage() {
                             )}
                           >
                             <div className="h-10 md:h-20 relative">
-                              <Image src={map.image} alt={map.name} fill className="object-cover" unoptimized />
+                              <MapImage src={map.image} alt={map.name} />
                               <div className="absolute inset-0 bg-black/40" />
                               <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <span className="text-[7px] md:text-[10px] font-black uppercase italic">{getTranslatedMapName(map.name)}</span>
@@ -437,7 +446,7 @@ export default function MatchmakingPage() {
                         <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{t.map}</p>
                         <div className="flex items-center gap-3 bg-black/40 p-2 rounded border border-white/5">
                             <div className="relative w-7 h-4 overflow-hidden rounded-xs border border-white/10 shrink-0">
-                              <Image src={selectedMap?.image} alt={selectedMap?.name} fill className="object-cover" unoptimized />
+                              <MapImage src={selectedMap?.image} alt={selectedMap?.name} />
                             </div>
                             <span className="text-xs font-bold uppercase italic">{getTranslatedMapName(selectedMap?.name)}</span>
                         </div>
