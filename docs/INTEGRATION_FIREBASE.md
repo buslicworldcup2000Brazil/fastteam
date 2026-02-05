@@ -1,63 +1,52 @@
 # Интеграция с Firebase Studio
 
-Это руководство описывает процесс перевода ProfileMirror с моковых данных на реальный бэкенд Firebase с использованием инструментов Firebase Studio.
+Это руководство описывает процесс перевода ProfileMirror на реальный бэкенд Firebase. Каждая деталь, которая сейчас является моковой, должна быть отражена в Firestore.
 
 ## 1. Подготовка (Scaffolding)
-Для начала работы вызовите команду `RequestFirebaseBackendTool`. Это сгенерирует необходимую инфраструктуру:
-- `docs/backend.json`: Описание структуры вашей базы данных.
-- `src/firebase/config.ts`: Конфигурация SDK.
-- `src/firebase/index.ts`: Точки доступа к Auth и Firestore.
+Вызовите `RequestFirebaseBackendTool` для инициализации инфраструктуры в `src/firebase/`.
 
 ## 2. Структура данных (Firestore)
 
-Все данные из `src/lib/data.ts` должны быть перенесены в Firestore.
-
 ### Коллекция `/users/{userId}`
-Содержит основной профиль игрока.
-- `name`: string (max 12 chars)
-- `bio`: string (max 30 chars)
-- `elo`: number (используется для расчета уровня через `calculateLevel`)
-- `winStreak`: number
-- `totalMatches`: number
-- `country`: string (название страны)
-- `avatarUrl`: string
-- `bannerUrl`: string
-- `language`: "ru" | "en"
-- `registeredAt`: timestamp
-- `last90Stats`: object (содержит агрегированную статистику за 90 дней)
+Содержит основной профиль и агрегированную статистику.
+
+- **Основные данные**:
+  - `name`: string (max 12 chars)
+  - `bio`: string (max 30 chars)
+  - `elo`: number (текущий рейтинг)
+  - `themeColor`: string (HSL значение, например, "3 71% 41%")
+  - `country`: string (название для `getFlagEmoji`)
+  - `avatarUrl` / `bannerUrl`: string
+  - `winStreak`: number
+  - `totalMatches`: number
+
+- **Агрегаты за 90 дней (`last90Stats`)**:
+  - `wins` / `losses`: number (например, 60 / 30)
+  - `highestElo` / `lowestElo`: number (рекорды за период)
+  - `eloChange`: number (разница между началом и концом периода, например, +440)
+  - `mapWinRates`: array of objects `{ mapName: string, winRate: number, matches: number }`
 
 ### Подколлекция `/users/{userId}/matches/{matchId}`
-История игр пользователя.
+История каждой игры для таблицы и графиков.
+
 - `date`: timestamp
-- `result`: "win" | "loss"
+- `result`: "win" | "loss" (определяет цвет полоски: Win = Green, Loss = Red)
 - `score`: string (например, "13 : 11")
-- `skillLevel`: number (ELO на момент матча)
-- `skillChange`: number (изменение ELO)
-- `kdRatio`: number
-- `krRatio`: number
-- `map`: string
+- `skillLevel`: number (ELO на момент окончания матча)
+- `skillChange`: number (число со знаком, например, +25 или -18. Если > 0 — Green + ArrowUp, если < 0 — Red + ArrowDown)
+- `kd`: string (например, "30/20")
+- `kdRatio`: number (если >= 1.0 — Green, < 1.0 — Red)
+- `krRatio`: number (аналогичная логика цвета)
+- `map`: string (ID карты)
 
-### Коллекция `/lobbies/{lobbyId}`
-Для системы Matchmaking в реальном времени.
-- `players`: array of userIds
-- `status`: "searching" | "ready_check" | "match_room"
-- `mode`: "2v2" | "5v5"
-- `selectedMap`: string (id карты)
+## 3. Логика отображения (UI Logic)
 
-## 3. Аутентификация
-Используйте хук `useUser()` из `@/firebase` для получения текущего игрока. 
-```tsx
-import { useUser, useFirestore, useDoc } from '@/firebase';
-import { doc } from 'firebase/firestore';
+### Тренды (Performance Trends)
+Для графика ELO берем последние 15 документов из подколлекции `matches`, сортируя по `date`.
+Для Combat Trends (K/D, K/R) используем те же данные, отображая `kdRatio` и `krRatio`.
 
-const { user } = useUser();
-const db = useFirestore();
-const userDoc = useMemoFirebase(() => user ? doc(db, 'users', user.uid) : null, [db, user]);
-const { data: profile } = useDoc(userDoc);
-```
-
-## 4. Безопасность (Security Rules)
-Firebase Studio автоматически развернет правила на основе `backend.json`. Убедитесь, что запись в `/users/{userId}` разрешена только пользователю с соответствующим `request.auth.uid`.
+### Уровни
+Используйте функцию `calculateLevel(profile.elo)` из `src/lib/data.ts` для динамического определения иконки уровня на основе ELO из базы.
 
 ---
-*Примечание: Все изменения данных должны происходить на стороне клиента через SDK Firebase.*
+*Важно: Все изменения данных (обновление профиля, запись результата матча) производятся через Client SDK.*

@@ -1,88 +1,69 @@
 # Интеграция с Supabase
 
-Это руководство поможет вам мигрировать ProfileMirror на Supabase для использования PostgreSQL и Realtime возможностей.
+Данное руководство описывает миграцию на PostgreSQL. Все моковые данные UI должны быть представлены в виде таблиц или View.
 
-## 1. Настройка клиента
-Установите пакет `@supabase/supabase-js` и создайте клиент в `src/lib/supabase.ts`:
-```ts
-import { createClient } from '@supabase/supabase-js';
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-```
+## 1. Схема базы данных (SQL)
 
-## 2. Схема базы данных (SQL)
-
-Выполните этот SQL в консоли Supabase для создания необходимых таблиц:
-
+### Таблица `profiles`
 ```sql
--- Таблица профилей
 create table profiles (
-  id uuid references auth.users on delete cascade primary key,
+  id uuid references auth.users primary key,
   nickname varchar(12) not null,
   bio varchar(30),
   elo integer default 1000,
-  win_streak integer default 0,
-  total_matches integer default 0,
+  theme_color text default '3 71% 41%', -- Хранение акцентного цвета
   country text,
   avatar_url text,
   banner_url text,
-  language text default 'ru',
-  created_at timestamp with time zone default timezone('utc'::text, now())
+  win_streak integer default 0,
+  total_matches integer default 0,
+  created_at timestamp with time zone default now()
 );
+```
 
--- Таблица матчей
+### Таблица `matches`
+```sql
 create table matches (
   id uuid default uuid_generate_v4() primary key,
-  user_id uuid references profiles(id) on delete cascade,
-  map_id text not null,
-  is_win boolean not null,
-  score text,
-  elo_at_time integer,
-  elo_change integer,
-  kd_ratio float,
+  user_id uuid references profiles(id),
+  match_date timestamp with time zone default now(),
+  is_win boolean, -- True = Green в UI, False = Red
+  score_text text, -- "13 : 11"
+  elo_after_match integer,
+  elo_diff integer, -- Разница (определяет цвет и стрелку в истории)
+  kills integer,
+  deaths integer,
+  kd_ratio float, -- Логика цвета: kd_ratio >= 1.0 ? green : red
   kr_ratio float,
-  created_at timestamp with time zone default timezone('utc'::text, now())
+  map_id text
 );
-
--- Включение RLS
-alter table profiles enable row level security;
-alter table matches enable row level security;
 ```
 
-## 3. Real-time Matchmaking
-Для страницы `/matchmaking` используйте подписки (Channels):
+## 2. Реализация статистики (Dashboard Stats)
 
-```tsx
-const lobbyChannel = supabase.channel('lobby_room')
-  .on('presence', { event: 'sync' }, () => {
-    const state = lobbyChannel.presenceState();
-    // Обновление списка игроков в лобби
-  })
-  .subscribe(async (status) => {
-    if (status === 'SUBSCRIBED') {
-      await lobbyChannel.track({ user_id: currentUserId });
-    }
-  });
+Для блока "За последние 90 игр" (W/L, Highest/Lowest Elo) рекомендуется создать SQL View:
+```sql
+create view player_90day_stats as
+select 
+  user_id,
+  count(*) filter (where is_win = true) as wins,
+  count(*) filter (where is_win = false) as losses,
+  max(elo_after_match) as highest_elo,
+  min(elo_after_match) as lowest_elo,
+  (last_value(elo_after_match) over(partition by user_id order by match_date) - 
+   first_value(elo_after_match) over(partition by user_id order by match_date)) as elo_change
+from matches
+where match_date > now() - interval '90 days'
+group by user_id;
 ```
 
-## 4. Миграция данных
-В `src/components/profile/profile-view.tsx` замените инициализацию стейта на загрузку из Supabase:
+## 3. UI Интеграция и цвета
 
-```tsx
-useEffect(() => {
-  const fetchProfile = async () => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*, matches(*)')
-      .eq('id', user.id)
-      .single();
-    if (data) setProfile(data);
-  };
-  fetchProfile();
-}, [user.id]);
-```
+- **Цвет темы**: При загрузке приложения вызывайте `setPrimaryColor(profile.theme_color)` из `useTheme`.
+- **История матчей**:
+  - `elo_diff`: Если положительный, рендерим `+` и `ArrowUp` (цвет green-400).
+  - `kd_ratio` / `kr_ratio`: Цвет текста зависит от значения (порог 1.0).
+- **Карты**: Маппинг `map_id` -> Название (через объект `translations`).
 
 ---
-*Важно: Для корректной работы уровней используйте функцию `calculateLevel` из `src/lib/data.ts` на клиенте, передавая ей значение `elo` из базы.*
+*Важно: Используйте Realtime подписки Supabase для обновления лобби и статуса друзей.*
